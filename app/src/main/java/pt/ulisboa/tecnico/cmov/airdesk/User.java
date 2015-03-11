@@ -29,19 +29,16 @@ public class User {
         return email;
     }
 
-    public File createFile(String filename){
-        return new File(filename);
-    }
-
     public Workspace createWorkspace(String name, boolean isPublic, int quota){
-        return new Workspace(name, isPublic, quota);
+        return new Workspace(name, isPublic, quota, name);
     }
 
     public void deleteWorkspace(Workspace workspace){
         ownedWorkspaces.remove(workspace);
     }
 
-    public void invite(String username, Workspace workspace){
-        //IT'S A KIND OF MAGIC
+    public List<Workspace> searchWorkspaces(String keywords[]){
+        //TODO
+        return null;
     }
 }

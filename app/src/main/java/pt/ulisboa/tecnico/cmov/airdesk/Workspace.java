@@ -14,12 +14,17 @@ public class Workspace {
     private List<String> keywords;
     private boolean isPublic;
     private int quota;
+    private String ownerName;
+    private List<String> allowedUsers;
+    private User user;
 
-    public Workspace(String name, boolean isPublic, int quota){
+    public Workspace(String name, boolean isPublic, int quota, String ownerName){
         this.name = name;
         this.isPublic = isPublic;
         files = new ArrayList<File>();
         keywords = new ArrayList<String>();
+        allowedUsers = new ArrayList<String>();
+        this.ownerName = ownerName;
     }
 
     public String getName(){
@@ -44,5 +49,29 @@ public class Workspace {
 
     public void removeFile(File file){
         files.remove(file);
+    }
+
+    public void editFile(File file){
+        //TODO
+    }
+
+    public void saveFile(File file){
+        //TODO
+    }
+
+    public boolean isOwner(String name){
+        return name.equals(ownerName);
+    }
+
+    public void invite(String username){
+        if(isOwner(user.getUsername()))
+            if(!allowedUsers.contains(username))
+                allowedUsers.add(username);
+    }
+
+    public void subscribe(){
+        if(isPublic)
+            if(!allowedUsers.contains(user.getUsername()))
+                allowedUsers.add(user.getUsername());
     }
 }
