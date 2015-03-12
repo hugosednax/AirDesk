@@ -17,7 +17,6 @@ public abstract class Workspace {
     protected boolean isPublic;
     protected int quota;
     protected String ownerName;
-    protected List<String> allowedUsers;
     protected User user;
 
     abstract void addFile(File file);
@@ -40,15 +39,5 @@ public abstract class Workspace {
 
     public boolean isPublic(){
         return isPublic;
-    }
-
-    public boolean isOwner(String name){
-        return name.equals(ownerName);
-    }
-
-    public void subscribe(){
-        if(isPublic)
-            if(!allowedUsers.contains(user.getUsername()))
-                allowedUsers.add(user.getUsername());
     }
 }

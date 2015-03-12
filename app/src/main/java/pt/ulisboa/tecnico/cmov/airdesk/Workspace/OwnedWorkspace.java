@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class OwnedWorkspace extends Workspace{
 
+    private List<String> allowedUsers;
+
     public OwnedWorkspace(String name, boolean isPublic, int quota, String ownerName){
         this.name = name;
         this.isPublic = isPublic;
@@ -16,22 +18,6 @@ public class OwnedWorkspace extends Workspace{
         keywords = new ArrayList<String>();
         allowedUsers = new ArrayList<String>();
         this.ownerName = ownerName;
-    }
-
-    public String getName(){
-        return name;
-    }
-
-    public List<File> getFiles(){
-        return files;
-    }
-
-    public int getQuota(){
-        return quota;
-    }
-
-    public boolean isPublic(){
-        return isPublic;
     }
 
     public void addFile(File file){
@@ -43,26 +29,19 @@ public class OwnedWorkspace extends Workspace{
     }
 
     public void editFile(File file){
-        //TODO
+        /*
+        TODO
+        NOTE: Whats the difference between editFile and saveFile in the backEnd?
+        */
     }
 
     public void saveFile(File file){
         //TODO
     }
 
-    public boolean isOwner(String name){
-        return name.equals(ownerName);
-    }
-
     public void invite(String username){
-        if(isOwner(user.getUsername()))
+        /*if(isOwner(user.getUsername()))
             if(!allowedUsers.contains(username))
-                allowedUsers.add(username);
-    }
-
-    public void subscribe(){
-        if(isPublic)
-            if(!allowedUsers.contains(user.getUsername()))
-                allowedUsers.add(user.getUsername());
+                allowedUsers.add(username);*/
     }
 }
