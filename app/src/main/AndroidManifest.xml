@@ -16,6 +16,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Activity.WorkspaceCreate"
+            android:label="@string/title_activity_workspace_create" >
+        </activity>
+        <activity
+            android:name=".Activity.Workspaces"
+            android:label="@string/title_activity_workspaces" >
+        </activity>
     </application>
 
 </manifest>
