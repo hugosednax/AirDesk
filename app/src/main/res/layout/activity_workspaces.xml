@@ -4,6 +4,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="#3fa9f5"
     tools:context="pt.ulisboa.tecnico.cmov.airdesk.Activity.Workspaces">
 
     <Button
@@ -11,6 +12,7 @@
         android:layout_height="wrap_content"
         android:text="Owned Workspaces"
         android:id="@+id/ownedWorkspacesButton"
+        android:onClick="switchToOwnedActivity"
         android:layout_marginTop="130dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
@@ -21,6 +23,7 @@
         android:layout_height="wrap_content"
         android:text="foreign Workspaces"
         android:id="@+id/foreignWorkspacesButton"
+        android:onClick="switchToForeignActivity"
         android:layout_below="@+id/ownedWorkspacesButton"
         android:layout_alignLeft="@+id/ownedWorkspacesButton"
         android:layout_alignStart="@+id/ownedWorkspacesButton"

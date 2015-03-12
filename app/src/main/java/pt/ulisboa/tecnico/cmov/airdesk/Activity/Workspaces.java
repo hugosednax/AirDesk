@@ -4,6 +4,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.content.Intent;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 
@@ -38,4 +40,15 @@ public class Workspaces extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void switchToOwnedActivity(View v){
+            Intent intent = new Intent(this, OwnedWorkspaces.class);
+            startActivity(intent);
+    }
+
+    public void switchToForeignActivity(View v){
+        Intent intent = new Intent(this, ForeignWorkspaces.class);
+        startActivity(intent);
+    }
+
 }
