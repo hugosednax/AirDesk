@@ -11,20 +11,20 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
  */
 public class User {
 
-    private String name;
+    private String nick;
     private String email;
     private List<Workspace> foreignWorkspaces;
     private List<Workspace> ownedWorkspaces;
 
-    public User(String name, String email){
-        this.name = name;
+    public User(String nick, String email){
+        this.nick = nick;
         this.email = email;
         foreignWorkspaces = new ArrayList<Workspace>();
         ownedWorkspaces = new ArrayList<Workspace>();
     }
 
-    public String getUsername(){
-        return name;
+    public String getNick(){
+        return nick;
     }
 
     public String getEmail(){
@@ -32,7 +32,8 @@ public class User {
     }
 
     public Workspace createWorkspace(String name, boolean isPublic, int quota){
-        return new OwnedWorkspace(name, isPublic, quota, name);
+        Workspace newWorkspace = new OwnedWorkspace(name, isPublic, quota, nick);
+        return newWorkspace;
     }
 
     public void deleteWorkspace(Workspace workspace){
