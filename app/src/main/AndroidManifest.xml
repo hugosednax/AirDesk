@@ -24,6 +24,22 @@
             android:name=".Activity.Workspaces"
             android:label="@string/title_activity_workspaces" >
         </activity>
+        <activity
+            android:name=".Activity.OwnedWorkspaces"
+            android:label="@string/title_activity_owned_workspaces" >
+        </activity>
+        <activity
+            android:name=".Activity.ForeignWorkspaces"
+            android:label="@string/title_activity_foreign_workspaces" >
+        </activity>
+        <activity
+            android:name=".Activity.ListFiles"
+            android:label="@string/title_activity_list_files" >
+        </activity>
+        <activity
+            android:name=".EditViewFile"
+            android:label="@string/title_activity_edit_view_file" >
+        </activity>
     </application>
 
 </manifest>

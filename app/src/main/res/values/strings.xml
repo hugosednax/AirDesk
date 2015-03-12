@@ -6,5 +6,9 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_workspace_create">WorkspaceCreate</string>
     <string name="title_activity_workspaces">Workspaces</string>
+    <string name="title_activity_owned_workspaces">OwnedWorkspaces</string>
+    <string name="title_activity_foreign_workspaces">ForeignWorkspaces</string>
+    <string name="title_activity_list_files">ListFiles</string>
+    <string name="title_activity_edit_view_file">EditViewFile</string>
 
 </resources>
