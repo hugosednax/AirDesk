@@ -32,7 +32,7 @@ public class User {
     }
 
     public Workspace createWorkspace(String name, boolean isPublic, int quota){
-        Workspace newWorkspace = new OwnedWorkspace(name, isPublic, quota, nick);
+        Workspace newWorkspace = new OwnedWorkspace(name, isPublic, quota);
         return newWorkspace;
     }
 
