@@ -25,9 +25,11 @@ public abstract class Workspace {
 
     abstract public void addFile(ADFile file);
 
-    abstract public void removeFile(ADFile file);
-
     abstract public void delete();
+
+    abstract public void removeFile(String name);
+
+    abstract public int getSize();
 
     public String getName() { return name; }
 

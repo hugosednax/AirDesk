@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.airdesk;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.OwnedWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
@@ -31,10 +32,22 @@ public class User {
         return email;
     }
 
+    public void createFile(String name, Workspace workspace){
+        ADFile newFile = new ADFile(name, workspace);
+    }
+
+    public void deleteFile(String name, Workspace workspace){
+        workspace.removeFile(name);
+    }
+
     public Workspace createWorkspace(String name, boolean isPublic, int quota){
         Workspace newWorkspace = new OwnedWorkspace(name, isPublic, quota);
         ownedWorkspaces.add(newWorkspace);
         return newWorkspace;
+    }
+
+    public void addForeignWorkspace(Workspace workspace){
+        foreignWorkspaces.add(workspace);
     }
 
     public void deleteWorkspace(Workspace workspace){

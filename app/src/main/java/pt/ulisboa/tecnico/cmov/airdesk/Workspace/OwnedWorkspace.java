@@ -7,13 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
+import pt.ulisboa.tecnico.cmov.airdesk.User;
 
 /**
  * Created by Filipe Teixeira on 12/03/2015.
  */
 public class OwnedWorkspace extends Workspace{
 
-    private List<String> allowedUsers;
+    private List<User> allowedUsers;
     private boolean isPublic;
     private String directoryPath;
 
@@ -21,18 +22,36 @@ public class OwnedWorkspace extends Workspace{
         super(name);
         this.isPublic = isPublic;
         this.quota = quota;
-        allowedUsers = new ArrayList<String>();
+        allowedUsers = new ArrayList<User>();
         directoryPath = Environment.getExternalStorageDirectory() + File.separator + name;
         File directory = new File(directoryPath);
         directory.mkdirs();
     }
 
     public void addFile(ADFile file){
-        files.add(file);
+        if(this.getSize() >= getQuota()){
+            System.out.println();
+            //todo: Quota exceeded exception
+        } else {
+            files.add(file);
+        }
     }
 
-    public void removeFile(ADFile file){
-        files.remove(file);
+    public void removeFile(String name){
+        // TODO
+    }
+
+    public int getSize(){
+        File directory = new File(directoryPath);
+        int workspaceSize = 0;
+
+        if (directory.isDirectory())
+            for (File child : directory.listFiles())
+                workspaceSize += child.getTotalSpace();
+        else System.out.println("Insert Exception HERE");
+        //todo: not a directory exception
+
+        return workspaceSize;
     }
 
     public void delete(){
