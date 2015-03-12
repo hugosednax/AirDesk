@@ -21,6 +21,11 @@ public class ForeignWorkspace extends Workspace{
     public void removeFile(ADFile file){
 
     }
+
+    public void delete(){
+
+    }
+
     public void subscribe(){
         /*if(isPublic)
             if(!allowedUsers.contains(user.getUsername()))

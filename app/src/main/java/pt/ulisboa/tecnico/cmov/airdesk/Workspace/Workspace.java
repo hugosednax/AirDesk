@@ -23,9 +23,11 @@ public abstract class Workspace {
         quota = 0;
     }
 
-    abstract void addFile(ADFile file);
+    abstract public void addFile(ADFile file);
 
-    abstract void removeFile(ADFile file);
+    abstract public void removeFile(ADFile file);
+
+    abstract public void delete();
 
     public String getName() { return name; }
 

@@ -33,10 +33,12 @@ public class User {
 
     public Workspace createWorkspace(String name, boolean isPublic, int quota){
         Workspace newWorkspace = new OwnedWorkspace(name, isPublic, quota);
+        ownedWorkspaces.add(newWorkspace);
         return newWorkspace;
     }
 
     public void deleteWorkspace(Workspace workspace){
+        workspace.delete();
         ownedWorkspaces.remove(workspace);
     }
 
