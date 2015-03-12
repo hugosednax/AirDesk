@@ -19,7 +19,7 @@ public class ForeignWorkspace extends Workspace{
     }
 
     public void removeFile(ADFile file){
-        
+
     }
     public void subscribe(){
         /*if(isPublic)

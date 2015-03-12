@@ -11,6 +11,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 public class OwnedWorkspace extends Workspace{
 
     private List<String> allowedUsers;
+    private boolean isPublic;
 
     public OwnedWorkspace(String name, boolean isPublic, int quota){
         super(name);
