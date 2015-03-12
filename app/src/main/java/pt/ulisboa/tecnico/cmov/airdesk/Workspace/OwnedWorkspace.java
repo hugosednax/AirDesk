@@ -12,13 +12,11 @@ public class OwnedWorkspace extends Workspace{
 
     private List<String> allowedUsers;
 
-    public OwnedWorkspace(String name, boolean isPublic, int quota, String ownerName){
-        this.name = name;
+    public OwnedWorkspace(String name, boolean isPublic, int quota){
+        super(name);
         this.isPublic = isPublic;
-        files = new ArrayList<ADFile>();
-        keywords = new ArrayList<String>();
+        this.quota = quota;
         allowedUsers = new ArrayList<String>();
-        this.ownerName = ownerName;
     }
 
     public void addFile(ADFile file){

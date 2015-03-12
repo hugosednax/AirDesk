@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
@@ -13,10 +14,14 @@ public abstract class Workspace {
     protected String name;
     protected List<ADFile> files;
     protected List<String> keywords;
-    protected boolean isPublic;
     protected int quota;
-    protected String ownerName;
-    protected User user;
+
+    public Workspace(String name){
+        this.name = name;
+        files = new ArrayList<ADFile>();
+        keywords = new ArrayList<String>();
+        quota = 0;
+    }
 
     abstract void addFile(ADFile file);
 
@@ -32,7 +37,7 @@ public abstract class Workspace {
         return quota;
     }
 
-    public boolean isPublic(){
-        return isPublic;
+    public void setQuota(int quota){
+        this.quota = quota;
     }
 }
