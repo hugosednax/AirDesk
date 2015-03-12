@@ -1,9 +1,8 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 import pt.ulisboa.tecnico.cmov.airdesk.User;
 
 /**
@@ -12,24 +11,20 @@ import pt.ulisboa.tecnico.cmov.airdesk.User;
 public abstract class Workspace {
 
     protected String name;
-    protected List<File> files;
+    protected List<ADFile> files;
     protected List<String> keywords;
     protected boolean isPublic;
     protected int quota;
     protected String ownerName;
     protected User user;
 
-    abstract void addFile(File file);
+    abstract void addFile(ADFile file);
 
-    abstract void removeFile(File file);
-
-    abstract void editFile(File file);
-
-    abstract void saveFile(File file);
+    abstract void removeFile(ADFile file);
 
     public String getName() { return name; }
 
-    public List<File> getFiles(){
+    public List<ADFile> getFiles(){
         return files;
     }
 

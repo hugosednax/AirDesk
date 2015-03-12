@@ -1,8 +1,9 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 
 /**
  * Created by Filipe Teixeira on 12/03/2015.
@@ -14,29 +15,18 @@ public class OwnedWorkspace extends Workspace{
     public OwnedWorkspace(String name, boolean isPublic, int quota, String ownerName){
         this.name = name;
         this.isPublic = isPublic;
-        files = new ArrayList<File>();
+        files = new ArrayList<ADFile>();
         keywords = new ArrayList<String>();
         allowedUsers = new ArrayList<String>();
         this.ownerName = ownerName;
     }
 
-    public void addFile(File file){
+    public void addFile(ADFile file){
         files.add(file);
     }
 
-    public void removeFile(File file){
+    public void removeFile(ADFile file){
         files.remove(file);
-    }
-
-    public void editFile(File file){
-        /*
-        TODO
-        NOTE: Whats the difference between editFile and saveFile in the backEnd?
-        */
-    }
-
-    public void saveFile(File file){
-        //TODO
     }
 
     public void invite(String username){
