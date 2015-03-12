@@ -33,7 +33,7 @@
             android:label="@string/title_activity_list_files" >
         </activity>
         <activity
-            android:name=".EditViewFile"
+            android:name=".Activity.EditViewFile"
             android:label="@string/title_activity_edit_view_file" >
         </activity>
     </application>

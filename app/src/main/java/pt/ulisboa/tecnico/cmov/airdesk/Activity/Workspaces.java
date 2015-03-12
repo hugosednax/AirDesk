@@ -47,7 +47,8 @@ public class Workspaces extends ActionBarActivity {
     }
 
     public void switchToForeignActivity(View v){
-
+        Intent intent = new Intent(this, ForeignWorkspaces.class);
+        startActivity(intent);
     }
 
 }
