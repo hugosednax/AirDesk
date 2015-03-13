@@ -8,6 +8,8 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
@@ -22,13 +24,18 @@ public class OwnedWorkspace extends Workspace{
     private List<User> allowedUsers;
     private boolean isPublic;
 
-    public OwnedWorkspace(String name, boolean isPublic, int quota){
+    public OwnedWorkspace(String name, boolean isPublic, int quota) throws CreateWorkspaceException {
         super(name);
         this.isPublic = isPublic;
         this.quota = quota;
         this.allowedUsers = new ArrayList<User>();
         File directory = new File(name);
-        directory.mkdirs();
+        if(!directory.mkdirs())
+            throw new CreateWorkspaceException("Can't create a new directory for this Workspace");
+    }
+
+    public boolean isPublic() {
+        return isPublic;
     }
 
     public void createFile(String fileName) throws QuotaLimitExceededException, CreateFileException {
@@ -44,11 +51,11 @@ public class OwnedWorkspace extends Workspace{
             }
     }
 
-    public void removeFile(String name) throws ADFileNotFoundException {
+    public void removeFile(String name) throws ADFileNotFoundException, DeleteFileException {
         ADFile file = getFileByName(name);
         files.remove(file);
-        file.getFile().delete();
-        file = null;
+        if(!file.getFile().delete())
+            throw new DeleteFileException("Can't delete file in Android File System");
     }
 
     public void updateFile(String name, String text){
@@ -56,7 +63,7 @@ public class OwnedWorkspace extends Workspace{
     }
 
     public ADFile getFileByName(String name) throws ADFileNotFoundException {
-        Predicate validator = new FileNamePredicate(name);
+        Predicate<ADFile> validator = new FileNamePredicate(name);
         ADFile result = null;
         for(ADFile file : getFiles())
             if (validator.apply(file)) {
@@ -84,14 +91,14 @@ public class OwnedWorkspace extends Workspace{
     }
 
     public void delete() throws NotDirectoryException{
-        //todo: not tested
         File directory = new File(getName());
         if (directory.isDirectory())
             for (File child : directory.listFiles())
-                child.delete();
+                if(!child.delete())
+                    System.out.println("Error at deleting file: " + child.getName());
         else throw new NotDirectoryException("Can't delete workspace, the provided name isn't a directory.");
-        directory.delete();
-        directory = null;
+        if(!directory.delete())
+            System.out.println("Error at deleting directory: " + directory.getName());
     }
 
     public void invite(String username){

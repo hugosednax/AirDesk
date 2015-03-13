@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.Predicate.WorkspaceNamePredicate;
@@ -31,8 +34,13 @@ public class User {
         ownedWorkspaces = new ArrayList<Workspace>();
 
         // TEST ADD
-        createWorkspace("test", true, 1);
-        createWorkspace("test2", true, 1);
+        try {
+            createWorkspace("test", true, 1);
+            createWorkspace("test2", true, 1);
+        } catch (CreateWorkspaceException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
     }
 
     // User functions
@@ -95,7 +103,7 @@ public class User {
         return result;
     }
 
-    public Workspace createWorkspace(String name, boolean isPublic, int quota){
+    public Workspace createWorkspace(String name, boolean isPublic, int quota) throws CreateWorkspaceException {
         Workspace newWorkspace = new OwnedWorkspace(name, isPublic, quota);
         ownedWorkspaces.add(newWorkspace);
         return newWorkspace;
@@ -128,10 +136,10 @@ public class User {
         getOwnedWorkspaceByName(workspaceName).createFile(fileName);
     }
 
-    public void deleteFile(String fileName, Workspace workspace){
+    public void deleteFile(String fileName, Workspace workspace) throws ADFileNotFoundException, DeleteFileException {
         workspace.removeFile(fileName);
     }
-    public void deleteFile(String fileName, String workspaceName) throws WorkspaceNotFoundException{
+    public void deleteFile(String fileName, String workspaceName) throws WorkspaceNotFoundException, ADFileNotFoundException, DeleteFileException {
         getOwnedWorkspaceByName(workspaceName).removeFile(fileName);
     }
 }
