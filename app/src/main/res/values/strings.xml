@@ -11,5 +11,6 @@
     <string name="title_activity_list_files">ListFiles</string>
     <string name="title_activity_edit_view_file">EditViewFile</string>
     <string name="title_activity_sign_up">SignUp</string>
+    <string name="title_activity_starter">StarterActivity</string>
 
 </resources>

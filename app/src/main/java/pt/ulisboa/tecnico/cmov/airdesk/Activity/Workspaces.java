@@ -24,12 +24,8 @@ public class Workspaces extends ActionBarActivity {
         airDeskApp.setPrefs(getSharedPreferences("user_prefs", MODE_PRIVATE));
         String userEmail = airDeskApp.getPrefs().getString("email_pref","DEFAULT");
         String nick = airDeskApp.getPrefs().getString("nick_pref","DEFAULT");
-        if(userEmail.equals("DEFAULT")) {
-            Intent intent = new Intent(this, SignUp.class); //diferent activity
-            startActivity(intent);
-        }else{
-            airDeskApp.setUser(new User(nick,userEmail));
-        }
+        airDeskApp.setUser(new User(nick,userEmail));
+        Log.d("PREFERENCES WORKSPACES","user: "+nick+" email: "+userEmail);
     }
 
 

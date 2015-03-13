@@ -9,7 +9,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".Activity.Workspaces"
+            android:name=".Activity.StarterActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,6 +40,10 @@
         <activity
             android:name=".Activity.SignUp"
             android:label="@string/title_activity_sign_up" >
+        </activity>
+        <activity
+            android:name=".Activity.Workspaces"
+            android:label="@string/title_activity_workspaces" >
         </activity>
     </application>
 
