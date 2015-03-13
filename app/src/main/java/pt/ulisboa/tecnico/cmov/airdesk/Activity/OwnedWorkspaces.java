@@ -1,9 +1,13 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -18,7 +22,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 public class OwnedWorkspaces extends ActionBarActivity {
     private ListAdapter listOfWorkspaces;
-
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +31,17 @@ public class OwnedWorkspaces extends ActionBarActivity {
 
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         listOfWorkspaces = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,airDeskApp.getUser().getOwnedWorkspacesNames());
-        ListView listView = (ListView) findViewById(R.id.lisWorkspaces);
+        listView = (ListView) findViewById(R.id.listWorkspaces);
         listView.setAdapter(listOfWorkspaces);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String selectedFromList =(String) (listView.getItemAtPosition(position));
+                Log.d("SELECTED",selectedFromList);
+            }
+        });
+
     }
 
     @Override
