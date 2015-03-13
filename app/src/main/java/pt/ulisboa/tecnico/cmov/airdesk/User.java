@@ -22,6 +22,8 @@ public class User {
         this.email = email;
         foreignWorkspaces = new ArrayList<Workspace>();
         ownedWorkspaces = new ArrayList<Workspace>();
+        createWorkspace("test", true, 1);
+        createWorkspace("test2", true, 1);
     }
 
     public String getNick(){
@@ -30,6 +32,24 @@ public class User {
 
     public String getEmail(){
         return email;
+    }
+
+    public List<Workspace> getForeignWorkspaces() {
+        return foreignWorkspaces;
+    }
+
+    public ArrayList<String> getOwnedWorkspacesNames() {
+        ArrayList<String> workspaceNames = new ArrayList();
+        for(int i=0;i<ownedWorkspaces.size();i++)
+            workspaceNames.add(ownedWorkspaces.get(i).getName());
+        return workspaceNames;
+    }
+
+    public ArrayList<String> getForeignWorkspacesNames() {
+        ArrayList<String> workspaceNames = new ArrayList();
+        for(int i=0;i<ownedWorkspaces.size();i++)
+            workspaceNames.add(ownedWorkspaces.get(i).getName());
+        return workspaceNames;
     }
 
     public void createFile(String name, Workspace workspace){

@@ -4,18 +4,32 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 
 public class OwnedWorkspaces extends ActionBarActivity {
+    private ListAdapter listOfWorkspaces;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_owned_workspaces);
-    }
 
+        AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
+        listOfWorkspaces = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,airDeskApp.getUser().getOwnedWorkspacesNames());
+        ListView listView = (ListView) findViewById(R.id.lisWorkspaces);
+        listView.setAdapter(listOfWorkspaces);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

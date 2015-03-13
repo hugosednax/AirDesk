@@ -4,16 +4,27 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
+import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 
 
 public class ForeignWorkspaces extends ActionBarActivity {
 
+    private ListAdapter listOfWorkspaces;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_foreign_workspaces);
+
+        AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
+        listOfWorkspaces = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,airDeskApp.getUser().getForeignWorkspacesNames());
+        ListView listView = (ListView) findViewById(R.id.lisWorkspaces);
+        listView.setAdapter(listOfWorkspaces);
     }
 
 
