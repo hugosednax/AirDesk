@@ -9,7 +9,6 @@ import android.view.MenuItem;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.User;
 
 
 public class StarterActivity extends ActionBarActivity {

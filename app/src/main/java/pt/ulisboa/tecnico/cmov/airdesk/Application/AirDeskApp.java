@@ -3,7 +3,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.Application;
 import android.app.Application;
 import android.content.SharedPreferences;
 
-import pt.ulisboa.tecnico.cmov.airdesk.User;
+import pt.ulisboa.tecnico.cmov.airdesk.User.User;
 
 /**
  * Created by Toninho on 3/12/2015.
