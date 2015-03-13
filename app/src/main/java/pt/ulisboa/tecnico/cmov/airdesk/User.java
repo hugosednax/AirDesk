@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.Predicate.WorkspaceNamePredicate;
@@ -120,10 +121,10 @@ public class User {
     }
 
     // File functions
-    public void createFile(String fileName, Workspace workspace) throws QuotaLimitExceededException {
+    public void createFile(String fileName, Workspace workspace) throws QuotaLimitExceededException, CreateFileException {
         workspace.createFile(fileName);
     }
-    public void createFile(String fileName, String workspaceName) throws WorkspaceNotFoundException, QuotaLimitExceededException {
+    public void createFile(String fileName, String workspaceName) throws WorkspaceNotFoundException, QuotaLimitExceededException, CreateFileException {
         getOwnedWorkspaceByName(workspaceName).createFile(fileName);
     }
 

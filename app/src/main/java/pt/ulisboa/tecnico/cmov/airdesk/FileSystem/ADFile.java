@@ -14,11 +14,17 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 public class ADFile {
 
     private File file;
+    private String name;
     private boolean editable;
 
     public ADFile(String name, String workspaceName) {
-        file = new File(Environment.getExternalStorageDirectory() + File.separator + workspaceName + File.separator + name + ".txt");
-        editable = true;
+        this.file = new File(Environment.getExternalStorageDirectory() + File.separator + workspaceName + File.separator + name + ".txt");
+        this.name = name;
+        this.editable = true;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public File getFile() {

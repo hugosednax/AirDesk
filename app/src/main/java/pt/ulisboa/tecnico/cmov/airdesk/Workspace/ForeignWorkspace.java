@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
@@ -32,6 +33,12 @@ public class ForeignWorkspace extends Workspace{
 
     public void updateFile(String name, String text){
         //TODO
+    }
+
+    @Override
+    public ADFile getFileByName(String name) throws ADFileNotFoundException {
+        // TODO
+        return null;
     }
 
     public void delete() throws NotDirectoryException {

@@ -1,12 +1,17 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
+import com.android.internal.util.Predicate;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
+import pt.ulisboa.tecnico.cmov.airdesk.Predicate.FileNamePredicate;
 import pt.ulisboa.tecnico.cmov.airdesk.User;
 
 /**
@@ -21,36 +26,59 @@ public class OwnedWorkspace extends Workspace{
         super(name);
         this.isPublic = isPublic;
         this.quota = quota;
-        allowedUsers = new ArrayList<User>();
+        this.allowedUsers = new ArrayList<User>();
         File directory = new File(name);
         directory.mkdirs();
     }
 
-    public void createFile(String fileName) throws QuotaLimitExceededException{
-        if(this.getSize() >= getQuota()){
-            throw new QuotaLimitExceededException("Quota limit exceeded while trying to create " + fileName + " in " + this.getName() + " your Workspace.");
-        } else {
-            files.add(new ADFile(fileName, this.getName()));
-        }
+    public void createFile(String fileName) throws QuotaLimitExceededException, CreateFileException {
+        try {
+            if(this.getSize() >= getQuota()){
+                throw new QuotaLimitExceededException("Quota limit exceeded while trying to create " + fileName + " in " + this.getName() + " your Workspace.");
+            } else {
+                files.add(new ADFile(fileName, this.getName()));
+            }
+        } catch (NotDirectoryException e) {
+            e.printStackTrace();
+            throw new CreateFileException("Problem occurred in getting workspace total size. See log for more info.");
+            }
     }
 
-    public void removeFile(String name){
-        // TODO
+    public void removeFile(String name) throws ADFileNotFoundException {
+        ADFile file = getFileByName(name);
+        files.remove(file);
+        file.getFile().delete();
+        file = null;
     }
 
     public void updateFile(String name, String text){
         //TODO
     }
 
-    public int getSize(){
+    public ADFile getFileByName(String name) throws ADFileNotFoundException {
+        Predicate validator = new FileNamePredicate(name);
+        ADFile result = null;
+        for(ADFile file : getFiles())
+            if (validator.apply(file)) {
+                result = file;
+                break;
+            }
+        if(result == null)
+            throw new ADFileNotFoundException("File " + name + " not found in " + this.getName() + " Workspace.");
+        return result;
+    }
+
+    public int getSize() throws NotDirectoryException {
         File directory = new File(getName());
         int workspaceSize = 0;
+
+        if(directory.listFiles().length != files.size())
+           System.out.println("File inconsistency noted.");
 
         if (directory.isDirectory())
             for (File child : directory.listFiles())
                 workspaceSize += child.getTotalSpace();
-        else System.out.println("Insert Exception HERE");
-        //todo: not a directory exception
+        else throw new NotDirectoryException("Can't read workspace, the provided name isn't a directory.");
 
         return workspaceSize;
     }
@@ -63,6 +91,7 @@ public class OwnedWorkspace extends Workspace{
                 child.delete();
         else throw new NotDirectoryException("Can't delete workspace, the provided name isn't a directory.");
         directory.delete();
+        directory = null;
     }
 
     public void invite(String username){

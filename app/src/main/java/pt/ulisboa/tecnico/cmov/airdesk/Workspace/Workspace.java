@@ -3,6 +3,8 @@ package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
@@ -20,20 +22,22 @@ public abstract class Workspace {
 
     public Workspace(String name){
         this.name = name;
-        files = new ArrayList<ADFile>();
-        keywords = new ArrayList<String>();
-        quota = 0;
+        this.files = new ArrayList<ADFile>();
+        this.keywords = new ArrayList<String>();
+        this.quota = 0;
     }
 
     abstract public void delete() throws NotDirectoryException;
 
-    abstract public void createFile(String name) throws QuotaLimitExceededException;
+    abstract public void createFile(String name) throws QuotaLimitExceededException, CreateFileException;
 
-    abstract public void removeFile(String name);
+    abstract public void removeFile(String name) throws ADFileNotFoundException;
 
     abstract public void updateFile(String name, String text);
 
-    abstract public int getSize();
+    abstract public ADFile getFileByName(String name) throws ADFileNotFoundException;
+
+    abstract public int getSize() throws NotDirectoryException;
 
     public String getName() { return name; }
 
