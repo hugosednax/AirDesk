@@ -1,11 +1,11 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
-import android.os.Environment;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 import pt.ulisboa.tecnico.cmov.airdesk.User;
 
@@ -16,24 +16,21 @@ public class OwnedWorkspace extends Workspace{
 
     private List<User> allowedUsers;
     private boolean isPublic;
-    private String directoryPath;
 
     public OwnedWorkspace(String name, boolean isPublic, int quota){
         super(name);
         this.isPublic = isPublic;
         this.quota = quota;
         allowedUsers = new ArrayList<User>();
-        directoryPath = Environment.getExternalStorageDirectory() + File.separator + name;
-        File directory = new File(directoryPath);
+        File directory = new File(name);
         directory.mkdirs();
     }
 
-    public void addFile(ADFile file){
+    public void createFile(String fileName) throws QuotaLimitExceededException{
         if(this.getSize() >= getQuota()){
-            System.out.println();
-            //todo: Quota exceeded exception
+            throw new QuotaLimitExceededException("Quota limit exceeded while trying to create " + fileName + " in " + this.getName() + " your Workspace.");
         } else {
-            files.add(file);
+            files.add(new ADFile(fileName, this.getName()));
         }
     }
 
@@ -41,8 +38,12 @@ public class OwnedWorkspace extends Workspace{
         // TODO
     }
 
+    public void updateFile(String name, String text){
+        //TODO
+    }
+
     public int getSize(){
-        File directory = new File(directoryPath);
+        File directory = new File(getName());
         int workspaceSize = 0;
 
         if (directory.isDirectory())
@@ -54,14 +55,13 @@ public class OwnedWorkspace extends Workspace{
         return workspaceSize;
     }
 
-    public void delete(){
+    public void delete() throws NotDirectoryException{
         //todo: not tested
-        File directory = new File(directoryPath);
+        File directory = new File(getName());
         if (directory.isDirectory())
             for (File child : directory.listFiles())
                 child.delete();
-        else System.out.println("Insert Exception HERE");
-        //todo: not a directory exception
+        else throw new NotDirectoryException("Can't delete workspace, the provided name isn't a directory.");
         directory.delete();
     }
 

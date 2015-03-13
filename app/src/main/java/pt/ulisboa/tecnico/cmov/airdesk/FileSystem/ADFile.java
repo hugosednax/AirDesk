@@ -15,13 +15,10 @@ public class ADFile {
 
     private File file;
     private boolean editable;
-    private Workspace workspace;
 
-    public ADFile(String name, Workspace workspace) {
-        file = new File(Environment.getExternalStorageDirectory() + File.separator + workspace.getName() + File.separator + name + ".txt");
+    public ADFile(String name, String workspaceName) {
+        file = new File(Environment.getExternalStorageDirectory() + File.separator + workspaceName + File.separator + name + ".txt");
         editable = true;
-        this.workspace = workspace;
-        workspace.addFile(this);
     }
 
     public File getFile() {
@@ -32,6 +29,7 @@ public class ADFile {
         return editable;
     }
 
+    /*
     public void save(String text){
         //TODO: Exception handle and creation
 
@@ -54,5 +52,5 @@ public class ADFile {
             writer.println(text);
             writer.close();
         }
-    }
+    }*/
 }

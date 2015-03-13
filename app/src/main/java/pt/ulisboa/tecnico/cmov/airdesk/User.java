@@ -1,9 +1,15 @@
 package pt.ulisboa.tecnico.cmov.airdesk;
 
+import com.android.internal.util.Predicate;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
+import pt.ulisboa.tecnico.cmov.airdesk.Predicate.WorkspaceNamePredicate;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.OwnedWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
@@ -22,10 +28,13 @@ public class User {
         this.email = email;
         foreignWorkspaces = new ArrayList<Workspace>();
         ownedWorkspaces = new ArrayList<Workspace>();
+
+        // TEST ADD
         createWorkspace("test", true, 1);
         createWorkspace("test2", true, 1);
     }
 
+    // User functions
     public String getNick(){
         return nick;
     }
@@ -34,8 +43,13 @@ public class User {
         return email;
     }
 
+    // Workspace functions
     public List<Workspace> getForeignWorkspaces() {
         return foreignWorkspaces;
+    }
+
+    public List<Workspace> getOwnedWorkspaces() {
+        return ownedWorkspaces;
     }
 
     public ArrayList<String> getOwnedWorkspacesNames() {
@@ -52,12 +66,32 @@ public class User {
         return workspaceNames;
     }
 
-    public void createFile(String name, Workspace workspace){
-        ADFile newFile = new ADFile(name, workspace);
+    public Workspace getOwnedWorkspaceByName(String name) throws WorkspaceNotFoundException{
+        Predicate validator = new WorkspaceNamePredicate(name);
+        Workspace result = null;
+        for(Workspace workspace : ownedWorkspaces){
+            if(validator.apply(workspace)){
+                result = workspace;
+                break;
+            }
+        }
+        if(result == null)
+            throw new WorkspaceNotFoundException("Workspace " + name + " not found in OwnedWorkspaces");
+        return result;
     }
 
-    public void deleteFile(String name, Workspace workspace){
-        workspace.removeFile(name);
+    public Workspace getForeignWorkspaceByName(String name) throws WorkspaceNotFoundException{
+        Predicate validator = new WorkspaceNamePredicate(name);
+        Workspace result = null;
+        for(Workspace workspace : foreignWorkspaces){
+            if(validator.apply(workspace)){
+                result = workspace;
+                break;
+            }
+        }
+        if(result == null)
+            throw new WorkspaceNotFoundException("Workspace " + name + " not found in ForeignWorkspaces");
+        return result;
     }
 
     public Workspace createWorkspace(String name, boolean isPublic, int quota){
@@ -71,12 +105,32 @@ public class User {
     }
 
     public void deleteWorkspace(Workspace workspace){
-        workspace.delete();
-        ownedWorkspaces.remove(workspace);
+        try {
+            workspace.delete();
+            ownedWorkspaces.remove(workspace);
+        } catch (NotDirectoryException e) {
+            //TODO: Correct exception handling (severe problem if this happens)
+            e.printStackTrace();
+        }
     }
 
     public List<Workspace> searchWorkspaces(String keywords[]){
         //TODO
         return null;
+    }
+
+    // File functions
+    public void createFile(String fileName, Workspace workspace) throws QuotaLimitExceededException {
+        workspace.createFile(fileName);
+    }
+    public void createFile(String fileName, String workspaceName) throws WorkspaceNotFoundException, QuotaLimitExceededException {
+        getOwnedWorkspaceByName(workspaceName).createFile(fileName);
+    }
+
+    public void deleteFile(String fileName, Workspace workspace){
+        workspace.removeFile(fileName);
+    }
+    public void deleteFile(String fileName, String workspaceName) throws WorkspaceNotFoundException{
+        getOwnedWorkspaceByName(workspaceName).removeFile(fileName);
     }
 }
