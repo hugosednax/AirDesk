@@ -10,7 +10,7 @@ import android.content.Intent;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
-import pt.ulisboa.tecnico.cmov.airdesk.User.User;
+import pt.ulisboa.tecnico.cmov.airdesk.User;
 
 
 public class Workspaces extends ActionBarActivity {

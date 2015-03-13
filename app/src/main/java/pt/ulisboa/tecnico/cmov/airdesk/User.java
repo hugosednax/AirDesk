@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.airdesk.User;
+package pt.ulisboa.tecnico.cmov.airdesk;
 
 import com.android.internal.util.Predicate;
 

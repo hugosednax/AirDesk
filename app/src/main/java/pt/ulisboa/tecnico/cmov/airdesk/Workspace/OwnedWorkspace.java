@@ -14,7 +14,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 import pt.ulisboa.tecnico.cmov.airdesk.Predicate.FileNamePredicate;
-import pt.ulisboa.tecnico.cmov.airdesk.User.User;
+import pt.ulisboa.tecnico.cmov.airdesk.User;
 
 /**
  * Created by Filipe Teixeira on 12/03/2015.

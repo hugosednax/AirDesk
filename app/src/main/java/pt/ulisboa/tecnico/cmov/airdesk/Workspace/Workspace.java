@@ -9,6 +9,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
+import pt.ulisboa.tecnico.cmov.airdesk.User;
 
 /**
  * Created by hugo__000 on 10/03/2015.
