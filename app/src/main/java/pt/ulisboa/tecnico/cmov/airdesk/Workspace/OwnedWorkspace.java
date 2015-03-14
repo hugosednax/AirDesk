@@ -34,6 +34,13 @@ public class OwnedWorkspace extends Workspace{
             throw new CreateWorkspaceException("Can't create a new directory for this Workspace");
     }
 
+    public OwnedWorkspace(String name, boolean isPublic, int quota, boolean poop) {
+        super(name);
+        this.isPublic = isPublic;
+        this.quota = quota;
+        this.allowedUsers = new ArrayList<User>();
+    }
+
     public boolean isPublic() {
         return isPublic;
     }

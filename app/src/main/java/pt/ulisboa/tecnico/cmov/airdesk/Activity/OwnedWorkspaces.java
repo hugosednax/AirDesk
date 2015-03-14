@@ -4,9 +4,12 @@ import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
@@ -14,8 +17,10 @@ import android.widget.ListView;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
@@ -23,6 +28,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 public class OwnedWorkspaces extends ActionBarActivity {
     private ListAdapter listOfWorkspaces;
     private ListView listView;
+    private List<String> selectedWorkSpaces;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +39,8 @@ public class OwnedWorkspaces extends ActionBarActivity {
         listOfWorkspaces = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,airDeskApp.getUser().getOwnedWorkspacesNames());
         listView = (ListView) findViewById(R.id.listWorkspaces);
         listView.setAdapter(listOfWorkspaces);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -42,6 +50,76 @@ public class OwnedWorkspaces extends ActionBarActivity {
             }
         });
 
+
+        selectedWorkSpaces = new ArrayList<>();
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                                           int pos, long id) {
+                Log.v("long clicked", "pos" + " " + pos);
+                String selectedFromList =(String) (listView.getItemAtPosition(pos));
+                if(selectedWorkSpaces.contains(selectedFromList)) {
+                    selectedWorkSpaces.remove(selectedFromList);
+                }else {
+                    selectedWorkSpaces.add(selectedFromList);
+                }
+
+                return true;
+            }
+        });
+
+        addContextToList(listView, airDeskApp);
+    }
+
+    public void addContextToList(ListView listView, final AirDeskApp airDeskApp){
+        listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position,
+                                                  long id, boolean checked) {
+                // Here you can do something when items are selected/de-selected,
+                // such as update the title in the CAB
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                // Respond to clicks on the actions in the CAB
+                switch (item.getItemId()) {
+                    case R.id.deleteWorkspace:
+                        try{
+                            for(int i=0; i<selectedWorkSpaces.size();i++){
+                                Workspace w = airDeskApp.getUser().getOwnedWorkspaceByName(selectedWorkSpaces.get(i));
+                                airDeskApp.getUser().deleteWorkspace(w);
+                            }
+                        }catch(WorkspaceNotFoundException e){}
+                        selectedWorkSpaces.clear();
+                        mode.finish(); // Action picked, so close the CAB
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                // Inflate the menu for the CAB
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.menu_owned_workspaces, menu);
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                // Here you can make any necessary updates to the activity when
+                // the CAB is removed. By default, selected items are deselected/unchecked.
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                // Here you can perform updates to the CAB due to
+                // an invalidate() request
+                return false;
+            }
+        });
     }
 
     public void startListFiles(String nameOfWorkspace){

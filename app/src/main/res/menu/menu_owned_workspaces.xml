@@ -4,4 +4,10 @@
     tools:context="pt.ulisboa.tecnico.cmov.airdesk.Activity.OwnedWorkspaces">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/deleteWorkspace"
+        android:title="@string/hello_world"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/editWorkspace"
+        android:title="@string/hello_world"
+        app:showAsAction="ifRoom"/>
 </menu>

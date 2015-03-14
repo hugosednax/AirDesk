@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.User;
 
 import com.android.internal.util.Predicate;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,8 +36,8 @@ public class User {
 
         // TEST ADD
         try {
-            createWorkspace("test", true, 1);
-            createWorkspace("test2", true, 1);
+            createWorkspace("workspace", true, 1);
+            createWorkspace("workspace1", true, 1);
         } catch (CreateWorkspaceException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
@@ -53,6 +54,18 @@ public class User {
     }
 
     // Workspace functions
+    /*
+    public List<Workspace> loadExistingWorkspaces() {
+        List<Workspace> existingWorkspaces;
+        File file = new File(".");
+        String[] fileNames = file.list();
+        for (String fileName : fileNames) {
+            ownedWorkspaces.add(new OwnedWorkspace(fileName, boolean isPublic, int quota,true))
+        }
+
+    }
+    */
+
     public List<Workspace> getForeignWorkspaces() {
         return foreignWorkspaces;
     }
