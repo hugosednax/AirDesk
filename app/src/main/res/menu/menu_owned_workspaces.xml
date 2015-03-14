@@ -2,12 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="pt.ulisboa.tecnico.cmov.airdesk.Activity.OwnedWorkspaces">
-    <item android:id="@+id/deleteWorkspace"
-        android:title="@string/action_delete_workspace"
-        app:showAsAction="collapseActionView"/>
-    <item android:id="@+id/editWorkspace"
-        android:title="@string/action_edit_workspace"
-        app:showAsAction="collapseActionView"/>
     <item android:id="@+id/createWorkspace"
         android:title="@string/action_new_workspace"
         app:showAsAction="always"/>

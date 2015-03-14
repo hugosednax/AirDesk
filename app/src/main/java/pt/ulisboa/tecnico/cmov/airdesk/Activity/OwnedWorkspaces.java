@@ -98,7 +98,7 @@ public class OwnedWorkspaces extends ActionBarActivity {
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 // Inflate the menu for the CAB
                 MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.menu_owned_workspaces, menu);
+                inflater.inflate(R.menu.menu_owned_workspaces_selected, menu);
                 return true;
             }
 
@@ -134,11 +134,6 @@ public class OwnedWorkspaces extends ActionBarActivity {
     }
 
 
-
-
-
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -154,7 +149,9 @@ public class OwnedWorkspaces extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.createWorkspace) {
+            Intent intent = new Intent(this, WorkspaceCreate.class);
+            startActivity(intent);
             return true;
         }
 
