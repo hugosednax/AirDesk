@@ -45,6 +45,10 @@
             android:name=".Activity.Workspaces"
             android:label="@string/title_activity_workspaces" >
         </activity>
+        <activity
+            android:name=".Activity.EditWorkspace"
+            android:label="@string/title_activity_edit_workspace" >
+        </activity>
     </application>
 
 </manifest>

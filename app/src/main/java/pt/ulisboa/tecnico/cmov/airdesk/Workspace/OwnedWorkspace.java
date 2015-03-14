@@ -30,8 +30,8 @@ public class OwnedWorkspace extends Workspace{
         this.quota = quota;
         this.allowedUsers = new ArrayList<User>();
         File directory = new File(name);
-        if(!directory.mkdirs())
-            throw new CreateWorkspaceException("Can't create a new directory for this Workspace");
+        //if(!directory.mkdirs())
+            //throw new CreateWorkspaceException("Can't create a new directory for this Workspace");
     }
 
     public OwnedWorkspace(String name, boolean isPublic, int quota, boolean poop) {
@@ -61,8 +61,10 @@ public class OwnedWorkspace extends Workspace{
     public void removeFile(String name) throws ADFileNotFoundException, DeleteFileException {
         ADFile file = getFileByName(name);
         files.remove(file);
+        /*
         if(!file.getFile().delete())
             throw new DeleteFileException("Can't delete file in Android File System");
+            */
     }
 
     public void updateFile(String name, String text){

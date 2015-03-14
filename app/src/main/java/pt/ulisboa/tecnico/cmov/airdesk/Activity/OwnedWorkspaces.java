@@ -26,7 +26,8 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 
 public class OwnedWorkspaces extends ActionBarActivity {
-    private ListAdapter listOfWorkspaces;
+    private ArrayAdapter listOfWorkspaces;
+    private List<String> listNameWorkspaces;
     private ListView listView;
     private List<String> selectedWorkSpaces;
 
@@ -36,11 +37,12 @@ public class OwnedWorkspaces extends ActionBarActivity {
         setContentView(R.layout.activity_owned_workspaces);
 
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
-        listOfWorkspaces = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,airDeskApp.getUser().getOwnedWorkspacesNames());
+        listNameWorkspaces = airDeskApp.getUser().getOwnedWorkspacesNames();
+        listOfWorkspaces = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,listNameWorkspaces);
         listView = (ListView) findViewById(R.id.listWorkspaces);
         listView.setAdapter(listOfWorkspaces);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-
+        listView.setLongClickable(true);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -50,34 +52,22 @@ public class OwnedWorkspaces extends ActionBarActivity {
             }
         });
 
-
         selectedWorkSpaces = new ArrayList<>();
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-                                           int pos, long id) {
-                Log.v("long clicked", "pos" + " " + pos);
-                String selectedFromList =(String) (listView.getItemAtPosition(pos));
-                if(selectedWorkSpaces.contains(selectedFromList)) {
-                    selectedWorkSpaces.remove(selectedFromList);
-                }else {
-                    selectedWorkSpaces.add(selectedFromList);
-                }
-
-                return true;
-            }
-        });
-
         addContextToList(listView, airDeskApp);
     }
 
-    public void addContextToList(ListView listView, final AirDeskApp airDeskApp){
+    public void addContextToList(final ListView listView, final AirDeskApp airDeskApp){
         listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
 
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position,
                                                   long id, boolean checked) {
-                // Here you can do something when items are selected/de-selected,
-                // such as update the title in the CAB
+                String selectedFromList =(String) (listView.getItemAtPosition(position));
+                if(selectedWorkSpaces.contains(selectedFromList)) {
+                    selectedWorkSpaces.remove(selectedFromList);
+                }else {
+                    selectedWorkSpaces.add(selectedFromList);
+                }
             }
 
             @Override
@@ -89,10 +79,17 @@ public class OwnedWorkspaces extends ActionBarActivity {
                             for(int i=0; i<selectedWorkSpaces.size();i++){
                                 Workspace w = airDeskApp.getUser().getOwnedWorkspaceByName(selectedWorkSpaces.get(i));
                                 airDeskApp.getUser().deleteWorkspace(w);
+                                listOfWorkspaces.remove(selectedWorkSpaces.get(i));
                             }
-                        }catch(WorkspaceNotFoundException e){}
+                        }catch(WorkspaceNotFoundException e){
+                            Log.w("yap","exception this workspace does not exist");
+                        }
+                        listOfWorkspaces.notifyDataSetChanged();
                         selectedWorkSpaces.clear();
                         mode.finish(); // Action picked, so close the CAB
+                        return true;
+                    case R.id.editWorkspace:
+                        stareditWorkspace();
                         return true;
                     default:
                         return false;
@@ -127,6 +124,17 @@ public class OwnedWorkspaces extends ActionBarActivity {
         intent.putExtra(nameOfWorkspace, "nameOfWorkspace");
         startActivity(intent);
     }
+
+    public void stareditWorkspace(){ //TODO
+        Intent intent = new Intent(this, EditWorkspace.class);
+        startActivity(intent);
+    }
+
+
+
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

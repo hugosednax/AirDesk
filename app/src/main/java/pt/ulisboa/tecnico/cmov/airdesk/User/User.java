@@ -33,7 +33,7 @@ public class User {
         this.email = email;
         foreignWorkspaces = new ArrayList<Workspace>();
         ownedWorkspaces = new ArrayList<Workspace>();
-
+        deleteAllWorkspaces();
         // TEST ADD
         try {
             createWorkspace("workspace", true, 1);
@@ -54,17 +54,6 @@ public class User {
     }
 
     // Workspace functions
-    /*
-    public List<Workspace> loadExistingWorkspaces() {
-        List<Workspace> existingWorkspaces;
-        File file = new File(".");
-        String[] fileNames = file.list();
-        for (String fileName : fileNames) {
-            ownedWorkspaces.add(new OwnedWorkspace(fileName, boolean isPublic, int quota,true))
-        }
-
-    }
-    */
 
     public List<Workspace> getForeignWorkspaces() {
         return foreignWorkspaces;
@@ -122,18 +111,38 @@ public class User {
         return newWorkspace;
     }
 
+        /*
+    public List<Workspace> loadExistingWorkspaces() {
+        List<Workspace> existingWorkspaces;
+        File file = new File(".");
+        String[] fileNames = file.list();
+        for (String fileName : fileNames) {
+            ownedWorkspaces.add(new OwnedWorkspace(fileName, boolean isPublic, int quota,true))
+        }
+
+    }
+    */
+
     public void addForeignWorkspace(Workspace workspace){
         foreignWorkspaces.add(workspace);
     }
 
-    public void deleteWorkspace(Workspace workspace){
-        try {
-            workspace.delete();
-            ownedWorkspaces.remove(workspace);
-        } catch (NotDirectoryException e) {
-            //TODO: Correct exception handling (severe problem if this happens)
-            e.printStackTrace();
+    public void deleteAllWorkspaces(){
+        File file = new File(".");
+        for (File workFile : file.listFiles()) {
+            workFile.delete();
         }
+        ownedWorkspaces = new ArrayList<Workspace>();
+    }
+
+    public void deleteWorkspace(Workspace workspace){
+        //try {
+            //workspace.delete();
+            ownedWorkspaces.remove(workspace);
+        //} catch (NotDirectoryException e) {
+            //TODO: Correct exception handling (severe problem if this happens)
+          //  e.printStackTrace();
+        //}
     }
 
     public List<Workspace> searchWorkspaces(String keywords[]){
