@@ -12,10 +12,8 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,7 +87,7 @@ public class OwnedWorkspaces extends ActionBarActivity {
                         mode.finish(); // Action picked, so close the CAB
                         return true;
                     case R.id.editWorkspace:
-                        stareditWorkspace();
+                        startEditWorkspace();
                         return true;
                     default:
                         return false;
@@ -125,8 +123,13 @@ public class OwnedWorkspaces extends ActionBarActivity {
         startActivity(intent);
     }
 
-    public void stareditWorkspace(){ //TODO
+    public void startEditWorkspace(){ //TODO
         Intent intent = new Intent(this, EditWorkspace.class);
+        startActivity(intent);
+    }
+
+    public void startCreateWorkspace(){ //TODO
+        Intent intent = new Intent(this, WorkspaceCreate.class);
         startActivity(intent);
     }
 
