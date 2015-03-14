@@ -42,7 +42,7 @@ public class ForeignWorkspaces extends ActionBarActivity {
 
     public void startListFiles(String nameOfWorkspace){
         Intent intent = new Intent(this, ListFiles.class);
-        intent.putExtra("STRING_I_NEED", nameOfWorkspace);
+        intent.putExtra(nameOfWorkspace, "nameOfWorkspace");
         startActivity(intent);
     }
 

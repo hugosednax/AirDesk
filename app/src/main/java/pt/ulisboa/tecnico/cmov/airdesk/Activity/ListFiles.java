@@ -28,7 +28,7 @@ public class ListFiles extends ActionBarActivity {
 
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         Intent intent = getIntent();
-        String nameOfCurrWorkspace = intent.getStringExtra("name");
+        String nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
         try {
             Workspace currWorkspace = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace);
             listOfFiles = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, currWorkspace.getFilesName());
