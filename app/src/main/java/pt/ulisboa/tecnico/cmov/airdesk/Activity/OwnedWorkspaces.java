@@ -38,10 +38,16 @@ public class OwnedWorkspaces extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String selectedFromList =(String) (listView.getItemAtPosition(position));
-                Log.d("SELECTED",selectedFromList);
+                startListFiles(selectedFromList);
             }
         });
 
+    }
+
+    public void startListFiles(String nameOfWorkspace){
+        Intent intent = new Intent(this, ListFiles.class);
+        intent.putExtra("STRING_I_NEED", nameOfWorkspace);
+        startActivity(intent);
     }
 
     @Override

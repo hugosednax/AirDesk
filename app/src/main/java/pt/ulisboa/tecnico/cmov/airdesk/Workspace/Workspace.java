@@ -45,6 +45,14 @@ public abstract class Workspace {
         return files;
     }
 
+    public ArrayList<String> getFilesName(){
+        ArrayList<String> ArrayListNames = new ArrayList();
+        for(int i=0;i<files.size();i++)
+            ArrayListNames.add(files.get(i).getFileName());
+
+        return ArrayListNames;
+    }
+
     public int getQuota(){
         return quota;
     }

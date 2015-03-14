@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,11 +35,16 @@ public class ForeignWorkspaces extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String selectedFromList =(String) (listView.getItemAtPosition(position));
-                Log.d("SELECTED", selectedFromList);
+                startListFiles(selectedFromList);
             }
         });
     }
 
+    public void startListFiles(String nameOfWorkspace){
+        Intent intent = new Intent(this, ListFiles.class);
+        intent.putExtra("STRING_I_NEED", nameOfWorkspace);
+        startActivity(intent);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

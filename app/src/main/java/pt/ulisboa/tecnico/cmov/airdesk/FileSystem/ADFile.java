@@ -31,6 +31,8 @@ public class ADFile {
         return file;
     }
 
+    public String getFileName(){return file.getName();}
+
     public boolean isEditable() {
         return editable;
     }
