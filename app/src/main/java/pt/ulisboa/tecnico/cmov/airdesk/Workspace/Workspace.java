@@ -60,4 +60,9 @@ public abstract class Workspace {
     public void setQuota(int quota){
         this.quota = quota;
     }
+
+    @Override
+    public String toString(){
+        return name;
+    }
 }

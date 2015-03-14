@@ -1,9 +1,18 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.EditText;
+
+import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 
 public class WorkspaceCreate extends ActionBarActivity {
@@ -14,6 +23,20 @@ public class WorkspaceCreate extends ActionBarActivity {
         setContentView(R.layout.activity_workspace_create);
     }
 
+
+    public void createWorkspace(View v){
+        EditText name = (EditText)findViewById(R.id.nameInput);
+        EditText quota = (EditText)findViewById(R.id.quotaInput);
+        CheckBox isPublic = (CheckBox)findViewById(R.id.isPublicCheckBox);
+
+        AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
+        try {
+            airDeskApp.getUser().createWorkspace(name.getText().toString(), isPublic.isChecked(), Integer.parseInt(quota.getText().toString()));
+        }catch(CreateWorkspaceException e){
+
+        }
+        finish();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

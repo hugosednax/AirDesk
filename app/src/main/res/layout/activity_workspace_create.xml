@@ -12,8 +12,8 @@
         android:layout_height="wrap_content"
         android:text="Name"
         android:id="@+id/nameWorkspace"
-        android:layout_marginTop="50dp"
-        android:layout_alignParentTop="true"
+        android:layout_marginBottom="89dp"
+        android:layout_above="@+id/quotaWorkspace"
         android:layout_alignLeft="@+id/quotaWorkspace"
         android:layout_alignStart="@+id/quotaWorkspace" />
 
@@ -22,8 +22,7 @@
         android:layout_height="wrap_content"
         android:text="Quota"
         android:id="@+id/quotaWorkspace"
-        android:layout_marginTop="33dp"
-        android:layout_below="@+id/nameWorkspace"
+        android:layout_centerVertical="true"
         android:layout_alignLeft="@+id/isPublicCheckBox"
         android:layout_alignStart="@+id/isPublicCheckBox" />
 
@@ -32,16 +31,39 @@
         android:layout_height="wrap_content"
         android:text="Public Workspace"
         android:id="@+id/isPublicCheckBox"
-        android:layout_marginTop="37dp"
-        android:layout_below="@+id/quotaWorkspace"
+        android:layout_above="@+id/createWorkspaceButton"
         android:layout_alignLeft="@+id/createWorkspaceButton"
-        android:layout_alignStart="@+id/createWorkspaceButton" />
+        android:layout_alignStart="@+id/createWorkspaceButton"
+        android:layout_marginBottom="41dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="create Workspace"
         android:id="@+id/createWorkspaceButton"
+        android:onClick="createWorkspace"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="74dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/nameInput"
+        android:layout_alignTop="@+id/nameWorkspace"
+        android:layout_alignRight="@+id/createWorkspaceButton"
+        android:layout_alignEnd="@+id/createWorkspaceButton"
+        android:layout_toRightOf="@+id/nameWorkspace"
+        android:layout_toEndOf="@+id/nameWorkspace" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/quotaInput"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignLeft="@+id/nameInput"
+        android:layout_alignStart="@+id/nameInput" />
+
 </RelativeLayout>

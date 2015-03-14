@@ -24,8 +24,8 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 
 public class OwnedWorkspaces extends ActionBarActivity {
-    private ArrayAdapter listOfWorkspaces;
-    private List<String> listNameWorkspaces;
+    private ArrayAdapter listWorkspacesAdapter;
+    private List<Workspace> listWorkspaces;
     private ListView listView;
     private List<String> selectedWorkSpaces;
 
@@ -35,17 +35,17 @@ public class OwnedWorkspaces extends ActionBarActivity {
         setContentView(R.layout.activity_owned_workspaces);
 
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
-        listNameWorkspaces = airDeskApp.getUser().getOwnedWorkspacesNames();
-        listOfWorkspaces = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,listNameWorkspaces);
+        listWorkspaces = airDeskApp.getUser().getOwnedWorkspaces();
+        listWorkspacesAdapter = new ArrayAdapter<Workspace>(this, android.R.layout.simple_list_item_1, listWorkspaces);
         listView = (ListView) findViewById(R.id.listWorkspaces);
-        listView.setAdapter(listOfWorkspaces);
+        listView.setAdapter(listWorkspacesAdapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setLongClickable(true);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedFromList =(String) (listView.getItemAtPosition(position));
+                String selectedFromList =listView.getItemAtPosition(position).toString();
                 startListFiles(selectedFromList);
             }
         });
@@ -60,7 +60,7 @@ public class OwnedWorkspaces extends ActionBarActivity {
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position,
                                                   long id, boolean checked) {
-                String selectedFromList =(String) (listView.getItemAtPosition(position));
+                String selectedFromList =listView.getItemAtPosition(position).toString();
                 if(selectedWorkSpaces.contains(selectedFromList)) {
                     selectedWorkSpaces.remove(selectedFromList);
                 }else {
@@ -77,12 +77,11 @@ public class OwnedWorkspaces extends ActionBarActivity {
                             for(int i=0; i<selectedWorkSpaces.size();i++){
                                 Workspace w = airDeskApp.getUser().getOwnedWorkspaceByName(selectedWorkSpaces.get(i));
                                 airDeskApp.getUser().deleteWorkspace(w);
-                                listOfWorkspaces.remove(selectedWorkSpaces.get(i));
                             }
                         }catch(WorkspaceNotFoundException e){
                             Log.w("yap","exception this workspace does not exist");
                         }
-                        listOfWorkspaces.notifyDataSetChanged();
+                        listWorkspacesAdapter.notifyDataSetChanged();
                         selectedWorkSpaces.clear();
                         mode.finish(); // Action picked, so close the CAB
                         return true;
@@ -157,4 +156,14 @@ public class OwnedWorkspaces extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("resume", "list");
+        if (listWorkspacesAdapter !=null){
+            listWorkspacesAdapter.notifyDataSetChanged();
+        }
+    }
+
 }
