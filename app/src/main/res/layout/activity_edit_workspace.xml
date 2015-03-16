@@ -5,6 +5,37 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:background="#3fa9f5"
-    tools:context="pt.ulisboa.tecnico.cmov.airdesk.Activity.EditWorkspace">
+    tools:context="pt.ulisboa.tecnico.cmov.airdesk.Activity.EditWorkspace"
+    android:id="@+id/">
 
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/newQuotaInput"
+        android:layout_marginTop="101dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="New Quota"
+        android:id="@+id/newQuota"
+        android:layout_toLeftOf="@+id/newQuotaInput"
+        android:layout_toStartOf="@+id/newQuotaInput"
+        android:layout_alignBottom="@+id/newQuotaInput" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="TODO: RETIRAR CLIENTES DA LISTA DE ACESSo"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/newQuotaInput"
+        android:layout_alignLeft="@+id/newQuota"
+        android:layout_alignStart="@+id/newQuota"
+        android:layout_marginTop="174dp" />
 </RelativeLayout>
