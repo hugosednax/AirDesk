@@ -5,8 +5,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:background="#3fa9f5"
-    tools:context="pt.ulisboa.tecnico.cmov.airdesk.Activity.EditWorkspace"
-    android:id="@+id/">
+    tools:context="pt.ulisboa.tecnico.cmov.airdesk.Activity.EditWorkspace">
 
     <EditText
         android:layout_width="wrap_content"
