@@ -13,9 +13,9 @@
         android:inputType="number"
         android:ems="10"
         android:id="@+id/newQuotaInput"
-        android:layout_marginTop="101dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="56dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -31,10 +31,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="TODO: RETIRAR CLIENTES DA LISTA DE ACESSo"
+        android:text="Previliged Clients"
         android:id="@+id/textView2"
         android:layout_below="@+id/newQuotaInput"
-        android:layout_alignLeft="@+id/newQuota"
-        android:layout_alignStart="@+id/newQuota"
-        android:layout_marginTop="174dp" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="69dp" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/privClientList"
+        android:choiceMode="singleChoice"
+        android:layout_alignTop="@+id/textView2"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/textView2"
+        android:layout_toEndOf="@+id/textView2"
+        android:layout_marginBottom="90dp"
+        android:longClickable="true"
+        android:smoothScrollbar="true"
+        android:stackFromBottom="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confirm"
+        android:id="@+id/ConfirmEdit"
+        android:onClick="ConfirmChanges"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

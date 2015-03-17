@@ -24,8 +24,8 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 
 public class OwnedWorkspaces extends ActionBarActivity {
-    private ArrayAdapter listWorkspacesAdapter;
-    private List<Workspace> listWorkspaces;
+    private ArrayAdapter workspacesAdapter;
+    private List<Workspace> workspaces;
     private ListView listView;
     private List<String> selectedWorkSpaces;
 
@@ -35,10 +35,10 @@ public class OwnedWorkspaces extends ActionBarActivity {
         setContentView(R.layout.activity_owned_workspaces);
 
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
-        listWorkspaces = airDeskApp.getUser().getOwnedWorkspaces();
-        listWorkspacesAdapter = new ArrayAdapter<Workspace>(this, android.R.layout.simple_list_item_1, listWorkspaces);
+        workspaces = airDeskApp.getUser().getOwnedWorkspaces();
+        workspacesAdapter = new ArrayAdapter<Workspace>(this, android.R.layout.simple_list_item_1, workspaces);
         listView = (ListView) findViewById(R.id.listWorkspaces);
-        listView.setAdapter(listWorkspacesAdapter);
+        listView.setAdapter(workspacesAdapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setLongClickable(true);
 
@@ -82,7 +82,7 @@ public class OwnedWorkspaces extends ActionBarActivity {
                         }catch(WorkspaceNotFoundException e){
                             Log.w("yap","exception this workspace does not exist");
                         }
-                        listWorkspacesAdapter.notifyDataSetChanged();
+                        workspacesAdapter.notifyDataSetChanged();
                         selectedWorkSpaces.clear();
                         mode.finish(); // Action picked, so close the CAB
                         return true;
@@ -129,15 +129,10 @@ public class OwnedWorkspaces extends ActionBarActivity {
         startActivity(intent);
     }
 
-    public void startEditWorkspace(){ //TODO
+    public void startEditWorkspace(){
         Intent intent = new Intent(this, EditWorkspace.class);
-        //fetch from list of selections
-        //intent.putExtra(nameOfWorkspace, "nameOfWorkspace");
-        startActivity(intent);
-    }
-
-    public void startCreateWorkspace(){ //TODO
-        Intent intent = new Intent(this, WorkspaceCreate.class);
+        String nameOfWorkspace = selectedWorkSpaces.get(0);
+        intent.putExtra("nameOfWorkspace",nameOfWorkspace);
         startActivity(intent);
     }
 
@@ -169,8 +164,8 @@ public class OwnedWorkspaces extends ActionBarActivity {
     public void onResume() {
         super.onResume();
         Log.d("resume", "list");
-        if (listWorkspacesAdapter !=null){
-            listWorkspacesAdapter.notifyDataSetChanged();
+        if (workspacesAdapter !=null){
+            workspacesAdapter.notifyDataSetChanged();
         }
     }
 

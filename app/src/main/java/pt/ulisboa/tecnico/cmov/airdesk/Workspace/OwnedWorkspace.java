@@ -45,6 +45,10 @@ public class OwnedWorkspace extends Workspace{
         return isPublic;
     }
 
+    public List<User> getAllowedUsers() {
+        return allowedUsers;
+    }
+
     public void createFile(String fileName) throws QuotaLimitExceededException, CreateFileException {
         try {
             if(this.getSize() >= getQuota()){

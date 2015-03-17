@@ -59,6 +59,11 @@ public class User {
         return foreignWorkspaces;
     }
 
+    @Override
+    public String toString(){
+        return nick;
+    }
+
     public List<Workspace> getOwnedWorkspaces() {
         return ownedWorkspaces;
     }
