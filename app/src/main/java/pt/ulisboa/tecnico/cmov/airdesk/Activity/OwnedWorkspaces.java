@@ -61,7 +61,7 @@ public class OwnedWorkspaces extends ActionBarActivity {
             public void onItemCheckedStateChanged(ActionMode mode, int position,
                                                   long id, boolean checked) {
                 String selectedFromList =listView.getItemAtPosition(position).toString();
-                if(checked) {
+                if(selectedWorkSpaces.contains(selectedFromList)) { //why doesnt if(checked) work? xD
                     selectedWorkSpaces.remove(selectedFromList);
                 }else {
                     selectedWorkSpaces.add(selectedFromList);
@@ -110,7 +110,7 @@ public class OwnedWorkspaces extends ActionBarActivity {
 
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                if (selectedWorkSpaces.size() == 1){
+                if (selectedWorkSpaces.size() <= 1){
                     MenuItem item = menu.findItem(R.id.editWorkspace);
                     item.setVisible(true);
                     return true;
