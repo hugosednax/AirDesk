@@ -61,11 +61,12 @@ public class OwnedWorkspaces extends ActionBarActivity {
             public void onItemCheckedStateChanged(ActionMode mode, int position,
                                                   long id, boolean checked) {
                 String selectedFromList =listView.getItemAtPosition(position).toString();
-                if(selectedWorkSpaces.contains(selectedFromList)) {
+                if(checked) {
                     selectedWorkSpaces.remove(selectedFromList);
                 }else {
                     selectedWorkSpaces.add(selectedFromList);
                 }
+                mode.invalidate();
             }
 
             @Override
@@ -109,9 +110,15 @@ public class OwnedWorkspaces extends ActionBarActivity {
 
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                // Here you can perform updates to the CAB due to
-                // an invalidate() request
-                return false;
+                if (selectedWorkSpaces.size() == 1){
+                    MenuItem item = menu.findItem(R.id.editWorkspace);
+                    item.setVisible(true);
+                    return true;
+                } else {
+                    MenuItem item = menu.findItem(R.id.editWorkspace);
+                    item.setVisible(false);
+                    return true;
+                }
             }
         });
     }
@@ -124,6 +131,8 @@ public class OwnedWorkspaces extends ActionBarActivity {
 
     public void startEditWorkspace(){ //TODO
         Intent intent = new Intent(this, EditWorkspace.class);
+        //fetch from list of selections
+        //intent.putExtra(nameOfWorkspace, "nameOfWorkspace");
         startActivity(intent);
     }
 
@@ -131,7 +140,6 @@ public class OwnedWorkspaces extends ActionBarActivity {
         Intent intent = new Intent(this, WorkspaceCreate.class);
         startActivity(intent);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
