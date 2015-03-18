@@ -125,7 +125,7 @@ public class OwnedWorkspaces extends ActionBarActivity {
 
     public void startListFiles(String nameOfWorkspace){
         Intent intent = new Intent(this, ListFiles.class);
-        intent.putExtra(nameOfWorkspace, "nameOfWorkspace");
+        intent.putExtra("nameOfWorkspace",nameOfWorkspace);
         startActivity(intent);
     }
 
@@ -163,7 +163,6 @@ public class OwnedWorkspaces extends ActionBarActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("resume", "list");
         if (workspacesAdapter !=null){
             workspacesAdapter.notifyDataSetChanged();
         }

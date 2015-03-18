@@ -15,6 +15,10 @@
     <string name="action_delete_workspace">Delete</string>
     <string name="action_new_workspace">New</string>
     <string name="action_edit_workspace">Edit</string>
+    <string name="action_new_file">New</string>
+    <string name="action_delete_file">Delete</string>
+    <string name="action_edit_file">Edit</string>
     <string name="title_activity_edit_workspace">editWorkspace</string>
+    <string name="title_activity_new_file">NewFile</string>
 
 </resources>

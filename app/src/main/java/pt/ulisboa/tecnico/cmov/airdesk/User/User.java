@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.cmov.airdesk.User;
 
+import android.util.Log;
+
 import com.android.internal.util.Predicate;
 
 import java.io.File;
@@ -36,9 +38,11 @@ public class User {
         deleteAllWorkspaces();
         // TEST ADD
         try {
-            createWorkspace("workspace", true, 1);
-            createWorkspace("workspace1", true, 1);
-        } catch (CreateWorkspaceException e) {
+                createWorkspace("workspace", true, 5);
+                createWorkspace("workspace1", true, 1);
+                ownedWorkspaces.get(0).createFile("test");
+                ownedWorkspaces.get(0).createFile("test2");
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }

@@ -49,6 +49,10 @@
             android:name=".Activity.EditWorkspace"
             android:label="@string/title_activity_edit_workspace" >
         </activity>
+        <activity
+            android:name=".Activity.NewFile"
+            android:label="@string/title_activity_new_file" >
+        </activity>
     </application>
 
 </manifest>

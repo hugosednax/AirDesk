@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
+import android.util.Log;
+
 import com.android.internal.util.Predicate;
 
 import java.io.File;
@@ -92,14 +94,14 @@ public class OwnedWorkspace extends Workspace{
         File directory = new File(getName());
         int workspaceSize = 0;
 
-        if(directory.listFiles().length != files.size())
-           System.out.println("File inconsistency noted.");
-
+        //if(directory.listFiles().length != files.size())
+          // System.out.println("File inconsistency noted.");
+/*
         if (directory.isDirectory())
             for (File child : directory.listFiles())
                 workspaceSize += child.getTotalSpace();
         else throw new NotDirectoryException("Can't read workspace, the provided name isn't a directory.");
-
+*/
         return workspaceSize;
     }
 

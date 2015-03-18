@@ -18,7 +18,7 @@ public class ADFile {
     private boolean editable;
 
     public ADFile(String name, String workspaceName) {
-        this.file = new File(Environment.getExternalStorageDirectory() + File.separator + workspaceName + File.separator + name + ".txt");
+        //this.file = new File(Environment.getExternalStorageDirectory() + File.separator + workspaceName + File.separator + name + ".txt");
         this.name = name;
         this.editable = true;
     }
@@ -35,6 +35,10 @@ public class ADFile {
 
     public boolean isEditable() {
         return editable;
+    }
+
+    public String toString(){
+        return name;
     }
 
     /*

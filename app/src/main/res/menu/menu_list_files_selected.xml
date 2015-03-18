@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="pt.ulisboa.tecnico.cmov.airdesk.Activity.ListFiles">
+    <item android:id="@+id/deleteFile"
+        android:title="@string/action_delete_file"
+        app:showAsAction="collapseActionView"/>
+    <item android:id="@+id/editFile"
+        android:title="@string/action_edit_file"
+        app:showAsAction="collapseActionView"/>
+</menu>
