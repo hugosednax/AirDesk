@@ -77,9 +77,11 @@ public class ListFiles extends ActionBarActivity {
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 // Respond to clicks on the actions in the CAB
                 switch (item.getItemId()) {
-                    case R.id.deleteWorkspace:
+                    case R.id.deleteFile:
+                        Log.d("DELETE",String.valueOf(selectedFiles.size()));
                             for(int i=0; i<selectedFiles.size();i++){
                                 try {
+                                    Log.d("DELETE",selectedFiles.get(i));
                                     currWorkspace.removeFile(selectedFiles.get(i));
                                 }catch (Exception e){}
                             }
@@ -87,7 +89,7 @@ public class ListFiles extends ActionBarActivity {
                         selectedFiles.clear();
                         mode.finish(); // Action picked, so close the CAB
                         return true;
-                    case R.id.editWorkspace:
+                    case R.id.editFile:
 
                         return true;
                     default:
