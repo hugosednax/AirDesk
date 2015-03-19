@@ -19,6 +19,9 @@ public class StarterActivity extends ActionBarActivity {
         setContentView(R.layout.activity_starter);
 
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
+        //@FT add
+        AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
+        //end
         airDeskApp.setPrefs(getSharedPreferences("user_prefs", MODE_PRIVATE));
         String userEmail = airDeskApp.getPrefs().getString("email_pref","DEFAULT");
         String nick = airDeskApp.getPrefs().getString("nick_pref","DEFAULT");

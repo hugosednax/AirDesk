@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
+import java.io.IOException;
+
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
@@ -21,7 +23,7 @@ public class ForeignWorkspace extends Workspace{
     }
 
 
-    public void createFile(String fileName) throws QuotaLimitExceededException {
+    public void createFile(String fileName) throws QuotaLimitExceededException, IOException {
         if(this.getSize() >= getQuota()){
             throw new QuotaLimitExceededException("Quota limit exceeded while trying to create " + fileName + " in " + this.getName() + " remote Workspace.");
         } else files.add(new ADFile(fileName, this.getName()));

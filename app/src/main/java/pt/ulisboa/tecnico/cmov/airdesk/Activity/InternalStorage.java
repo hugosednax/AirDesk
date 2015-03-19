@@ -38,9 +38,9 @@ public class InternalStorage extends Activity {
             Toast.makeText(this, "File written", Toast.LENGTH_SHORT).show();
         } catch (FileNotFoundException e) {
             Log.e("Internal Storage", "File not found", e);
-        } catch (IOException e) {
+        } /*catch (IOException e) {
             Log.e("Internal Storage", "IO problem", e);
-        } finally {
+        } */finally {
             try {
                 fos.close();
             } catch (IOException e) {

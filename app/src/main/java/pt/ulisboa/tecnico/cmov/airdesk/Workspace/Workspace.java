@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public abstract class Workspace {
 
     abstract public void delete() throws NotDirectoryException;
 
-    abstract public void createFile(String name) throws QuotaLimitExceededException, CreateFileException;
+    abstract public void createFile(String name) throws QuotaLimitExceededException, CreateFileException, IOException;
 
     abstract public void removeFile(String name) throws ADFileNotFoundException, DeleteFileException;
 

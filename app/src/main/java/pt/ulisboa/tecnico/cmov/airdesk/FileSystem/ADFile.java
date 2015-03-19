@@ -1,11 +1,14 @@
 package pt.ulisboa.tecnico.cmov.airdesk.FileSystem;
+import android.content.Context;
 import android.os.Environment;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
+import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 /**
@@ -17,8 +20,9 @@ public class ADFile {
     private String name;
     private boolean editable;
 
-    public ADFile(String name, String workspaceName) {
-        //this.file = new File(Environment.getExternalStorageDirectory() + File.separator + workspaceName + File.separator + name + ".txt");
+    public ADFile(String name, String workspaceName) throws IOException {
+        this.file =  new File(AirDeskApp.getAppContext().getDir(workspaceName, Context.MODE_PRIVATE), name + ".txt");
+        file.createNewFile();
         this.name = name;
         this.editable = true;
     }

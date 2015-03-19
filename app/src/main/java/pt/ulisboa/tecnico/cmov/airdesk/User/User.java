@@ -5,6 +5,7 @@ import android.util.Log;
 import com.android.internal.util.Predicate;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -160,10 +161,10 @@ public class User {
     }
 
     // File functions
-    public void createFile(String fileName, Workspace workspace) throws QuotaLimitExceededException, CreateFileException {
+    public void createFile(String fileName, Workspace workspace) throws QuotaLimitExceededException, CreateFileException, IOException {
         workspace.createFile(fileName);
     }
-    public void createFile(String fileName, String workspaceName) throws WorkspaceNotFoundException, QuotaLimitExceededException, CreateFileException {
+    public void createFile(String fileName, String workspaceName) throws WorkspaceNotFoundException, QuotaLimitExceededException, CreateFileException, IOException {
         getOwnedWorkspaceByName(workspaceName).createFile(fileName);
     }
 

@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Application;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import pt.ulisboa.tecnico.cmov.airdesk.User.User;
@@ -12,6 +13,7 @@ public class AirDeskApp extends Application {
 
     private User user;
     SharedPreferences prefs;
+    private static Context context;
 
 
     public AirDeskApp() {
@@ -21,6 +23,7 @@ public class AirDeskApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        AirDeskApp.context = getApplicationContext();
     }
 
     @Override
@@ -42,6 +45,10 @@ public class AirDeskApp extends Application {
 
     public void setPrefs(SharedPreferences prefs) {
         this.prefs = prefs;
+    }
+
+    public static Context getAppContext() {
+        return AirDeskApp.context;
     }
 
 

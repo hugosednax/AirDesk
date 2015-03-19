@@ -5,9 +5,11 @@ import android.util.Log;
 import com.android.internal.util.Predicate;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
@@ -31,9 +33,12 @@ public class OwnedWorkspace extends Workspace{
         this.isPublic = isPublic;
         this.quota = quota;
         this.allowedUsers = new ArrayList<User>();
-        File directory = new File(name);
-        //if(!directory.mkdirs())
-            //throw new CreateWorkspaceException("Can't create a new directory for this Workspace");
+        AirDeskApp.getAppContext().getDir("app_data"+File.separator+name, AirDeskApp.getAppContext().MODE_PRIVATE).mkdirs();
+
+
+        /*File directory = new File(name);
+        if(!directory.mkdirs())
+            throw new CreateWorkspaceException("Can't create a new directory for this Workspace");*/
     }
 
     public OwnedWorkspace(String name, boolean isPublic, int quota, boolean poop) {
@@ -51,7 +56,7 @@ public class OwnedWorkspace extends Workspace{
         return allowedUsers;
     }
 
-    public void createFile(String fileName) throws QuotaLimitExceededException, CreateFileException {
+    public void createFile(String fileName) throws QuotaLimitExceededException, CreateFileException, IOException {
         try {
             if(this.getSize() >= getQuota()){
                 throw new QuotaLimitExceededException("Quota limit exceeded while trying to create " + fileName + " in " + this.getName() + " your Workspace.");
