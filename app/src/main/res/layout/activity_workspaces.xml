@@ -4,7 +4,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:background="#3fa9f5"
+    android:background="#bbcde3"
     tools:context="pt.ulisboa.tecnico.cmov.airdesk.Activity.Workspaces">
 
     <Button
@@ -15,7 +15,9 @@
         android:onClick="switchToOwnedActivity"
         android:layout_marginTop="130dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:background="#ff3fa9f5"
+        android:textColor="#ffffffff" />
 
     <Button
         style="?android:attr/buttonStyleSmall"

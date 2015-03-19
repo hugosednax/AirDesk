@@ -31,6 +31,7 @@ public class StarterActivity extends ActionBarActivity {
             Log.d("PREFERENCES HERE","user: "+nick+" email: "+userEmail);
         }
         startActivity(intent);
+        finish();
     }
 
     @Override
