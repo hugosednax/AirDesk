@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
@@ -33,7 +34,7 @@ public class WorkspaceCreate extends ActionBarActivity {
         try {
             airDeskApp.getUser().createWorkspace(name.getText().toString(), isPublic.isChecked(), Integer.parseInt(quota.getText().toString()));
         }catch(CreateWorkspaceException e){
-
+            Toast.makeText(this.getApplicationContext(),"Can't create it (need proper handle)", Toast.LENGTH_SHORT);
         }
         finish();
     }

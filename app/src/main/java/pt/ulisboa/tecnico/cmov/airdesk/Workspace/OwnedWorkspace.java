@@ -35,11 +35,8 @@ public class OwnedWorkspace extends Workspace{
         this.allowedUsers = new ArrayList<User>();
         File mainDir = AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
         File currentDir = new File(""+mainDir+File.separatorChar+name);
-        currentDir.mkdir();
-
-        /*File directory = new File(name);
-        if(!directory.mkdirs())
-            throw new CreateWorkspaceException("Can't create a new directory for this Workspace");*/
+        if(!currentDir.mkdir())
+            throw new CreateWorkspaceException("Can't create a new directory for this Workspace");
     }
 
     public OwnedWorkspace(String name, boolean isPublic, int quota, boolean poop) {
