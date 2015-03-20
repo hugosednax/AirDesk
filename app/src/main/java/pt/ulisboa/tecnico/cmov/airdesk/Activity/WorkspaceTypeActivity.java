@@ -20,42 +20,39 @@ public class WorkspaceTypeActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workspaces);
 
+        /*If it reached this activity either the player just signed up and was redirected OR
+        * was directly redirected from StarterActivity since it has done sign up previously
+        *
+        * So we can know for sure that there is filled values for the nick and email, so
+        * we create a User object with these informations
+        * */
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         airDeskApp.setPrefs(getSharedPreferences("user_prefs", MODE_PRIVATE));
         String userEmail = airDeskApp.getPrefs().getString("email_pref","DEFAULT");
         String nick = airDeskApp.getPrefs().getString("nick_pref","DEFAULT");
         airDeskApp.setUser(new User(nick,userEmail));
-        Log.d("PREFERENCES WORKSPACES","user: "+nick+" email: "+userEmail);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_workspaces, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
+    //Pressed OwnedWorkspace button
     public void switchToOwnedActivity(View v){
             Intent intent = new Intent(this, OwnedWorkspacesActivity.class);
             startActivity(intent);
     }
 
+    //Pressed ForeignWorkspace button
     public void switchToForeignActivity(View v){
         Intent intent = new Intent(this, ForeignWorkspacesActivity.class);
         startActivity(intent);

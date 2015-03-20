@@ -88,7 +88,7 @@ public class FilesActivity extends ActionBarActivity {
                 mode.invalidate(); //automaticly calls onPrepareActionMode
             }
 
-            /*Logic: When a button from the Bar is clicked, detect wich one was clicked and
+            /*Logic: When a button from the Bar is clicked, detect which one was clicked and
             select correct behaviour depending if delete or edit*/
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {

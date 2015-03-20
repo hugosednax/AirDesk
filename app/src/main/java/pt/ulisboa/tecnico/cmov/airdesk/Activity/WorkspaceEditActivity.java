@@ -1,9 +1,7 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
-import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,37 +14,40 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.User.User;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.OwnedWorkspace;
-import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 
 public class WorkspaceEditActivity extends ActionBarActivity {
     private OwnedWorkspace workspaceToEdit;
     private EditText quota;
     private ListView listView;
-    private ArrayAdapter workspacesAdapter;
+    private ArrayAdapter usersAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_workspace);
+
+        //Get the quota View, get the sent workspace Name from the previous screen
         quota = (EditText)findViewById(R.id.newQuotaInput);
         String workspaceNameToEdit = getIntent().getExtras().getString("nameOfWorkspace");
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         try {
+            //Get the workspace from its name
             workspaceToEdit = (OwnedWorkspace) airDeskApp.getUser().getOwnedWorkspaceByName(workspaceNameToEdit);
         }catch(WorkspaceNotFoundException e){
             //TODO
         }
+        //Fill the quotaView with the current Quota of the Workspace
         quota.setText(String.valueOf(workspaceToEdit.getQuota()));
 
-
-        workspacesAdapter = new ArrayAdapter<User>(this, android.R.layout.simple_list_item_1, workspaceToEdit.getAllowedUsers());
+        // Link the array of previliged users to an adapter, user has a toString overriden so it will display its nick and not the object
+        usersAdapter = new ArrayAdapter<User>(this, android.R.layout.simple_list_item_1, workspaceToEdit.getAllowedUsers());
         listView = (ListView) findViewById(R.id.privClientList);
-        listView.setAdapter(workspacesAdapter);
+        listView.setAdapter(usersAdapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
     }
 
-
+    //called when the button is pressed and changes the Quota of the workspace
     public void ConfirmChanges(View view){
         EditText quota = (EditText)findViewById(R.id.newQuotaInput);
         if(!quota.getText().toString().isEmpty())

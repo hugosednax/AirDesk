@@ -22,6 +22,13 @@ public class StarterActivity extends ActionBarActivity {
         //@FT add
         AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
         //end
+
+        /*Get the prefs, get the user and nick (with the default value of DEFAULT)
+        * Check if the user is DEFAULT which means the user has not signed up once yet
+        * so redirect do SignUpActivity
+        * ELSE
+        * go to WorkspaceTypeActivity since the user already signed up
+        * */
         airDeskApp.setPrefs(getSharedPreferences("user_prefs", MODE_PRIVATE));
         String userEmail = airDeskApp.getPrefs().getString("email_pref","DEFAULT");
         String nick = airDeskApp.getPrefs().getString("nick_pref","DEFAULT");
@@ -34,7 +41,7 @@ public class StarterActivity extends ActionBarActivity {
             Log.d("PREFERENCES HERE","user: "+nick+" email: "+userEmail);
         }
         startActivity(intent);
-        finish();
+        finish(); //finish to close this activity and not allow to use the back button to travel to it
     }
 
     @Override
@@ -46,15 +53,7 @@ public class StarterActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

@@ -30,33 +30,25 @@ public class WorkspaceCreateActivity extends ActionBarActivity {
         EditText quota = (EditText)findViewById(R.id.quotaInput);
         CheckBox isPublic = (CheckBox)findViewById(R.id.isPublicCheckBox);
 
+        //Call workspace constructor and use the View inputs to fill in its attributes
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         try {
             airDeskApp.getUser().createWorkspace(name.getText().toString(), isPublic.isChecked(), Integer.parseInt(quota.getText().toString()));
         }catch(CreateWorkspaceException e){
             Toast.makeText(this.getApplicationContext(),"Can't create it (need proper handle)", Toast.LENGTH_SHORT);
         }
-        finish();
+        finish(); //redirect to previous screen (OwnedWorkspacesActivity)
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_workspace_create, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

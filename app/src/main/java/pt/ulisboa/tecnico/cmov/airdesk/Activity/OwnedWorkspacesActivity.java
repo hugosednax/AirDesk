@@ -37,8 +37,8 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
         /*
             Logic and Backend:
             Retrieve the user from the context and then get the list of OwnedWorkspaces
-            Link the ArrayAdapter to list of files of the workspace, this will only display the name of the File thanks
-                to the toString override on the ADFile class
+            Link the ArrayAdapter to list of workspaces, this will only display the name of the Workspace thanks
+                to the toString override on the Workspace class
             Get the ListView, link it to the ArrayAdapter, allow multiple choices, allow long clicks,
                 set itemClick Listener
             */
@@ -50,6 +50,7 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setLongClickable(true);
 
+        /*Logic: Find the name of the workspace on the list position of the click*/
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -65,6 +66,7 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
     public void addContextToList(final ListView listView, final AirDeskApp airDeskApp){
         listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
 
+            /*Logic: When a listView item is LONG clicked, adds it to a list of names*/
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position,
                                                   long id, boolean checked) {
@@ -77,9 +79,10 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
                 mode.invalidate();
             }
 
+            /*Logic: When a button from the Bar is clicked, detect which one was clicked and
+            select correct behaviour depending if delete or edit*/
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                // Respond to clicks on the actions in the CAB
                 switch (item.getItemId()) {
                     case R.id.deleteWorkspace:
                         try{
@@ -90,9 +93,9 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
                         }catch(WorkspaceNotFoundException e){
                             Log.w("yap","exception this workspace does not exist");
                         }
-                        workspacesAdapter.notifyDataSetChanged();
+                        workspacesAdapter.notifyDataSetChanged(); //warn the adapter that the original array has changed
                         selectedWorkSpaces.clear();
-                        mode.finish(); // Action picked, so close the CAB
+                        mode.finish();
                         return true;
                     case R.id.editWorkspace:
                         startEditWorkspace();
@@ -104,7 +107,7 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
 
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                // Inflate the menu for the CAB
+                /*Inflate the menu with other options (delete and edit) when something is selected*/
                 MenuInflater inflater = mode.getMenuInflater();
                 inflater.inflate(R.menu.menu_owned_workspaces_selected, menu);
                 return true;
@@ -112,8 +115,6 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                // Here you can make any necessary updates to the activity when
-                // the CAB is removed. By default, selected items are deselected/unchecked.
             }
 
             @Override
@@ -131,12 +132,14 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
         });
     }
 
+    /*Logic: Start a FilesActivity, and send the name of the current workspace clicked on*/
     public void startListFiles(String nameOfWorkspace){
         Intent intent = new Intent(this, FilesActivity.class);
         intent.putExtra("nameOfWorkspace",nameOfWorkspace);
         startActivity(intent);
     }
 
+    /*Logic: Start a WorkspaceEditActivity, and send the name of the current workspace clicked on*/
     public void startEditWorkspace(){
         Intent intent = new Intent(this, WorkspaceEditActivity.class);
         String nameOfWorkspace = selectedWorkSpaces.get(0);
@@ -144,21 +147,18 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    /*Normal inflate, only has the new Option*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_owned_workspaces, menu);
         return true;
     }
 
+    /*Once clicked on the New Button, go to the WorkspaceCreateActivity*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.createWorkspace) {
             Intent intent = new Intent(this, WorkspaceCreateActivity.class);
             startActivity(intent);

@@ -22,16 +22,18 @@ public class SignUpActivity extends ActionBarActivity {
         setContentView(R.layout.activity_sign_up);
     }
 
+    //called when the button is pressed
     public void saveSettings(View v){
         EditText email = (EditText)findViewById(R.id.inputEmail);
         EditText nick = (EditText)findViewById(R.id.inputName);
 
+        /*gets the App context, gets the sharedPreferences, gets the content inside the editText Views and save them inside the Preferences
+        redirect to the WorkspaceTypeActivity*/
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         SharedPreferences.Editor prefEditor = airDeskApp.getPrefs().edit();
         prefEditor.putString("email_pref",email.getText().toString());
         prefEditor.putString("nick_pref",nick.getText().toString());
         prefEditor.commit();
-        Log.d("PREFERENCE","signUP");
         Intent intent = new Intent(this, WorkspaceTypeActivity.class);
         startActivity(intent);
     }
@@ -50,10 +52,6 @@ public class SignUpActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
