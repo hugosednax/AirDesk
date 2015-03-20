@@ -21,7 +21,7 @@ public class ADFile {
     private boolean editable;
 
     public ADFile(String name, String workspaceName) throws IOException {
-        this.file =  new File(AirDeskApp.getAppContext().getDir(workspaceName, Context.MODE_PRIVATE), name + ".txt");
+        this.file =  new File(""+AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE)+File.separatorChar+workspaceName, name + ".txt");
         file.createNewFile();
         this.name = name;
         this.editable = true;

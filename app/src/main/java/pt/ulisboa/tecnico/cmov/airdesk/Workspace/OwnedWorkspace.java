@@ -33,8 +33,9 @@ public class OwnedWorkspace extends Workspace{
         this.isPublic = isPublic;
         this.quota = quota;
         this.allowedUsers = new ArrayList<User>();
-        AirDeskApp.getAppContext().getDir("app_data"+File.separator+name, AirDeskApp.getAppContext().MODE_PRIVATE).mkdirs();
-
+        File mainDir = AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
+        File currentDir = new File(""+mainDir+File.separatorChar+name);
+        currentDir.mkdir();
 
         /*File directory = new File(name);
         if(!directory.mkdirs())
