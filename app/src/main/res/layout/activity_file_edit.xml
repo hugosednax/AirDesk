@@ -4,15 +4,6 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:background="#3fa9f5"
-    tools:context="pt.ulisboa.tecnico.cmov.airdesk.Activity.ForeignWorkspacesActivity">
+    tools:context="pt.ulisboa.tecnico.cmov.airdesk.Activity.FileEditActivity">
 
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/listView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:stackFromBottom="true"
-        android:smoothScrollbar="true" />
 </RelativeLayout>

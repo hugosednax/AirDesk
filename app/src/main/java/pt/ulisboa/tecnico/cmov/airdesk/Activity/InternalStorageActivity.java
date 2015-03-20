@@ -18,7 +18,7 @@ import java.util.Scanner;
 
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 
-public class InternalStorage extends Activity {
+public class InternalStorageActivity extends Activity {
 
     private static final String LINE_SEP = System.getProperty("line.separator");
 

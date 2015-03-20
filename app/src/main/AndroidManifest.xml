@@ -18,40 +18,44 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activity.WorkspaceCreate"
+            android:name=".Activity.WorkspaceCreateActivity"
             android:label="@string/title_activity_workspace_create" >
         </activity>
         <activity
-            android:name=".Activity.OwnedWorkspaces"
+            android:name=".Activity.OwnedWorkspacesActivity"
             android:label="@string/title_activity_owned_workspaces" >
         </activity>
         <activity
-            android:name=".Activity.ForeignWorkspaces"
+            android:name=".Activity.ForeignWorkspacesActivity"
             android:label="@string/title_activity_foreign_workspaces" >
         </activity>
         <activity
-            android:name=".Activity.ListFiles"
+            android:name=".Activity.FilesActivity"
             android:label="@string/title_activity_list_files" >
         </activity>
         <activity
-            android:name=".Activity.EditViewFile"
+            android:name=".Activity.FileViewActivity"
             android:label="@string/title_activity_edit_view_file" >
         </activity>
         <activity
-            android:name=".Activity.SignUp"
+            android:name=".Activity.SignUpActivity"
             android:label="@string/title_activity_sign_up" >
         </activity>
         <activity
-            android:name=".Activity.Workspaces"
+            android:name=".Activity.WorkspaceTypeActivity"
             android:label="@string/title_activity_workspaces" >
         </activity>
         <activity
-            android:name=".Activity.EditWorkspace"
+            android:name=".Activity.WorkspaceEditActivity"
             android:label="@string/title_activity_edit_workspace" >
         </activity>
         <activity
-            android:name=".Activity.NewFile"
+            android:name=".Activity.FileCreateActivity"
             android:label="@string/title_activity_new_file" >
+        </activity>
+        <activity
+            android:name=".Activity.FileEditActivity"
+            android:label="@string/title_activity_file_edit" >
         </activity>
     </application>
 

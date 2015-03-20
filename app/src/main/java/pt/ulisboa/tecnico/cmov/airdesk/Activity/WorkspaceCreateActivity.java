@@ -16,7 +16,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 
-public class WorkspaceCreate extends ActionBarActivity {
+public class WorkspaceCreateActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

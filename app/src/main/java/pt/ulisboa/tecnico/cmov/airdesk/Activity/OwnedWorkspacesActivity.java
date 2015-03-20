@@ -23,7 +23,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 
-public class OwnedWorkspaces extends ActionBarActivity {
+public class OwnedWorkspacesActivity extends ActionBarActivity {
     private ArrayAdapter workspacesAdapter;
     private List<Workspace> workspaces;
     private ListView listView;
@@ -34,6 +34,14 @@ public class OwnedWorkspaces extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_owned_workspaces);
 
+        /*
+            Logic and Backend:
+            Retrieve the user from the context and then get the list of OwnedWorkspaces
+            Link the ArrayAdapter to list of files of the workspace, this will only display the name of the File thanks
+                to the toString override on the ADFile class
+            Get the ListView, link it to the ArrayAdapter, allow multiple choices, allow long clicks,
+                set itemClick Listener
+            */
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         workspaces = airDeskApp.getUser().getOwnedWorkspaces();
         workspacesAdapter = new ArrayAdapter<Workspace>(this, android.R.layout.simple_list_item_1, workspaces);
@@ -124,13 +132,13 @@ public class OwnedWorkspaces extends ActionBarActivity {
     }
 
     public void startListFiles(String nameOfWorkspace){
-        Intent intent = new Intent(this, ListFiles.class);
+        Intent intent = new Intent(this, FilesActivity.class);
         intent.putExtra("nameOfWorkspace",nameOfWorkspace);
         startActivity(intent);
     }
 
     public void startEditWorkspace(){
-        Intent intent = new Intent(this, EditWorkspace.class);
+        Intent intent = new Intent(this, WorkspaceEditActivity.class);
         String nameOfWorkspace = selectedWorkSpaces.get(0);
         intent.putExtra("nameOfWorkspace",nameOfWorkspace);
         startActivity(intent);
@@ -152,7 +160,7 @@ public class OwnedWorkspaces extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.createWorkspace) {
-            Intent intent = new Intent(this, WorkspaceCreate.class);
+            Intent intent = new Intent(this, WorkspaceCreateActivity.class);
             startActivity(intent);
             return true;
         }

@@ -19,7 +19,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.OwnedWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 
-public class EditWorkspace extends ActionBarActivity {
+public class WorkspaceEditActivity extends ActionBarActivity {
     private OwnedWorkspace workspaceToEdit;
     private EditText quota;
     private ListView listView;

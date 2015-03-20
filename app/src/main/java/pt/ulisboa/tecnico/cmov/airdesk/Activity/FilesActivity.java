@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 
-public class ListFiles extends ActionBarActivity {
+public class FilesActivity extends ActionBarActivity {
     private ArrayAdapter filesAdapter;
     private ListView listView;
     private Workspace currWorkspace;
@@ -36,31 +35,47 @@ public class ListFiles extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_files);
 
+        /*Logic and Backend:
+         retrieve the app context and retrieve the name of the current workspace, sent from the previous screen
+        */
         selectedFiles = new ArrayList<String>();
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         Intent intent = getIntent();
         String nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
         try {
+            /*
+            Logic and Backend:
+            Retrieve the user from the context and then get the current workspace by searching with the name
+            Link the ArrayAdapter to list of files of the workspace, this will only display the name of the File thanks
+                to the toString override on the ADFile class
+            Get the ListView, link it to the ArrayAdapter, allow multiple choices, allow long clicks,
+                set itemClick Listener
+            */
             currWorkspace = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace);
             filesAdapter = new ArrayAdapter<ADFile>(this, android.R.layout.simple_list_item_1, currWorkspace.getFiles());
             listView = (ListView) findViewById(R.id.listFiles);
             listView.setAdapter(filesAdapter);
             listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
             listView.setLongClickable(true);
+            /*Logic: Find the name of the file on the list position of the click*/
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String selectedFromList =listView.getItemAtPosition(position).toString();
+                    String selectedFromList = listView.getItemAtPosition(position).toString();
                     startViewFile(selectedFromList);
                 }
             });
         }catch(WorkspaceNotFoundException e){}
+
+        /*Links the listView to the context Bar*/
         addContextToList(listView, airDeskApp);
     }
 
+    //Behaviour of the ContextBar
     public void addContextToList(final ListView listView, final AirDeskApp airDeskApp){
         listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
 
+            /*Logic: When a listView item is LONG clicked, adds it to a list of names*/
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position,
                                                   long id, boolean checked) {
@@ -70,27 +85,27 @@ public class ListFiles extends ActionBarActivity {
                 }else {
                     selectedFiles.add(selectedFromList);
                 }
-                mode.invalidate();
+                mode.invalidate(); //automaticly calls onPrepareActionMode
             }
 
+            /*Logic: When a button from the Bar is clicked, detect wich one was clicked and
+            select correct behaviour depending if delete or edit*/
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                // Respond to clicks on the actions in the CAB
                 switch (item.getItemId()) {
+                    /*Backend: iterate through the list of names of selectedFiles and remove the files from the current workspace */
                     case R.id.deleteFile:
-                        Log.d("DELETE",String.valueOf(selectedFiles.size()));
                             for(int i=0; i<selectedFiles.size();i++){
                                 try {
-                                    Log.d("DELETE",selectedFiles.get(i));
                                     currWorkspace.removeFile(selectedFiles.get(i));
                                 }catch (Exception e){}
                             }
-                        filesAdapter.notifyDataSetChanged();
+                        filesAdapter.notifyDataSetChanged(); //warn the adapter that the original array has changed
                         selectedFiles.clear();
-                        mode.finish(); // Action picked, so close the CAB
+                        mode.finish();
                         return true;
                     case R.id.editFile:
-
+                        startEditFile(selectedFiles.get(0));
                         return true;
                     default:
                         return false;
@@ -99,7 +114,7 @@ public class ListFiles extends ActionBarActivity {
 
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                // Inflate the menu for the CAB
+               /*Inflate the menu with other options (delete and edit) when something is selected*/
                 MenuInflater inflater = mode.getMenuInflater();
                 inflater.inflate(R.menu.menu_list_files_selected, menu);
                 return true;
@@ -107,12 +122,11 @@ public class ListFiles extends ActionBarActivity {
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                // Here you can make any necessary updates to the activity when
-                // the CAB is removed. By default, selected items are deselected/unchecked.
             }
 
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                //Shows or hides the editFile button depending on the number of selected files
                 if (selectedFiles.size() <= 1){
                     MenuItem item = menu.findItem(R.id.editFile);
                     item.setVisible(true);
@@ -126,31 +140,36 @@ public class ListFiles extends ActionBarActivity {
         });
     }
 
-
+    /*Logic: Start a FileViewActivity, and send the name of the current workspace and file clicked on*/
     public void startViewFile(String selectedFile){
-        Intent intent = new Intent(this, EditViewFile.class);
+        Intent intent = new Intent(this, FileViewActivity.class);
+        intent.putExtra("nameOfWorkspace",currWorkspace.getName());
+        intent.putExtra("nameOfFile",selectedFile);
+        startActivity(intent);
+    }
+
+    /*Logic: Start a FileEditActivity, and send the name of the current workspace and file clicked on*/
+    public void startEditFile(String selectedFile){
+        Intent intent = new Intent(this, FileEditActivity.class);
         intent.putExtra("nameOfWorkspace",currWorkspace.getName());
         intent.putExtra("nameOfWorkspace",selectedFile);
         startActivity(intent);
     }
 
+    /*Normal inflate, only has the new Option*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_list_files, menu);
         return true;
     }
 
+    /*Once clicked on the New Button, go to the File Create Activity and send the name of the current Workspace*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.createFile) {
-            Intent intent = new Intent(this, NewFile.class);
+            Intent intent = new Intent(this, FileCreateActivity.class);
+            intent.putExtra("nameOfWorkspace",currWorkspace.getName());
             startActivity(intent);
             return true;
         }

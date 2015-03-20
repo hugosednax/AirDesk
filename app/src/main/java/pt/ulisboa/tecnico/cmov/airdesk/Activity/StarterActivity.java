@@ -27,10 +27,10 @@ public class StarterActivity extends ActionBarActivity {
         String nick = airDeskApp.getPrefs().getString("nick_pref","DEFAULT");
         Intent intent;
         if(userEmail.equals("DEFAULT")) {
-            intent = new Intent(this, SignUp.class);
+            intent = new Intent(this, SignUpActivity.class);
             Log.d("PREFERENCES MISSING","user: "+nick+" email: "+userEmail);
         }else{
-            intent = new Intent(this, Workspaces.class);
+            intent = new Intent(this, WorkspaceTypeActivity.class);
             Log.d("PREFERENCES HERE","user: "+nick+" email: "+userEmail);
         }
         startActivity(intent);

@@ -1,46 +1,38 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.content.Intent;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.User.User;
 
 
-public class SignUp extends ActionBarActivity {
+public class WorkspaceTypeActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
-    }
-
-    public void saveSettings(View v){
-        EditText email = (EditText)findViewById(R.id.inputEmail);
-        EditText nick = (EditText)findViewById(R.id.inputName);
+        setContentView(R.layout.activity_workspaces);
 
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
-        SharedPreferences.Editor prefEditor = airDeskApp.getPrefs().edit();
-        prefEditor.putString("email_pref",email.getText().toString());
-        prefEditor.putString("nick_pref",nick.getText().toString());
-        prefEditor.commit();
-        Log.d("PREFERENCE","signUP");
-        Intent intent = new Intent(this, Workspaces.class);
-        startActivity(intent);
+        airDeskApp.setPrefs(getSharedPreferences("user_prefs", MODE_PRIVATE));
+        String userEmail = airDeskApp.getPrefs().getString("email_pref","DEFAULT");
+        String nick = airDeskApp.getPrefs().getString("nick_pref","DEFAULT");
+        airDeskApp.setUser(new User(nick,userEmail));
+        Log.d("PREFERENCES WORKSPACES","user: "+nick+" email: "+userEmail);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_sign_up, menu);
+        getMenuInflater().inflate(R.menu.menu_workspaces, menu);
         return true;
     }
 
@@ -58,4 +50,15 @@ public class SignUp extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void switchToOwnedActivity(View v){
+            Intent intent = new Intent(this, OwnedWorkspacesActivity.class);
+            startActivity(intent);
+    }
+
+    public void switchToForeignActivity(View v){
+        Intent intent = new Intent(this, ForeignWorkspacesActivity.class);
+        startActivity(intent);
+    }
+
 }
