@@ -152,7 +152,7 @@ public class FilesActivity extends ActionBarActivity {
     public void startEditFile(String selectedFile){
         Intent intent = new Intent(this, FileEditActivity.class);
         intent.putExtra("nameOfWorkspace",currWorkspace.getName());
-        intent.putExtra("nameOfWorkspace",selectedFile);
+        intent.putExtra("nameOfFile",selectedFile);
         startActivity(intent);
     }
 
