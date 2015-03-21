@@ -38,19 +38,17 @@ public class SettingsHandler {
     //endregion
 
     //region Constructor
-    public SettingsHandler() throws CantCreateFileException, WriteToFileException {
-
+    public SettingsHandler() throws CantCreateFileException, WriteToFileException, FileNotFoundException {
         File mainDir = AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
-        settings = new File(mainDir, ".settings.txt");
+        settings = new File(mainDir, "settings.txt");
 
-        if(settings.exists()){
+        ownedWorkspaces = new ArrayList<WorkspaceDTO>();
+        foreignWorkspaces = new ArrayList<WorkspaceDTO>();
+        hadSettings = false;
+
+        if(settings.isFile()){
             hadSettings = true;
-            try {
-                readSettingsFile();
-            } catch (FileNotFoundException e) {
-                //TODO
-                e.printStackTrace();
-            }
+            readSettingsFile();
         } else{
             try {
                 settings.createNewFile();
@@ -63,10 +61,6 @@ public class SettingsHandler {
             } catch (IOException e) {
                 throw new WriteToFileException(e.getMessage());
             }
-
-            ownedWorkspaces = new ArrayList<WorkspaceDTO>();
-            foreignWorkspaces = new ArrayList<WorkspaceDTO>();
-            hadSettings = false;
         }
     }
     //endregion

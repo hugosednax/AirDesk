@@ -5,17 +5,22 @@ import android.util.Log;
 import com.android.internal.util.Predicate;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.CantCreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.WriteToFileException;
+import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.SettingsHandler;
 import pt.ulisboa.tecnico.cmov.airdesk.Predicate.WorkspaceNamePredicate;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.OwnedWorkspace;
@@ -30,13 +35,41 @@ public class User {
     private String email;
     private List<Workspace> foreignWorkspaces;
     private List<Workspace> ownedWorkspaces;
+    private SettingsHandler settings;
 
     public User(String nick, String email){
         this.nick = nick;
         this.email = email;
         foreignWorkspaces = new ArrayList<Workspace>();
         ownedWorkspaces = new ArrayList<Workspace>();
-        deleteAllWorkspaces();
+
+        try {
+            Log.d("SettingHandler", "create handler");
+            this.settings = new SettingsHandler();
+            Log.d("SettingHandler", "finished handler creating");
+        } catch (CantCreateFileException e) {
+            //TODO
+            Log.d("SettingHandler", e.getMessage());
+        } catch (WriteToFileException e) {
+            //TODO
+            Log.d("SettingHandler", e.getMessage());
+        } catch (FileNotFoundException e) {
+            //TODO
+            Log.d("SettingHandler", e.getMessage());
+        }
+
+        if(settings.hadSettings()){
+            Log.d("SettingHandler", "entered here why?");
+            for(WorkspaceDTO wsDTO : settings.getOwnedWorkspaces()){
+                Workspace savedWS = new OwnedWorkspace(wsDTO);
+                ownedWorkspaces.add(savedWS);
+            }
+            for(WorkspaceDTO wsDTO : settings.getForeignWorkspaces()){
+                //TODO: something to do
+            }
+        }
+
+/*        deleteAllWorkspaces();
         // TEST ADD
         try {
                 createWorkspace("workspace", true, 5);
@@ -46,7 +79,7 @@ public class User {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-        }
+        }*/
     }
 
     // User functions
