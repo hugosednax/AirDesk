@@ -1,10 +1,14 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -54,6 +58,14 @@ public class FileEditActivity extends ActionBarActivity {
 
         //Set the text
         textView.setText(text);
+        textView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                  Log.d("TOUCHED","FOCUS");
+                }
+            }
+        });
     }
 
     @Override
