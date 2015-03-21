@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmov.airdesk.FileSystem;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -59,15 +60,13 @@ public class ADFile {
     public void save(String text){
         PrintWriter writer = null;
         try {
-            writer = new PrintWriter(file.getName(), "UTF-8");
+            writer = new PrintWriter(file.getAbsolutePath());
+            writer.println(text);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Log.d(AirDeskApp.LOG_TAG, e.getMessage());
+        } finally{
+            writer.close();
         }
-        writer.println(text);
-        writer.close();
-
 
         //Bellow code was a previous implementation, this check must be done in the workspace environment
 
