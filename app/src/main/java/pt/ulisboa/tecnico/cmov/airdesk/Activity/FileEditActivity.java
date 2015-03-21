@@ -36,14 +36,13 @@ public class FileEditActivity extends ActionBarActivity {
         String nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
         String nameOfCurrFile = intent.getStringExtra("nameOfFile");
         StringBuilder text = new StringBuilder();
-        Log.d("HEEEY","WS: "+ nameOfCurrWorkspace+"FILE: "+nameOfCurrFile);
+        Log.d("HEEEY","WS: "+ nameOfCurrWorkspace+" FILE: "+nameOfCurrFile);
         try {
              /*
             Logic and Backend:
             Retrieve the user from the context and then get the current workspace by searching with the name and get the current Name by the name
             */
             currFile = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace).getFileByName(nameOfCurrFile);
-            Log.d("TRY1",currFile.getName());
             //Read text from file
             BufferedReader br = new BufferedReader(new FileReader(currFile.getFile()));
             String line;

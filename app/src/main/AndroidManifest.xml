@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pt.ulisboa.tecnico.cmov.airdesk" >
 
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
+
     <application
         android:name=".Application.AirDeskApp"
         android:allowBackup="true"
