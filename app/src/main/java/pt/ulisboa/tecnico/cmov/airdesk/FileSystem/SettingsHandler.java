@@ -1,20 +1,22 @@
 package pt.ulisboa.tecnico.cmov.airdesk.FileSystem;
 
-import android.provider.SyncStateContract;
+import android.provider.MediaStore;
 import android.util.Log;
-import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
+import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CantCreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WriteToFileException;
-import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 /**
  * Created by Filipe Teixeira on 20/03/2015.
@@ -24,8 +26,8 @@ public class SettingsHandler {
     private static final String DEFAULT_FILE_CONTENT ="OwnedWorkspaces" + "\n" + "NONE" + "\n" + "ForeignWorkspaces" + "\n"
             + "NONE";
     File settings;
-    List<Workspace> ownedWorkspaces;
-    List<Workspace> foreignWorkspaces;
+    List<WorkspaceDTO> ownedWorkspaces;
+    List<WorkspaceDTO> foreignWorkspaces;
     boolean hadSettings;
 
 
@@ -36,7 +38,12 @@ public class SettingsHandler {
 
         if(settings.exists()){
             hadSettings = true;
-            readSettingsFile();
+            try {
+                readSettingsFile();
+            } catch (FileNotFoundException e) {
+                //TODO
+                e.printStackTrace();
+            }
         } else{
             try {
                 settings.createNewFile();
@@ -50,8 +57,8 @@ public class SettingsHandler {
                 throw new WriteToFileException(e.getMessage());
             }
 
-            ownedWorkspaces = new ArrayList<Workspace>();
-            foreignWorkspaces = new ArrayList<Workspace>();
+            ownedWorkspaces = new ArrayList<WorkspaceDTO>();
+            foreignWorkspaces = new ArrayList<WorkspaceDTO>();
             hadSettings = false;
         }
     }
@@ -67,10 +74,44 @@ public class SettingsHandler {
         }
     }
 
-    private boolean readSettingsFile() {
+    private boolean readSettingsFile() throws FileNotFoundException {
         boolean result = false;
+        boolean atOwned = true;
         if(settings.getTotalSpace() > 0){
+            BufferedReader br = new BufferedReader(new FileReader(settings.getPath()));
+            try {
+                String line = br.readLine();
 
+                while (line != null) {
+                    System.out.println(line);
+                    if(atOwned){
+                        if(!line.equals("OwnedWorkspaces")){
+                            if(line.equals("ForeignWorkspaces")){
+                                atOwned = false;
+                            } else{
+                                if(!line.equals("NONE")){
+                                    String[] workspaceSettings = line.split("\\s+");
+                                    WorkspaceDTO newWS = new WorkspaceDTO(workspaceSettings[0], (Integer.parseInt(workspaceSettings[1]) != 0), Integer.parseInt(workspaceSettings[2]));
+                                    ownedWorkspaces.add(newWS);
+                                }
+                            }
+                        }
+                    } else{
+                        //TODO: saved foreign workspaces
+                    }
+                    line = br.readLine();
+                }
+            } catch (IOException e) {
+                //TODO
+                e.printStackTrace();
+            } finally {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    // TODO
+                    e.printStackTrace();
+                }
+            }
             result = true;
         }
         return result;

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
+import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
@@ -25,9 +26,12 @@ import pt.ulisboa.tecnico.cmov.airdesk.User.User;
  */
 public class OwnedWorkspace extends Workspace{
 
+    //region Class Variables
     private List<User> allowedUsers;
     private boolean isPublic;
+    //endregion
 
+    //region Constructors
     public OwnedWorkspace(String name, boolean isPublic, int quota) throws CreateWorkspaceException {
         super(name);
         this.isPublic = isPublic;
@@ -40,14 +44,27 @@ public class OwnedWorkspace extends Workspace{
             throw new CreateWorkspaceException("Can't create a new directory for this Workspace");
     }
 
-    public OwnedWorkspace(String name, boolean isPublic, int quota, boolean poop) {
-        super(name);
-        this.isPublic = isPublic;
-        this.quota = quota;
+    public OwnedWorkspace(WorkspaceDTO workspaceDTO) {
+        super(workspaceDTO.getName());
+        this.isPublic = workspaceDTO.isPublic();
+        this.quota = workspaceDTO.getQuota();
+        //TODO: load already authorized users
         this.allowedUsers = new ArrayList<User>();
+
+        File mainDir = AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
+        File currentDir = new File(""+mainDir+File.separatorChar+name);
+
+        if(currentDir.isDirectory()){
+            for(File file : currentDir.listFiles()){
+                ADFile savedFile = new ADFile(file);
+                getFiles().add(savedFile);
+                Log.d("[AirDesk][SFLoading]", "Loaded file: " + file.getName() + " from memory to app");
+            }
+        } else currentDir.mkdir();
     }
+    //endregion
 
-
+    //region Getters
     public boolean isPublic() {
         return isPublic;
     }
@@ -56,6 +73,24 @@ public class OwnedWorkspace extends Workspace{
         return allowedUsers;
     }
 
+    public int getSize() throws NotDirectoryException {
+        File mainDir = AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
+        File currentDir = new File(""+mainDir+File.separatorChar+name);
+        int workspaceSize = 0;
+
+        if(currentDir.listFiles().length != files.size())
+            System.out.println("File inconsistency noted.");
+
+        if (currentDir.isDirectory())
+            for (File child : currentDir.listFiles())
+                workspaceSize += child.getTotalSpace();
+        else throw new NotDirectoryException("Can't read workspace, the provided name isn't a directory.");
+
+        return workspaceSize;
+    }
+    //endregion
+
+    //region File Functions
     public void createFile(String fileName) throws QuotaLimitExceededException, CreateFileException, IOException {
         try {
             if(this.getSize() >= getQuota()){
@@ -94,22 +129,9 @@ public class OwnedWorkspace extends Workspace{
             throw new ADFileNotFoundException("File " + name + " not found in " + this.getName() + " Workspace.");
         return result;
     }
+    //endregion
 
-    public int getSize() throws NotDirectoryException {
-        File directory = new File(getName());
-        int workspaceSize = 0;
-
-        //if(directory.listFiles().length != files.size())
-          // System.out.println("File inconsistency noted.");
-/*
-        if (directory.isDirectory())
-            for (File child : directory.listFiles())
-                workspaceSize += child.getTotalSpace();
-        else throw new NotDirectoryException("Can't read workspace, the provided name isn't a directory.");
-*/
-        return workspaceSize;
-    }
-
+    //region Workspace Functions
     public void delete() throws NotDirectoryException{
         File directory = new File(getName());
         if (directory.isDirectory())
@@ -127,4 +149,5 @@ public class OwnedWorkspace extends Workspace{
             if(!allowedUsers.contains(username))
                 allowedUsers.add(username);*/
     }
+    //endregion
 }

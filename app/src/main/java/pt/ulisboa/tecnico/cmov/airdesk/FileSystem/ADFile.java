@@ -27,6 +27,12 @@ public class ADFile {
         this.editable = true;
     }
 
+    public ADFile(File file) {
+        this.file = file;
+        this.name = file.getName();
+        this.editable = true;
+    }
+
     public String getName() {
         return name;
     }
