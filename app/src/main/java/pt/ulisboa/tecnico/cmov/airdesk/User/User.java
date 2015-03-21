@@ -16,6 +16,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.CantCreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WriteToFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.SettingsHandler;
@@ -173,13 +174,13 @@ public class User {
     }
 
     public void deleteWorkspace(Workspace workspace){
-        //try {
-            //workspace.delete();
+        try {
+            workspace.delete();
             ownedWorkspaces.remove(workspace);
-        //} catch (NotDirectoryException e) {
-            //TODO: Correct exception handling (severe problem if this happens)
-          //  e.printStackTrace();
-        //}
+            settings.removeOwnedWorkspace(new WorkspaceDTO(workspace));
+        } catch (Exception e) {
+            Log.d("[AirDesk]", e.getMessage());
+        }
     }
 
     public List<Workspace> searchWorkspaces(String keywords[]){

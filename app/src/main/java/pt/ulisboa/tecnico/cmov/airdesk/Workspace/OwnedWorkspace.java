@@ -133,14 +133,15 @@ public class OwnedWorkspace extends Workspace{
 
     //region Workspace Functions
     public void delete() throws NotDirectoryException{
-        File directory = new File(getName());
+        File mainDir = AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
+        File directory = new File(""+mainDir+File.separatorChar+name);
         if (directory.isDirectory())
             for (File child : directory.listFiles())
                 if(!child.delete())
-                    System.out.println("Error at deleting file: " + child.getName());
+                    Log.d("[AirDesk]","Error at deleting file: " + child.getName());
         else throw new NotDirectoryException("Can't delete workspace, the provided name isn't a directory.");
         if(!directory.delete())
-            System.out.println("Error at deleting directory: " + directory.getName());
+            Log.d("[AirDesk]","Error at deleting directory: " + directory.getName());
     }
 
     public void invite(String username){
