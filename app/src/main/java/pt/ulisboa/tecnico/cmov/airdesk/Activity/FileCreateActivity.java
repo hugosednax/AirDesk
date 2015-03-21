@@ -52,7 +52,7 @@ public class FileCreateActivity extends ActionBarActivity {
     public void createNewFile(View view){
         EditText listView = (EditText) findViewById(R.id.FileName);
         try {
-            airDeskApp.getUser().createFile(listView.toString(),currWorkspace);
+            airDeskApp.getUser().createFile(listView.getText().toString(),currWorkspace);
 
         }catch(Exception e){
         }
