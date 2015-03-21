@@ -38,7 +38,7 @@ public class OwnedWorkspace extends Workspace{
         this.isPublic = isPublic;
         this.quota = quota;
         this.allowedUsers = new ArrayList<User>();
-        File mainDir = AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
+        File mainDir = AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE);
         File currentDir = new File(""+mainDir+File.separatorChar+name);
         currentDir.mkdir();
         if(!currentDir.isDirectory())
@@ -52,7 +52,7 @@ public class OwnedWorkspace extends Workspace{
         //TODO: load already authorized users
         this.allowedUsers = new ArrayList<User>();
 
-        File mainDir = AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
+        File mainDir = AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE);
         File currentDir = new File(""+mainDir+File.separatorChar+name);
 
         if(currentDir.isDirectory()){

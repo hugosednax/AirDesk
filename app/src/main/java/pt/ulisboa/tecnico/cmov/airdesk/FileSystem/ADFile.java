@@ -51,11 +51,22 @@ public class ADFile {
         return name;
     }
 
-    /*
     public void save(String text){
-        //TODO: Exception handle and creation
+        PrintWriter writer = null;
+        try {
+            writer = new PrintWriter(file.getName(), "UTF-8");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        writer.println(text);
+        writer.close();
 
-        // File size calculation
+
+        //Bellow code was a previous implementation, this check must be done in the workspace environment
+
+        /*// File size calculation
         long fileSize = text.length() * 8;
         long oldFileSize = file.getTotalSpace();
 
@@ -63,16 +74,7 @@ public class ADFile {
         if(workspace.getSize()+fileSize-oldFileSize >= workspace.getQuota()){
             System.out.println("TODO EXCEPTION");
         } else {
-            PrintWriter writer = null;
-            try {
-                writer = new PrintWriter(file.getName(), "UTF-8");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            writer.println(text);
-            writer.close();
-        }
-    }*/
+            WriteToFile (String text)
+        }*/
+    }
 }

@@ -12,11 +12,11 @@ import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
  */
 
 // 1st version of ForeignWorkspace, fully local
-public class ForeignWorkspace extends Workspace{
+public class ForeignLocalWorkspace extends Workspace{
 
     private String directoryPath;
 
-    public ForeignWorkspace(String name, int quota, String directoryPath){
+    public ForeignLocalWorkspace(String name, int quota, String directoryPath){
         super(name);
         setQuota(quota);
         this.directoryPath = directoryPath;
