@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +20,8 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 public class FileCreateActivity extends ActionBarActivity {
 
-    Workspace currWorkspace;
+    AirDeskApp airDeskApp;
+    String nameOfCurrWorkspace;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,18 +31,9 @@ public class FileCreateActivity extends ActionBarActivity {
         /*Logic and Backend:
          retrieve the app context and retrieve the name of the current workspace, sent from the previous screen
         */
-        AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
+        airDeskApp = (AirDeskApp) getApplicationContext();
         Intent intent = getIntent();
-        String nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
-        try {
-            /*
-            Logic and Backend:
-            Retrieve the user from the context and then get the current workspace by searching with the name
-            */
-            currWorkspace = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace);
-        }catch(WorkspaceNotFoundException e){
-
-        }
+        nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
     }
 
     /*
@@ -51,10 +44,11 @@ public class FileCreateActivity extends ActionBarActivity {
     public void createNewFile(View view){
         EditText listView = (EditText) findViewById(R.id.FileName);
         try {
-            currWorkspace.createFile(listView.toString());
-            finish();
+            airDeskApp.getUser().createFile(nameOfCurrWorkspace,listView.toString());
         }catch(Exception e){
+            Log.d("EXCEPTION",e.toString());
         }
+        finish();
     }
 
     @Override
