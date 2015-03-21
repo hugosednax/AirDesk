@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.android.internal.util.Predicate;
@@ -58,7 +59,7 @@ public class OwnedWorkspace extends Workspace{
             for(File file : currentDir.listFiles()){
                 ADFile savedFile = new ADFile(file);
                 getFiles().add(savedFile);
-                Log.d("[AirDesk][SFLoading]", "Loaded file: " + file.getName() + " from memory to app");
+                Log.d(AirDeskApp.LOG_TAG, "Loaded file: " + file.getName() + " from memory to app");
             }
         } else currentDir.mkdir();
     }
@@ -74,12 +75,12 @@ public class OwnedWorkspace extends Workspace{
     }
 
     public int getSize() throws NotDirectoryException {
-        File mainDir = AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
+        File mainDir = AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE);
         File currentDir = new File(""+mainDir+File.separatorChar+name);
         int workspaceSize = 0;
 
         if(currentDir.listFiles().length != files.size())
-            System.out.println("File inconsistency noted.");
+            Log.d(AirDeskApp.LOG_TAG, "File inconsistency noted.");
 
         if (currentDir.isDirectory())
             for (File child : currentDir.listFiles())
@@ -99,7 +100,7 @@ public class OwnedWorkspace extends Workspace{
                 files.add(new ADFile(fileName, this.getName()));
             }
         } catch (NotDirectoryException e) {
-            e.printStackTrace();
+            Log.d(AirDeskApp.LOG_TAG, e.getMessage());
             throw new CreateFileException("Problem occurred in getting workspace total size. See log for more info.");
             }
     }
@@ -107,10 +108,9 @@ public class OwnedWorkspace extends Workspace{
     public void removeFile(String name) throws ADFileNotFoundException, DeleteFileException {
         ADFile file = getFileByName(name);
         files.remove(file);
-        /*
+
         if(!file.getFile().delete())
             throw new DeleteFileException("Can't delete file in Android File System");
-            */
     }
 
     public void updateFile(String name, String text){
@@ -138,10 +138,10 @@ public class OwnedWorkspace extends Workspace{
         if (directory.isDirectory())
             for (File child : directory.listFiles())
                 if(!child.delete())
-                    Log.d("[AirDesk]","Error at deleting file: " + child.getName());
+                    Log.d(AirDeskApp.LOG_TAG, "Error at deleting file: " + child.getName());
         else throw new NotDirectoryException("Can't delete workspace, the provided name isn't a directory.");
         if(!directory.delete())
-            Log.d("[AirDesk]","Error at deleting directory: " + directory.getName());
+            Log.d(AirDeskApp.LOG_TAG,"Error at deleting directory: " + directory.getName());
     }
 
     public void invite(String username){

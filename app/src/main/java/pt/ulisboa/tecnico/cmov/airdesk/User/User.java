@@ -10,15 +10,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
-import pt.ulisboa.tecnico.cmov.airdesk.Exception.CantCreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
-import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
-import pt.ulisboa.tecnico.cmov.airdesk.Exception.WriteToFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.SettingsHandler;
 import pt.ulisboa.tecnico.cmov.airdesk.Predicate.WorkspaceNamePredicate;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
@@ -46,25 +44,24 @@ public class User {
         ownedWorkspaces = new ArrayList<Workspace>();
 
         try {
-            Log.d("SettingHandler", "create handler");
+            Log.d(AirDeskApp.LOG_TAG, "create handler");
             this.settings = new SettingsHandler();
-            Log.d("SettingHandler", "finished handler creating");
+            Log.d(AirDeskApp.LOG_TAG, "finished handler creating");
         } catch (Exception e) {
-            //TODO
-            Log.d("SettingHandler", e.getMessage());
+            Log.d(AirDeskApp.LOG_TAG, e.getMessage());
         }
 
         if(settings.hadSettings()){
             loadSavedWorkspaces();
         }
 
-/*        deleteAllWorkspaces();
-        // TEST ADD
+        /*
+        deleteAllWorkspaces();
         try {
-                createWorkspace("workspace", true, 5);
-                createWorkspace("workspace1", true, 1);
-                ownedWorkspaces.get(0).createFile("test");
-                ownedWorkspaces.get(0).createFile("test2");
+            createWorkspace("workspace", true, 5);
+            createWorkspace("workspace1", true, 1);
+            ownedWorkspaces.get(0).createFile("test");
+            ownedWorkspaces.get(0).createFile("test2");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());

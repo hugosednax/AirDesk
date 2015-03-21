@@ -11,6 +11,8 @@ import pt.ulisboa.tecnico.cmov.airdesk.User.User;
  */
 public class AirDeskApp extends Application {
 
+    public static final String LOG_TAG = "[AirDesk]";
+
     private User user;
     SharedPreferences prefs;
     private static Context context;
