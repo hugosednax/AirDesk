@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
@@ -17,7 +16,6 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.CantCreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
-import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WriteToFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.SettingsHandler;
@@ -31,12 +29,15 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
  */
 public class User {
 
+    //region Class Variables
     private String nick;
     private String email;
     private List<Workspace> foreignWorkspaces;
     private List<Workspace> ownedWorkspaces;
     private SettingsHandler settings;
+    //endregion
 
+    //region Constructors
     public User(String nick, String email){
         this.nick = nick;
         this.email = email;
@@ -47,26 +48,13 @@ public class User {
             Log.d("SettingHandler", "create handler");
             this.settings = new SettingsHandler();
             Log.d("SettingHandler", "finished handler creating");
-        } catch (CantCreateFileException e) {
-            //TODO
-            Log.d("SettingHandler", e.getMessage());
-        } catch (WriteToFileException e) {
-            //TODO
-            Log.d("SettingHandler", e.getMessage());
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             //TODO
             Log.d("SettingHandler", e.getMessage());
         }
 
         if(settings.hadSettings()){
-            Log.d("SettingHandler", "entered here why?");
-            for(WorkspaceDTO wsDTO : settings.getOwnedWorkspaces()){
-                Workspace savedWS = new OwnedWorkspace(wsDTO);
-                ownedWorkspaces.add(savedWS);
-            }
-            for(WorkspaceDTO wsDTO : settings.getForeignWorkspaces()){
-                //TODO: something to do
-            }
+            loadSavedWorkspaces();
         }
 
 /*        deleteAllWorkspaces();
@@ -81,8 +69,9 @@ public class User {
             System.out.println(e.getMessage());
         }*/
     }
+    //endregion
 
-    // User functions
+    //region Getters
     public String getNick(){
         return nick;
     }
@@ -91,15 +80,27 @@ public class User {
         return email;
     }
 
-    // Workspace functions
-
-    public List<Workspace> getForeignWorkspaces() {
-        return foreignWorkspaces;
-    }
-
     @Override
     public String toString(){
         return nick;
+    }
+    //endregion
+
+    //region Private Methods
+    private void loadSavedWorkspaces() {
+        for(WorkspaceDTO wsDTO : settings.getOwnedWorkspaces()){
+            Workspace savedWS = new OwnedWorkspace(wsDTO);
+            ownedWorkspaces.add(savedWS);
+        }
+        for(WorkspaceDTO wsDTO : settings.getForeignWorkspaces()){
+            //TODO: something to do
+        }
+    }
+    //endregion
+
+    //region Workspace Methods
+    public List<Workspace> getForeignWorkspaces() {
+        return foreignWorkspaces;
     }
 
     public List<Workspace> getOwnedWorkspaces() {
@@ -107,21 +108,21 @@ public class User {
     }
 
     public ArrayList<String> getOwnedWorkspacesNames() {
-        ArrayList<String> workspaceNames = new ArrayList();
+        ArrayList<String> workspaceNames = new ArrayList<String>();
         for(int i=0;i<ownedWorkspaces.size();i++)
             workspaceNames.add(ownedWorkspaces.get(i).getName());
         return workspaceNames;
     }
 
     public ArrayList<String> getForeignWorkspacesNames() {
-        ArrayList<String> workspaceNames = new ArrayList();
+        ArrayList<String> workspaceNames = new ArrayList<String>();
         for(int i=0;i<ownedWorkspaces.size();i++)
             workspaceNames.add(ownedWorkspaces.get(i).getName());
         return workspaceNames;
     }
 
     public Workspace getOwnedWorkspaceByName(String name) throws WorkspaceNotFoundException{
-        Predicate validator = new WorkspaceNamePredicate(name);
+        Predicate<Workspace> validator = new WorkspaceNamePredicate(name);
         Workspace result = null;
         for(Workspace workspace : ownedWorkspaces){
             if(validator.apply(workspace)){
@@ -135,7 +136,7 @@ public class User {
     }
 
     public Workspace getForeignWorkspaceByName(String name) throws WorkspaceNotFoundException{
-        Predicate validator = new WorkspaceNamePredicate(name);
+        Predicate<Workspace> validator = new WorkspaceNamePredicate(name);
         Workspace result = null;
         for(Workspace workspace : foreignWorkspaces){
             if(validator.apply(workspace)){
@@ -151,20 +152,13 @@ public class User {
     public Workspace createWorkspace(String name, boolean isPublic, int quota) throws CreateWorkspaceException {
         Workspace newWorkspace = new OwnedWorkspace(name, isPublic, quota);
         ownedWorkspaces.add(newWorkspace);
+        try {
+            settings.saveOwnedWorkspace(new WorkspaceDTO(newWorkspace));
+        } catch (FileNotFoundException e) {
+            throw new CreateWorkspaceException(e.getMessage());
+        }
         return newWorkspace;
     }
-
-        /*
-    public List<Workspace> loadExistingWorkspaces() {
-        List<Workspace> existingWorkspaces;
-        File file = new File(".");
-        String[] fileNames = file.list();
-        for (String fileName : fileNames) {
-            ownedWorkspaces.add(new OwnedWorkspace(fileName, boolean isPublic, int quota,true))
-        }
-
-    }
-    */
 
     public void addForeignWorkspace(Workspace workspace){
         foreignWorkspaces.add(workspace);
@@ -192,8 +186,9 @@ public class User {
         //TODO
         return null;
     }
+    //endregion
 
-    // File functions
+    //region File Methods
     public void createFile(String fileName, Workspace workspace) throws QuotaLimitExceededException, CreateFileException, IOException {
         workspace.createFile(fileName);
     }
@@ -207,4 +202,5 @@ public class User {
     public void deleteFile(String fileName, String workspaceName) throws WorkspaceNotFoundException, ADFileNotFoundException, DeleteFileException {
         getOwnedWorkspaceByName(workspaceName).removeFile(fileName);
     }
+    //endregion
 }

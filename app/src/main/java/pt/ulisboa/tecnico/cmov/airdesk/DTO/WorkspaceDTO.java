@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.cmov.airdesk.DTO;
 
+import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
+
 /**
  * Created by Filipe Teixeira on 21/03/2015.
  */
@@ -12,6 +14,11 @@ public class WorkspaceDTO {
         this.name = name;
         this.isPublic = isPublic;
         this.quota = quota;
+    }
+
+    public WorkspaceDTO(Workspace ws){
+        this.name = ws.getName();
+        this.quota = ws.getQuota();
     }
 
     public String getName() {
