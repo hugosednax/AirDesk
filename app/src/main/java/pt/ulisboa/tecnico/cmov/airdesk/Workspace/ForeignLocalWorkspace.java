@@ -3,6 +3,8 @@ package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 import java.io.IOException;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
@@ -14,47 +16,36 @@ import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 // 1st version of ForeignWorkspace, fully local
 public class ForeignLocalWorkspace extends Workspace{
 
-    private String directoryPath;
+    private Workspace workspaceLink;
 
-    public ForeignLocalWorkspace(String name, int quota, String directoryPath){
-        super(name);
-        setQuota(quota);
-        this.directoryPath = directoryPath;
+    public ForeignLocalWorkspace(Workspace workspace, String username) {
+        super(workspace.name + "@" + username);
+        this.workspaceLink = workspace;
     }
 
 
-    public void createFile(String fileName) throws QuotaLimitExceededException, IOException {
-        if(this.getSize() >= getQuota()){
-            throw new QuotaLimitExceededException("Quota limit exceeded while trying to create " + fileName + " in " + this.getName() + " remote Workspace.");
-        } else files.add(new ADFile(fileName, this.getName()));
+    public void createFile(String fileName) throws QuotaLimitExceededException, IOException, CreateFileException {
+        workspaceLink.createFile(fileName);
     }
 
-    public void removeFile(String name){
-        //TODO
+    public void removeFile(String name) throws ADFileNotFoundException, DeleteFileException {
+        workspaceLink.removeFile(name);
     }
 
     public void updateFile(String name, String text){
-        //TODO
+        workspaceLink.updateFile(name, text);
     }
 
     @Override
     public ADFile getFileByName(String name) throws ADFileNotFoundException {
-        // TODO
-        return null;
+        return workspaceLink.getFileByName(name);
     }
 
     public void delete() throws NotDirectoryException {
         //TODO
     }
 
-    public int getSize(){
-        //TODO
-        return 0;
-    }
-
-    public void subscribe(){
-        /*if(isPublic)
-            if(!allowedUsers.contains(user.getUsername()))
-                allowedUsers.add(user.getUsername());*/
+    public int getSize() throws NotDirectoryException {
+        return workspaceLink.getSize();
     }
 }

@@ -1,6 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.FileSystem;
+
 import android.content.Context;
-import android.os.Environment;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,17 +9,18 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
-import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 /**
  * Created by hugo__000 on 12/03/2015.
  */
 public class ADFile {
-
+    //region Class Variables
     private File file;
     private String name;
     private boolean editable;
+    //endregion
 
+    //region Constructors
     public ADFile(String name, String workspaceName) throws IOException {
         this.file =  new File(""+AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE)+File.separatorChar+workspaceName, name + ".txt");
         file.createNewFile();
@@ -32,7 +33,9 @@ public class ADFile {
         this.name = file.getName();
         this.editable = true;
     }
+    //endregion
 
+    //region Getters
     public String getName() {
         return name;
     }
@@ -50,7 +53,9 @@ public class ADFile {
     public String toString(){
         return name;
     }
+    //endregion
 
+    //region File Methods
     public void save(String text){
         PrintWriter writer = null;
         try {
@@ -77,4 +82,5 @@ public class ADFile {
             WriteToFile (String text)
         }*/
     }
+    //endregion
 }

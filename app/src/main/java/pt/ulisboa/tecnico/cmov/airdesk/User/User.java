@@ -20,6 +20,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.SettingsHandler;
 import pt.ulisboa.tecnico.cmov.airdesk.Predicate.WorkspaceNamePredicate;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Workspace.ForeignLocalWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.OwnedWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
@@ -160,6 +161,13 @@ public class User {
 
     public void addForeignWorkspace(Workspace workspace){
         foreignWorkspaces.add(workspace);
+    }
+
+    public void invite(Workspace workspace, String username){
+        //ignores username;
+        Workspace newForeign = new ForeignLocalWorkspace(workspace, username);
+        foreignWorkspaces.add(newForeign);
+        //NOT SAVING IT IN SETTINGS
     }
 
     public void deleteAllWorkspaces(){
