@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,15 +23,21 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.WriteToFileException;
  * Created by Filipe Teixeira on 20/03/2015.
  */
 public class SettingsHandler {
-    //Foreign workspaces save not used
-    private static final String DEFAULT_FILE_CONTENT ="OwnedWorkspaces" + "\n" + "NONE" + "\n" + "ForeignWorkspaces" + "\n"
-            + "NONE";
-    File settings;
-    List<WorkspaceDTO> ownedWorkspaces;
-    List<WorkspaceDTO> foreignWorkspaces;
-    boolean hadSettings;
+    //TODO: Foreign workspaces save implemented but still need the @<username> completion testing etc...
+    //TODO: control of IO exceptions is not good, must discuss a way to solve it
 
+    //region Private Class Constants
+    private static final String DEFAULT_FILE_CONTENT ="OwnedWorkspaces" + "\n" + "ForeignWorkspaces" + "\n";
+    //endregion
 
+    //region Private Class Variables
+    private File settings;
+    private List<WorkspaceDTO> ownedWorkspaces;
+    private List<WorkspaceDTO> foreignWorkspaces;
+    private boolean hadSettings;
+    //endregion
+
+    //region Constructor
     public SettingsHandler() throws CantCreateFileException, WriteToFileException {
 
         File mainDir = AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
@@ -62,7 +69,9 @@ public class SettingsHandler {
             hadSettings = false;
         }
     }
+    //endregion
 
+    //region Private Methods
     private void writeDefaultFile() throws IOException {
         FileWriter fw = new FileWriter(settings.getAbsoluteFile());
         BufferedWriter bw = new BufferedWriter(fw);
@@ -72,6 +81,12 @@ public class SettingsHandler {
         } catch (IOException e) {
             Log.d("[AirDesk]", "Error writing default string to Settings file" + "\n" + e.getMessage());
         }
+    }
+
+    private void writeToFile(String content) throws IOException {
+        PrintWriter writer = new PrintWriter(settings);
+        writer.print(content);
+        writer.close();
     }
 
     private boolean readSettingsFile() throws FileNotFoundException {
@@ -89,11 +104,9 @@ public class SettingsHandler {
                             if(line.equals("ForeignWorkspaces")){
                                 atOwned = false;
                             } else{
-                                if(!line.equals("NONE")){
-                                    String[] workspaceSettings = line.split("\\s+");
-                                    WorkspaceDTO newWS = new WorkspaceDTO(workspaceSettings[0], (Integer.parseInt(workspaceSettings[1]) != 0), Integer.parseInt(workspaceSettings[2]));
-                                    ownedWorkspaces.add(newWS);
-                                }
+                                String[] workspaceSettings = line.split("\\s+");
+                                WorkspaceDTO newWS = new WorkspaceDTO(workspaceSettings[0], (Integer.parseInt(workspaceSettings[1]) != 0), Integer.parseInt(workspaceSettings[2]));
+                                ownedWorkspaces.add(newWS);
                             }
                         }
                     } else{
@@ -116,8 +129,135 @@ public class SettingsHandler {
         }
         return result;
     }
+    //endregion
+
+    //region Public API
+    public List<WorkspaceDTO> getOwnedWorkspaces() {
+        return ownedWorkspaces;
+    }
+
+    public List<WorkspaceDTO> getForeignWorkspaces() {
+        return foreignWorkspaces;
+    }
+
+    public void saveOwnedWorkspace(WorkspaceDTO ws) throws FileNotFoundException {
+        BufferedReader br = new BufferedReader(new FileReader(settings.getPath()));
+        String fileContent = "";
+        try {
+            String line = br.readLine();
+            fileContent += line + "\n";
+            fileContent += ws.getName() + " " + (ws.isPublic() ? 1 : 0) + " " + ws.getQuota() + "\n";
+            line = br.readLine();
+            while (line != null) {
+                fileContent += line + "\n";
+                line = br.readLine();
+            }
+            writeToFile(fileContent);
+        } catch (IOException e) {
+            //TODO
+            e.printStackTrace();
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e) {
+                // TODO
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void removeOwnedWorkspace(WorkspaceDTO ws) throws FileNotFoundException {
+        BufferedReader br = new BufferedReader(new FileReader(settings.getPath()));
+        String fileContent = "";
+        boolean atOwned = true;
+        try {
+            String line = br.readLine();
+            fileContent += line + "\n";
+            line = br.readLine();
+            while (line != null) {
+                if(line.equals("ForeignWorkspaces")) {
+                    atOwned = false;
+                    fileContent += line + "\n";
+                } else if(atOwned){
+                    String[] wsLine = line.split("\\s+");
+                    if(!wsLine[0].equals(ws.getName()))
+                        fileContent += line + "\n";
+                } else fileContent += line + "\n";
+                line = br.readLine();
+            }
+            writeToFile(fileContent);
+        } catch (IOException e) {
+            //TODO
+            e.printStackTrace();
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e) {
+                // TODO
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void saveForeignWorkspace(WorkspaceDTO ws) throws FileNotFoundException {
+        BufferedReader br = new BufferedReader(new FileReader(settings.getPath()));
+        String fileContent = "";
+        try {
+            String line = br.readLine();
+            while (line != null) {
+                fileContent += line + "\n";
+                line = br.readLine();
+            }
+            fileContent += ws.getName() + " " + (ws.isPublic() ? 1 : 0) + " " + ws.getQuota() + "\n";
+            writeToFile(fileContent);
+        } catch (IOException e) {
+            //TODO
+            e.printStackTrace();
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e) {
+                // TODO
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void removeForeignWorkspace(WorkspaceDTO ws) throws FileNotFoundException {
+        BufferedReader br = new BufferedReader(new FileReader(settings.getPath()));
+        String fileContent = "";
+        boolean atOwned = true;
+        try {
+            String line = br.readLine();
+            fileContent += line + "\n";
+            line = br.readLine();
+            while (line != null) {
+                if(line.equals("ForeignWorkspaces")) {
+                    atOwned = false;
+                    fileContent += line + "\n";
+                } else if(!atOwned){
+                    String[] wsLine = line.split("\\s+");
+                    if(!wsLine[0].equals(ws.getName()))
+                        fileContent += line + "\n";
+                } else fileContent += line + "\n";
+                line = br.readLine();
+            }
+            writeToFile(fileContent);
+        } catch (IOException e) {
+            //TODO
+            e.printStackTrace();
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e) {
+                // TODO
+                e.printStackTrace();
+            }
+        }
+    }
 
     public boolean hadSettings() {
         return hadSettings;
     }
+    //endregion
 }
