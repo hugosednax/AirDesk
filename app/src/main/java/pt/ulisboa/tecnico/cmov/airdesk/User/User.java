@@ -134,6 +134,19 @@ public class User {
         return result;
     }
 
+    public boolean hasForeignWorkspaceByName(String name){
+        Predicate<Workspace> validator = new WorkspaceNamePredicate(name);
+        boolean result = false;
+
+        for(Workspace workspace : foreignWorkspaces){
+            if(validator.apply(workspace)){
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
     public Workspace getForeignWorkspaceByName(String name) throws WorkspaceNotFoundException{
         Predicate<Workspace> validator = new WorkspaceNamePredicate(name);
         Workspace result = null;
@@ -163,8 +176,9 @@ public class User {
         foreignWorkspaces.add(workspace);
     }
 
-    public void invite(Workspace workspace, String username){
+    public void invite(OwnedWorkspace workspace, String username){
         //ignores username;
+        workspace.invite(username);
         Workspace newForeign = new ForeignLocalWorkspace(workspace, username);
         foreignWorkspaces.add(newForeign);
         //NOT SAVING IT IN SETTINGS

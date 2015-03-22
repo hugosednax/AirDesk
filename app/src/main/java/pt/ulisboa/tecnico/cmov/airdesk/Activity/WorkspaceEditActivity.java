@@ -11,6 +11,9 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
@@ -21,8 +24,11 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.OwnedWorkspace;
 public class WorkspaceEditActivity extends ActionBarActivity {
     private OwnedWorkspace workspaceToEdit;
     private EditText quota;
+    private User user;
     private ListView listView;
     private ArrayAdapter usersAdapter;
+    private List<String> prevUsers;
+    EditText input;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,16 +40,18 @@ public class WorkspaceEditActivity extends ActionBarActivity {
         String workspaceNameToEdit = getIntent().getExtras().getString("nameOfWorkspace");
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         try {
+            user = airDeskApp.getUser();
             //Get the workspace from its name
-            workspaceToEdit = (OwnedWorkspace) airDeskApp.getUser().getOwnedWorkspaceByName(workspaceNameToEdit);
+            workspaceToEdit = (OwnedWorkspace) user.getOwnedWorkspaceByName(workspaceNameToEdit);
         }catch(WorkspaceNotFoundException e){
             //TODO
         }
         //Fill the quotaView with the current Quota of the Workspace
         quota.setText(String.valueOf(workspaceToEdit.getQuota()));
+        prevUsers = workspaceToEdit.getAllowedUsers();
 
         // Link the array of previliged users to an adapter, user has a toString overriden so it will display its nick and not the object
-        usersAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, workspaceToEdit.getAllowedUsers());
+        usersAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, prevUsers);
         listView = (ListView) findViewById(R.id.privClientList);
         listView.setAdapter(usersAdapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -56,10 +64,9 @@ public class WorkspaceEditActivity extends ActionBarActivity {
                 if (event.getAction()!=KeyEvent.ACTION_DOWN)
                     return true;
 
-                EditText input = (EditText)v;
+                input = (EditText)v;
                 if(keyCode == KeyEvent.KEYCODE_ENTER && input.getText().toString()!=null){
-                    Log.d("PERSON",input.getText().toString());
-                    workspaceToEdit.invite(input.getText().toString());
+                    prevUsers.add(input.getText().toString());
                     usersAdapter.notifyDataSetChanged();
                     input.setText(null);
                 }
@@ -73,6 +80,12 @@ public class WorkspaceEditActivity extends ActionBarActivity {
         EditText quota = (EditText)findViewById(R.id.newQuotaInput);
         if(!quota.getText().toString().isEmpty())
             workspaceToEdit.setQuota(Integer.parseInt(quota.getText().toString()));
+
+        for(int i=0; i<prevUsers.size();i++){
+            if(!user.hasForeignWorkspaceByName(prevUsers.get(i))) {
+                user.invite(workspaceToEdit, prevUsers.get(i));
+            }
+        }
         finish();
     }
 
