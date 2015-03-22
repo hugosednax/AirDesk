@@ -15,7 +15,7 @@
         android:id="@+id/newQuotaInput"
         android:layout_marginTop="56dp"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/textView2"
+        android:layout_toRightOf="@+id/prevClientsText"
         android:layout_alignRight="@+id/privClientList"
         android:layout_alignEnd="@+id/privClientList" />
 
@@ -35,29 +35,29 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Previliged Clients"
-        android:id="@+id/textView2"
-        android:layout_below="@+id/newQuotaInput"
+        android:id="@+id/prevClientsText"
+        android:textColor="#AAAAAA"
+        android:layout_above="@+id/ConfirmEdit"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="69dp"
-        android:textColor="#AAAAAA"
-        android:layout_marginRight="20dp" />
+        android:layout_marginBottom="165dp" />
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/privClientList"
         android:choiceMode="singleChoice"
-        android:layout_alignTop="@+id/textView2"
+        android:layout_alignTop="@+id/prevClientsText"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/textView2"
-        android:layout_toEndOf="@+id/textView2"
+        android:layout_toRightOf="@+id/prevClientsText"
+        android:layout_toEndOf="@+id/prevClientsText"
         android:layout_marginBottom="90dp"
         android:longClickable="true"
         android:smoothScrollbar="true"
         android:stackFromBottom="false"
-        android:background="#F0F0F0" />
+        android:background="#F0F0F0"
+        android:layout_marginLeft="10dp" />
 
     <Button
         android:layout_width="wrap_content"
@@ -69,4 +69,25 @@
         android:layout_centerHorizontal="true"
         android:background="#3FA9F5"
         android:textColor="#ffffffff" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/previllgedUser"
+        android:layout_above="@+id/privClientList"
+        android:layout_toRightOf="@+id/prevClientsText"
+        android:layout_marginBottom="40dp"
+        android:layout_alignRight="@+id/privClientList"
+        android:layout_alignEnd="@+id/privClientList" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Add Previliged Client"
+        android:id="@+id/prevClientText"
+        android:textColor="#AAAAAA"
+        android:layout_alignTop="@+id/previllgedUser"
+        android:layout_alignRight="@+id/newQuota"
+        android:layout_alignEnd="@+id/newQuota" />
 </RelativeLayout>

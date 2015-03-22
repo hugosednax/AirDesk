@@ -2,6 +2,8 @@ package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,10 +43,26 @@ public class WorkspaceEditActivity extends ActionBarActivity {
         quota.setText(String.valueOf(workspaceToEdit.getQuota()));
 
         // Link the array of previliged users to an adapter, user has a toString overriden so it will display its nick and not the object
-        usersAdapter = new ArrayAdapter<User>(this, android.R.layout.simple_list_item_1, workspaceToEdit.getAllowedUsers());
+        usersAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, workspaceToEdit.getAllowedUsers());
         listView = (ListView) findViewById(R.id.privClientList);
         listView.setAdapter(usersAdapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+
+        EditText prevlgdUserInput = (EditText)findViewById(R.id.previllgedUser);
+        prevlgdUserInput.setOnKeyListener(new View.OnKeyListener(){
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                EditText input = (EditText)v;
+                if(keyCode == KeyEvent.KEYCODE_ENTER && !input.getText().toString().equals("")){
+                    Log.d("PERSON",input.getText().toString());
+                    workspaceToEdit.invite(input.getText().toString());
+                    usersAdapter.notifyDataSetChanged();
+                    input.setText("");
+                }
+                return false;
+            }
+
+        });
     }
 
     //called when the button is pressed and changes the Quota of the workspace

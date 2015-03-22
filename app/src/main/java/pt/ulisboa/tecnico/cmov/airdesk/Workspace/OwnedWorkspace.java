@@ -28,7 +28,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.User.User;
 public class OwnedWorkspace extends Workspace{
 
     //region Class Variables
-    private List<User> allowedUsers;
+    private List<String> allowedUsers;
     private boolean isPublic;
     //endregion
 
@@ -37,7 +37,7 @@ public class OwnedWorkspace extends Workspace{
         super(name);
         this.isPublic = isPublic;
         this.quota = quota;
-        this.allowedUsers = new ArrayList<User>();
+        this.allowedUsers = new ArrayList<String>();
         File mainDir = AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE);
         File currentDir = new File(""+mainDir+File.separatorChar+name);
         currentDir.mkdir();
@@ -50,7 +50,7 @@ public class OwnedWorkspace extends Workspace{
         this.isPublic = workspaceDTO.isPublic();
         this.quota = workspaceDTO.getQuota();
         //TODO: load already authorized users
-        this.allowedUsers = new ArrayList<User>();
+        this.allowedUsers = new ArrayList<String>();
 
         File mainDir = AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE);
         File currentDir = new File(""+mainDir+File.separatorChar+name);
@@ -70,7 +70,7 @@ public class OwnedWorkspace extends Workspace{
         return isPublic;
     }
 
-    public List<User> getAllowedUsers() {
+    public List<String> getAllowedUsers() {
         return allowedUsers;
     }
 
@@ -145,6 +145,9 @@ public class OwnedWorkspace extends Workspace{
     }
 
     public void invite(String username){
+        if(!allowedUsers.contains(username))
+            allowedUsers.add(username);
+
         //todo 2nd deliever: network protocol
         /*if(isOwner(user.getUsername()))
             if(!allowedUsers.contains(username))
