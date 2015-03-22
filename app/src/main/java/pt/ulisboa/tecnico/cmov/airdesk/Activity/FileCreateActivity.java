@@ -59,6 +59,7 @@ public class FileCreateActivity extends ActionBarActivity {
             airDeskApp.getUser().createFile(listView.getText().toString(),currWorkspace);
 
         }catch(Exception e){
+            e.printStackTrace();
         }
         finish();
     }

@@ -84,7 +84,7 @@ public class OwnedWorkspace extends Workspace{
 
         if (currentDir.isDirectory())
             for (File child : currentDir.listFiles())
-                workspaceSize += child.getTotalSpace();
+                workspaceSize += child.length();
         else throw new NotDirectoryException("Can't read workspace, the provided name isn't a directory.");
 
         return workspaceSize;
