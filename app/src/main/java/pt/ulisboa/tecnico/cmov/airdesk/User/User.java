@@ -180,7 +180,8 @@ public class User {
         //ignores username;
         workspace.invite(username);
         Workspace newForeign = new ForeignLocalWorkspace(workspace, username);
-        foreignWorkspaces.add(newForeign);
+        if(username.equals(this.getEmail())) //acho que só é suposto mostrar foreign se for um auto-convite
+            foreignWorkspaces.add(newForeign);
         //NOT SAVING IT IN SETTINGS
     }
 
