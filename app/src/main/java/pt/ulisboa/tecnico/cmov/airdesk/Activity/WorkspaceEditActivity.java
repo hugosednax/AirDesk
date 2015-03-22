@@ -52,16 +52,19 @@ public class WorkspaceEditActivity extends ActionBarActivity {
         prevlgdUserInput.setOnKeyListener(new View.OnKeyListener(){
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
+                //This is the filter
+                if (event.getAction()!=KeyEvent.ACTION_DOWN)
+                    return true;
+
                 EditText input = (EditText)v;
-                if(keyCode == KeyEvent.KEYCODE_ENTER && !input.getText().toString().equals("")){
+                if(keyCode == KeyEvent.KEYCODE_ENTER && input.getText().toString()!=null){
                     Log.d("PERSON",input.getText().toString());
                     workspaceToEdit.invite(input.getText().toString());
                     usersAdapter.notifyDataSetChanged();
-                    input.setText("");
+                    input.setText(null);
                 }
                 return false;
             }
-
         });
     }
 
