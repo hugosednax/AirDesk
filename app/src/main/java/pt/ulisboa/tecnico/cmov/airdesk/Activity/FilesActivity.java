@@ -42,6 +42,7 @@ public class FilesActivity extends ActionBarActivity {
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         Intent intent = getIntent();
         String nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
+        boolean isForeign = intent.getBooleanExtra("isForeign",false); //default value is false
         try {
             /*
             Logic and Backend:
@@ -51,7 +52,10 @@ public class FilesActivity extends ActionBarActivity {
             Get the ListView, link it to the ArrayAdapter, allow multiple choices, allow long clicks,
                 set itemClick Listener
             */
-            currWorkspace = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace);
+            if(isForeign)
+                currWorkspace = airDeskApp.getUser().getForeignWorkspaceByName(nameOfCurrWorkspace);
+            else
+                currWorkspace = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace);
             filesAdapter = new ArrayAdapter<ADFile>(this, android.R.layout.simple_list_item_1, currWorkspace.getFiles());
             listView = (ListView) findViewById(R.id.listFiles);
             listView.setAdapter(filesAdapter);

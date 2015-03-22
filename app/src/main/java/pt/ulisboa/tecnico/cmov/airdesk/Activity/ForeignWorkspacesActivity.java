@@ -37,7 +37,7 @@ public class ForeignWorkspacesActivity extends ActionBarActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedFromList =(String) (listView.getItemAtPosition(position));
+                String selectedFromList =listView.getItemAtPosition(position).toString();
                 startListFiles(selectedFromList);
             }
         });
@@ -45,9 +45,12 @@ public class ForeignWorkspacesActivity extends ActionBarActivity {
 
     public void startListFiles(String nameOfWorkspace){
         Intent intent = new Intent(this, FilesActivity.class);
-        intent.putExtra(nameOfWorkspace, "nameOfWorkspace");
+        intent.putExtra("nameOfWorkspace",nameOfWorkspace);
+        intent.putExtra("isForeign",true);
         startActivity(intent);
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
