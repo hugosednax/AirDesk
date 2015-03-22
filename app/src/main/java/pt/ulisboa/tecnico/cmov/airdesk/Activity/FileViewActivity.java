@@ -32,12 +32,16 @@ public class FileViewActivity extends ActionBarActivity {
         String nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
         String nameOfCurrFile = intent.getStringExtra("nameOfFile");
         StringBuilder text = new StringBuilder();
+        boolean isForeign = intent.getBooleanExtra("isForeign",false);
         try {
              /*
             Logic and Backend:
             Retrieve the user from the context and then get the current workspace by searching with the name and get the current Name by the name
             */
-            currFile = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace).getFileByName(nameOfCurrFile);
+            if(isForeign)
+                currFile = airDeskApp.getUser().getForeignWorkspaceByName(nameOfCurrWorkspace).getFileByName(nameOfCurrFile);
+            else
+                currFile = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace).getFileByName(nameOfCurrFile);
             //Read text from file
             BufferedReader br = new BufferedReader(new FileReader(currFile.getFile()));
             String line;

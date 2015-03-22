@@ -29,6 +29,7 @@ public class FilesActivity extends ActionBarActivity {
     private ListView listView;
     private Workspace currWorkspace;
     private List<String> selectedFiles;
+    boolean isForeign;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,7 @@ public class FilesActivity extends ActionBarActivity {
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         Intent intent = getIntent();
         String nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
-        boolean isForeign = intent.getBooleanExtra("isForeign",false); //default value is false
+        isForeign = intent.getBooleanExtra("isForeign",false); //default value is false
         try {
             /*
             Logic and Backend:
@@ -149,6 +150,7 @@ public class FilesActivity extends ActionBarActivity {
         Intent intent = new Intent(this, FileViewActivity.class);
         intent.putExtra("nameOfWorkspace",currWorkspace.getName());
         intent.putExtra("nameOfFile",selectedFile);
+        intent.putExtra("isForeign",isForeign);
         startActivity(intent);
     }
 
@@ -157,6 +159,7 @@ public class FilesActivity extends ActionBarActivity {
         Intent intent = new Intent(this, FileEditActivity.class);
         intent.putExtra("nameOfWorkspace",currWorkspace.getName());
         intent.putExtra("nameOfFile",selectedFile);
+        intent.putExtra("isForeign",isForeign);
         startActivity(intent);
     }
 
@@ -174,6 +177,7 @@ public class FilesActivity extends ActionBarActivity {
         if (id == R.id.createFile) {
             Intent intent = new Intent(this, FileCreateActivity.class);
             intent.putExtra("nameOfWorkspace",currWorkspace.getName());
+            intent.putExtra("isForeign",isForeign);
             startActivity(intent);
             return true;
         }

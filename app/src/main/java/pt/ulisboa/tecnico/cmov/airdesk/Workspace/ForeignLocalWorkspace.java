@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
 import java.io.IOException;
+import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
@@ -23,6 +24,10 @@ public class ForeignLocalWorkspace extends Workspace{
         this.workspaceLink = workspace;
     }
 
+    @Override
+    public List<ADFile> getFiles(){
+        return workspaceLink.getFiles();
+    }
 
     public void createFile(String fileName) throws QuotaLimitExceededException, IOException, CreateFileException {
         workspaceLink.createFile(fileName);

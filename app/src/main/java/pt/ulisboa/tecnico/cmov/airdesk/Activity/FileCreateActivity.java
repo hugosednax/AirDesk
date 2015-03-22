@@ -33,12 +33,16 @@ public class FileCreateActivity extends ActionBarActivity {
         airDeskApp = (AirDeskApp) getApplicationContext();
         Intent intent = getIntent();
         String nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
+        boolean isForeign = intent.getBooleanExtra("isForeign",false);
         try {
             /*
             Logic and Backend:
             Retrieve the user from the context and then get the current workspace by searching with the name
             */
-            currWorkspace = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace);
+            if(isForeign)
+                currWorkspace = airDeskApp.getUser().getForeignWorkspaceByName(nameOfCurrWorkspace);
+            else
+                currWorkspace = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace);
         }catch(WorkspaceNotFoundException e){
 
         }
