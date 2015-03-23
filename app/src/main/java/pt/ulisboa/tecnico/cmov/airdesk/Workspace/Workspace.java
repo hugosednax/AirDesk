@@ -34,11 +34,13 @@ public abstract class Workspace {
 
     abstract public void removeFile(String name) throws ADFileNotFoundException, DeleteFileException;
 
-    abstract public void updateFile(String name, String text);
+    abstract public void updateFile(String name, String text) throws ADFileNotFoundException, NotDirectoryException, QuotaLimitExceededException;
 
     abstract public ADFile getFileByName(String name) throws ADFileNotFoundException;
 
     abstract public int getSize() throws NotDirectoryException;
+
+    abstract public void setQuota(int quota) throws NotDirectoryException, QuotaLimitExceededException;
 
     public String getName() { return name; }
 
@@ -56,10 +58,6 @@ public abstract class Workspace {
 
     public int getQuota(){
         return quota;
-    }
-
-    public void setQuota(int quota){
-        this.quota = quota;
     }
 
     @Override

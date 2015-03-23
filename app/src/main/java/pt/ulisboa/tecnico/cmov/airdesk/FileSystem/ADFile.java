@@ -41,6 +41,8 @@ public class ADFile {
         return name;
     }
 
+    public long getSize() { return file.length(); }
+
     public File getFile() {
         return file;
     }

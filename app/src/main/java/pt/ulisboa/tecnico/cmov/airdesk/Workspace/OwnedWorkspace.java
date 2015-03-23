@@ -113,8 +113,11 @@ public class OwnedWorkspace extends Workspace{
             throw new DeleteFileException("Can't delete file in Android File System");
     }
 
-    public void updateFile(String name, String text){
-        //TODO
+    public void updateFile(String name, String text) throws ADFileNotFoundException, NotDirectoryException, QuotaLimitExceededException {
+        ADFile file = getFileByName(name);
+        if(this.getSize() - file.getSize() + text.length() > this.getQuota())
+            throw new QuotaLimitExceededException("Quota limit exceeded while trying to update " + name + " in " + this.getName() + " your Workspace.");
+        file.save(text);
     }
 
     public ADFile getFileByName(String name) throws ADFileNotFoundException {
@@ -152,6 +155,13 @@ public class OwnedWorkspace extends Workspace{
         /*if(isOwner(user.getUsername()))
             if(!allowedUsers.contains(username))
                 allowedUsers.add(username);*/
+    }
+
+    public void setQuota(int max) throws NotDirectoryException, QuotaLimitExceededException {
+        long workspaceSize = this.getSize();
+        if(max < workspaceSize)
+            throw new QuotaLimitExceededException("Workspace size is " + workspaceSize + " and the new max size was " + max + ". Can't update to a smaller value.");
+        this.quota = max;
     }
     //endregion
 }

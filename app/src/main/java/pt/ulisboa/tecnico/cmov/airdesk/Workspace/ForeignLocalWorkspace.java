@@ -37,7 +37,7 @@ public class ForeignLocalWorkspace extends Workspace{
         workspaceLink.removeFile(name);
     }
 
-    public void updateFile(String name, String text){
+    public void updateFile(String name, String text) throws QuotaLimitExceededException, ADFileNotFoundException, NotDirectoryException {
         workspaceLink.updateFile(name, text);
     }
 
@@ -52,5 +52,10 @@ public class ForeignLocalWorkspace extends Workspace{
 
     public int getSize() throws NotDirectoryException {
         return workspaceLink.getSize();
+    }
+
+    @Override
+    public void setQuota(int quota) throws NotDirectoryException, QuotaLimitExceededException {
+        workspaceLink.setQuota(quota);
     }
 }
