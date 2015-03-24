@@ -16,18 +16,23 @@ import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
  */
 public abstract class Workspace {
 
+    //region Class Variables
     protected String name;
     protected List<ADFile> files;
     protected List<String> keywords;
     protected int quota;
+    //endregion
 
+    //region Constructors
     public Workspace(String name){
         this.name = name;
         this.files = new ArrayList<ADFile>();
         this.keywords = new ArrayList<String>();
         this.quota = 0;
     }
+    //endregion
 
+    //region Abstract Methods
     abstract public void delete() throws NotDirectoryException;
 
     abstract public void createFile(String name) throws QuotaLimitExceededException, CreateFileException, IOException;
@@ -41,7 +46,9 @@ public abstract class Workspace {
     abstract public int getSize() throws NotDirectoryException;
 
     abstract public void setQuota(int quota) throws NotDirectoryException, QuotaLimitExceededException;
+    //endregion
 
+    //region Getters
     public String getName() { return name; }
 
     public List<ADFile> getFiles(){
@@ -59,9 +66,12 @@ public abstract class Workspace {
     public int getQuota(){
         return quota;
     }
+    //endregion
 
+    //region Setters
     @Override
     public String toString(){
         return name;
     }
+    //endregion
 }

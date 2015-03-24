@@ -17,16 +17,40 @@ import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 // 1st version of ForeignWorkspace, fully local
 public class ForeignLocalWorkspace extends Workspace{
 
+    //region Class Variables
     private Workspace workspaceLink;
+    //endregion
 
+    //region Constructors
     public ForeignLocalWorkspace(Workspace workspace, String username) {
         super(workspace.name + "@" + username);
         this.workspaceLink = workspace;
     }
+    //endregion
 
+    //region Getters
     @Override
     public List<ADFile> getFiles(){
         return workspaceLink.getFiles();
+    }
+
+    public int getSize() throws NotDirectoryException {
+        return workspaceLink.getSize();
+    }
+    //endregion
+
+    //region Setters
+    @Override
+    public void setQuota(int quota) throws NotDirectoryException, QuotaLimitExceededException {
+        workspaceLink.setQuota(quota);
+    }
+    //endregion
+
+    //region File Methods
+
+    @Override
+    public ADFile getFileByName(String name) throws ADFileNotFoundException {
+        return workspaceLink.getFileByName(name);
     }
 
     public void createFile(String fileName) throws QuotaLimitExceededException, IOException, CreateFileException {
@@ -40,22 +64,11 @@ public class ForeignLocalWorkspace extends Workspace{
     public void updateFile(String name, String text) throws QuotaLimitExceededException, ADFileNotFoundException, NotDirectoryException {
         workspaceLink.updateFile(name, text);
     }
+    //endregion
 
-    @Override
-    public ADFile getFileByName(String name) throws ADFileNotFoundException {
-        return workspaceLink.getFileByName(name);
-    }
-
+    //region Workspace Methods
     public void delete() throws NotDirectoryException {
         //TODO
     }
-
-    public int getSize() throws NotDirectoryException {
-        return workspaceLink.getSize();
-    }
-
-    @Override
-    public void setQuota(int quota) throws NotDirectoryException, QuotaLimitExceededException {
-        workspaceLink.setQuota(quota);
-    }
+    //endregion
 }
