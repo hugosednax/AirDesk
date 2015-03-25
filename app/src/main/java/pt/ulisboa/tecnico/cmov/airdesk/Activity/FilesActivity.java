@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,8 +16,8 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.Activity.Threads.FilesTask;
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
-import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
@@ -27,9 +26,11 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 public class FilesActivity extends ActionBarActivity {
     private ArrayAdapter filesAdapter;
     private ListView listView;
-    private Workspace currWorkspace;
+    private FilesTask filesThread;
+    private AirDeskApp airDeskApp;
     private List<String> selectedFiles;
-    boolean isForeign;
+    private Workspace currentWorkspace;
+    private boolean isForeign;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,41 +40,38 @@ public class FilesActivity extends ActionBarActivity {
         /*Logic and Backend:
          retrieve the app context and retrieve the name of the current workspace, sent from the previous screen
         */
-        selectedFiles = new ArrayList<String>();
-        AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
-        Intent intent = getIntent();
-        String nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
-        isForeign = intent.getBooleanExtra("isForeign",false); //default value is false
-        try {
-            /*
-            Logic and Backend:
-            Retrieve the user from the context and then get the current workspace by searching with the name
-            Link the ArrayAdapter to list of files of the workspace, this will only display the name of the File thanks
-                to the toString override on the ADFile class
-            Get the ListView, link it to the ArrayAdapter, allow multiple choices, allow long clicks,
-                set itemClick Listener
-            */
-            if(isForeign)
-                currWorkspace = airDeskApp.getUser().getForeignWorkspaceByName(nameOfCurrWorkspace);
-            else
-                currWorkspace = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace);
-            filesAdapter = new ArrayAdapter<ADFile>(this, android.R.layout.simple_list_item_1, currWorkspace.getFiles());
-            listView = (ListView) findViewById(R.id.listFiles);
-            listView.setAdapter(filesAdapter);
-            listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-            listView.setLongClickable(true);
-            /*Logic: Find the name of the file on the list position of the click*/
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String selectedFromList = listView.getItemAtPosition(position).toString();
-                    startViewFile(selectedFromList);
-                }
-            });
-        }catch(WorkspaceNotFoundException e){}
 
-        /*Links the listView to the context Bar*/
-        addContextToList(listView, airDeskApp);
+        airDeskApp = (AirDeskApp) getApplicationContext();
+        Intent intent = getIntent();
+        isForeign = intent.getBooleanExtra("isForeign",false); //default value is false
+        selectedFiles = new ArrayList<String>();
+        new FilesTask().execute(this);
+    }
+
+    public void assignArrayAdapter(List<ADFile> array){
+        filesAdapter = new ArrayAdapter<ADFile>(this, android.R.layout.simple_list_item_1, array);
+        listView = (ListView) findViewById(R.id.listFiles);
+        listView.setAdapter(filesAdapter);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setLongClickable(true);
+            /*Logic: Find the name of the file on the list position of the click*/
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String selectedFromList = listView.getItemAtPosition(position).toString();
+                startViewFile(selectedFromList);
+                /*Links the listView to the context Bar*/
+                addContextToList(listView, airDeskApp);
+            }
+        });
+    }
+
+    public void setCurrentWorkspace(Workspace currentWorkspace){
+        this.currentWorkspace = currentWorkspace;
+    }
+
+    public Workspace getCurrentWorkspace(){
+        return currentWorkspace;
     }
 
     //Behaviour of the ContextBar
@@ -102,7 +100,7 @@ public class FilesActivity extends ActionBarActivity {
                     case R.id.deleteFile:
                             for(int i=0; i<selectedFiles.size();i++){
                                 try {
-                                    currWorkspace.removeFile(selectedFiles.get(i));
+                                    currentWorkspace.removeFile(selectedFiles.get(i));
                                 }catch (Exception e){}
                             }
                         filesAdapter.notifyDataSetChanged(); //warn the adapter that the original array has changed
@@ -148,7 +146,7 @@ public class FilesActivity extends ActionBarActivity {
     /*Logic: Start a FileViewActivity, and send the name of the current workspace and file clicked on*/
     public void startViewFile(String selectedFile){
         Intent intent = new Intent(this, FileViewActivity.class);
-        intent.putExtra("nameOfWorkspace",currWorkspace.getName());
+        intent.putExtra("nameOfWorkspace",currentWorkspace.getName());
         intent.putExtra("nameOfFile",selectedFile);
         intent.putExtra("isForeign",isForeign);
         startActivity(intent);
@@ -157,7 +155,7 @@ public class FilesActivity extends ActionBarActivity {
     /*Logic: Start a FileEditActivity, and send the name of the current workspace and file clicked on*/
     public void startEditFile(String selectedFile){
         Intent intent = new Intent(this, FileEditActivity.class);
-        intent.putExtra("nameOfWorkspace",currWorkspace.getName());
+        intent.putExtra("nameOfWorkspace",currentWorkspace.getName());
         intent.putExtra("nameOfFile",selectedFile);
         intent.putExtra("isForeign",isForeign);
         startActivity(intent);
@@ -176,7 +174,7 @@ public class FilesActivity extends ActionBarActivity {
         int id = item.getItemId();
         if (id == R.id.createFile) {
             Intent intent = new Intent(this, FileCreateActivity.class);
-            intent.putExtra("nameOfWorkspace",currWorkspace.getName());
+            intent.putExtra("nameOfWorkspace",currentWorkspace.getName());
             intent.putExtra("isForeign",isForeign);
             startActivity(intent);
             return true;

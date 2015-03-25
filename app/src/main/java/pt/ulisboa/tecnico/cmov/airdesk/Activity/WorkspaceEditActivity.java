@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.User.User;
@@ -87,10 +88,15 @@ public class WorkspaceEditActivity extends ActionBarActivity {
     }
 
     //called when the button is pressed and changes the Quota of the workspace
-    public void ConfirmChanges(View view){
-        EditText quota = (EditText)findViewById(R.id.newQuotaInput);
-        if(!quota.getText().toString().isEmpty())
-            workspaceToEdit.setQuota(Integer.parseInt(quota.getText().toString()));
+    public void ConfirmChanges(View view) {
+        EditText quota = (EditText) findViewById(R.id.newQuotaInput);
+        if (!quota.getText().toString().isEmpty()) {
+            try {
+                workspaceToEdit.setQuota(Integer.parseInt(quota.getText().toString()));
+            } catch (Exception e) {
+                //TODO
+            }
+        }
 
         for(int i=0; i<prevUsers.size();i++){
             if(!user.hasForeignWorkspaceByName(prevUsers.get(i))) {
