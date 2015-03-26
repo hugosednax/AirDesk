@@ -88,8 +88,11 @@ public class User {
     //region Private Methods
     private void loadSavedWorkspaces() {
         for(WorkspaceDTO wsDTO : settings.getOwnedWorkspaces()){
-            Workspace savedWS = new OwnedWorkspace(wsDTO);
+            OwnedWorkspace savedWS = new OwnedWorkspace(wsDTO);
             ownedWorkspaces.add(savedWS);
+            if(savedWS.getAllowedUsers().size() != 0)
+                for(String username : savedWS.getAllowedUsers())
+                    this.invite(savedWS, username);
         }
         for(WorkspaceDTO wsDTO : settings.getForeignWorkspaces()){
             //TODO: something to do
@@ -165,7 +168,7 @@ public class User {
         Workspace newWorkspace = new OwnedWorkspace(name, isPublic, quota);
         ownedWorkspaces.add(newWorkspace);
         try {
-            settings.saveOwnedWorkspace(new WorkspaceDTO(newWorkspace));
+            settings.saveOwnedWorkspace(new WorkspaceDTO((OwnedWorkspace)newWorkspace));
         } catch (FileNotFoundException e) {
             throw new CreateWorkspaceException(e.getMessage());
         }
@@ -177,27 +180,26 @@ public class User {
     }
 
     public void invite(OwnedWorkspace workspace, String username){
-        //ignores username;
         workspace.invite(username);
         Workspace newForeign = new ForeignLocalWorkspace(workspace, username);
-        if(username.equals(this.getEmail())) //acho que só é suposto mostrar foreign se for um auto-convite
+        //TODO: use nick or email to authentication?
+        if(username.equals(this.getNick()))
             foreignWorkspaces.add(newForeign);
-        //NOT SAVING IT IN SETTINGS
     }
 
-    public void deleteAllWorkspaces(){
+    /*public void deleteAllWorkspaces(){
         File file = new File(".");
         for (File workFile : file.listFiles()) {
             workFile.delete();
         }
         ownedWorkspaces = new ArrayList<Workspace>();
-    }
+    }*/
 
     public void deleteWorkspace(Workspace workspace){
         try {
             workspace.delete();
             ownedWorkspaces.remove(workspace);
-            settings.removeOwnedWorkspace(new WorkspaceDTO(workspace));
+            settings.removeOwnedWorkspace(new WorkspaceDTO((OwnedWorkspace)workspace));
         } catch (Exception e) {
             Log.d("[AirDesk]", e.getMessage());
         }

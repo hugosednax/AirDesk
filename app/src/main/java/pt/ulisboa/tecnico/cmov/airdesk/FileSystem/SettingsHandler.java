@@ -91,7 +91,6 @@ public class SettingsHandler {
                 String line = br.readLine();
 
                 while (line != null) {
-                    System.out.println(line);
                     if(atOwned){
                         if(!line.equals("OwnedWorkspaces")){
                             if(line.equals("ForeignWorkspaces")){
@@ -100,6 +99,16 @@ public class SettingsHandler {
                                 String[] workspaceSettings = line.split("\\s+");
                                 WorkspaceDTO newWS = new WorkspaceDTO(workspaceSettings[0], (Integer.parseInt(workspaceSettings[1]) != 0), Integer.parseInt(workspaceSettings[2]));
                                 ownedWorkspaces.add(newWS);
+                                br.mark(10);
+                                String nextLine = br.readLine();
+                                String[] nextLineSplit = nextLine.split("\\s+");
+                                while(nextLineSplit[0].equals("[P]")){
+                                    newWS.addAllowedUser(nextLineSplit[1]);
+                                    br.mark(10);
+                                    nextLine = br.readLine();
+                                    nextLineSplit = nextLine.split("\\s+");
+                                }
+                                br.reset();
                             }
                         }
                     } else{
@@ -140,6 +149,9 @@ public class SettingsHandler {
             String line = br.readLine();
             fileContent += line + "\n";
             fileContent += ws.getName() + " " + (ws.isPublic() ? 1 : 0) + " " + ws.getQuota() + "\n";
+            for(String user : ws.getAllowedUsers()){
+                fileContent += "[P] " + user + "\n";
+            }
             line = br.readLine();
             while (line != null) {
                 fileContent += line + "\n";
@@ -159,10 +171,16 @@ public class SettingsHandler {
         }
     }
 
+    public void updateOwnedWorkspace(WorkspaceDTO ws) throws FileNotFoundException{
+        removeOwnedWorkspace(ws);
+        saveOwnedWorkspace(ws);
+    }
+
     public void removeOwnedWorkspace(WorkspaceDTO ws) throws FileNotFoundException {
         BufferedReader br = new BufferedReader(new FileReader(settings.getPath()));
         String fileContent = "";
         boolean atOwned = true;
+        boolean atWS = false;
         try {
             String line = br.readLine();
             fileContent += line + "\n";
@@ -173,8 +191,15 @@ public class SettingsHandler {
                     fileContent += line + "\n";
                 } else if(atOwned){
                     String[] wsLine = line.split("\\s+");
-                    if(!wsLine[0].equals(ws.getName()))
-                        fileContent += line + "\n";
+                    if(wsLine[0].equals(ws.getName()))
+                        atWS = true;
+                    else if(atWS){
+                        if(!wsLine[0].equals("[P]")) {
+                            fileContent += line + "\n";
+                            atWS = false;
+                        }
+                        // else ignore
+                    } else fileContent += line + "\n";
                 } else fileContent += line + "\n";
                 line = br.readLine();
             }

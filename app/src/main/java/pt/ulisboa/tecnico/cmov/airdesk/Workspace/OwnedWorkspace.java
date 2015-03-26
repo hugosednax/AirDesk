@@ -49,8 +49,10 @@ public class OwnedWorkspace extends Workspace{
         super(workspaceDTO.getName());
         this.isPublic = workspaceDTO.isPublic();
         this.quota = workspaceDTO.getQuota();
-        //TODO: load already authorized users
         this.allowedUsers = new ArrayList<String>();
+
+        for(String username : workspaceDTO.getAllowedUsers())
+            allowedUsers.add(username);
 
         File mainDir = AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE);
         File currentDir = new File(""+mainDir+File.separatorChar+name);
