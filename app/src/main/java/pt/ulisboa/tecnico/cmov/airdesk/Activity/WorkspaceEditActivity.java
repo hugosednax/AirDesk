@@ -36,7 +36,7 @@ public class WorkspaceEditActivity extends ActionBarActivity {
 
         //Get the quota View, get the sent workspace Name from the previous screen
         quota = (EditText)findViewById(R.id.newQuotaInput);
-        name = (EditText)findViewById(R.id.newNameInput);
+        //name = (EditText)findViewById(R.id.newNameInput);
         String workspaceNameToEdit = getIntent().getExtras().getString("nameOfWorkspace");
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         try {
@@ -48,8 +48,7 @@ public class WorkspaceEditActivity extends ActionBarActivity {
         }
         //Fill the quotaView with the current Quota of the Workspace
         quota.setText(String.valueOf(workspaceToEdit.getQuota()));
-        Log.w("test",workspaceToEdit.getName());
-        name.setText(String.valueOf(workspaceToEdit.getName()));
+        //name.setText(String.valueOf(workspaceToEdit.getName()));
     }
 
     //called when the button is pressed and changes the Quota of the workspace
@@ -61,7 +60,7 @@ public class WorkspaceEditActivity extends ActionBarActivity {
                 //TODO
             }
         }
-
+        /*
         if (!name.getText().toString().isEmpty()) {
             try {
                 workspaceToEdit.setName(name.getText().toString());
@@ -69,6 +68,7 @@ public class WorkspaceEditActivity extends ActionBarActivity {
                 //TODO
             }
         }
+        */
         finish();
     }
 

@@ -13,10 +13,10 @@
         android:inputType="number"
         android:ems="10"
         android:id="@+id/newQuotaInput"
-        android:layout_marginTop="74dp"
+        android:layout_marginTop="75dp"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/newNameInput"
-        android:layout_alignStart="@+id/newNameInput" />
+        android:layout_toRightOf="@+id/newQuota"
+        android:layout_toEndOf="@+id/newQuota" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -39,27 +39,5 @@
         android:layout_centerHorizontal="true"
         android:background="#3FA9F5"
         android:textColor="#ffffffff" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Name"
-        android:id="@+id/newName"
-        android:layout_below="@+id/newQuotaInput"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="89dp" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/newNameInput"
-        android:layout_alignBottom="@+id/newName"
-        android:layout_toRightOf="@+id/newName"
-        android:layout_toEndOf="@+id/newName"
-        android:layout_marginLeft="29dp"
-        android:layout_marginStart="29dp" />
 
 </RelativeLayout>
