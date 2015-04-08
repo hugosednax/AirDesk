@@ -23,7 +23,7 @@ public class ForeignLocalWorkspace extends Workspace{
 
     //region Constructors
     public ForeignLocalWorkspace(Workspace workspace, String username) {
-        super(workspace.name + "@" + username);
+        super(workspace.getName() + "@" + username);
         this.workspaceLink = workspace;
     }
     //endregion

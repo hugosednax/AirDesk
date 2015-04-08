@@ -175,5 +175,10 @@ public class OwnedWorkspace extends Workspace{
             throw new QuotaLimitExceededException("Workspace size is " + workspaceSize + " and the new max size was " + max + ". Can't update to a smaller value.");
         this.quota = max;
     }
+
+    public void setName(String name){ //needs to throw some new exceptions
+        if(!name.equals(this.getName()))
+            this.name = name;
+    }
     //endregion
 }

@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,12 +32,10 @@ public class InviteUsersActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invite_users);
 
-
         String workspaceNameToEdit = getIntent().getExtras().getString("nameOfWorkspace");
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         try {
             user = airDeskApp.getUser();
-            //Get the workspace from its name
             workspaceToEdit = (OwnedWorkspace) user.getOwnedWorkspaceByName(workspaceNameToEdit);
         }catch(WorkspaceNotFoundException e){
             //TODO
@@ -51,7 +50,7 @@ public class InviteUsersActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String selectedFromList =(String) (listView.getItemAtPosition(position));
-                user.uninvite(workspaceToEdit,selectedFromList);
+                user.uninvite(workspaceToEdit, selectedFromList);
                 usersAdapter.notifyDataSetChanged();
             }
         });
@@ -60,9 +59,7 @@ public class InviteUsersActivity extends ActionBarActivity {
         prevlgdUserInput.setOnKeyListener(new View.OnKeyListener(){
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                //This is the filter
-                boolean filter = false;
-                if (event.getAction()!=KeyEvent.ACTION_DOWN)
+                if (event.getAction()!=KeyEvent.ACTION_DOWN && keyCode != KeyEvent.KEYCODE_BACK)
                     return true;
 
                 input = (EditText)v;
@@ -70,9 +67,9 @@ public class InviteUsersActivity extends ActionBarActivity {
                     user.invite(workspaceToEdit, input.getText().toString());
                     usersAdapter.notifyDataSetChanged();
                     input.getText().clear();
-                    filter = true;
+                    return true;
                 }
-                return filter;
+                return false;
             }
         });
     }
