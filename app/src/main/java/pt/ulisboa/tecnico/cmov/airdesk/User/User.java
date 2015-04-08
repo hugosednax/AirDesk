@@ -179,12 +179,30 @@ public class User {
         foreignWorkspaces.add(workspace);
     }
 
-    public void invite(OwnedWorkspace workspace, String username){
-        workspace.invite(username);
-        Workspace newForeign = new ForeignLocalWorkspace(workspace, username);
-        //TODO: use nick or email to authentication?
-        if(username.equals(this.getNick()))
+    public void invite(OwnedWorkspace workspace, String email){
+        workspace.invite(email);
+        Workspace newForeign = new ForeignLocalWorkspace(workspace, email);
+        if(email.equals(this.getEmail())){
             foreignWorkspaces.add(newForeign);
+            try {
+                settings.updateOwnedWorkspace(new WorkspaceDTO(workspace));
+            } catch (FileNotFoundException e) {
+                Log.d("[AirDesk]", e.getMessage());
+            }
+        }
+    }
+
+    public void uninvite(OwnedWorkspace workspace, String email){
+        workspace.uninvite(email);
+        Workspace newForeign = new ForeignLocalWorkspace(workspace, email);
+        if(email.equals(this.getEmail())){
+            foreignWorkspaces.remove(newForeign);
+            try {
+                settings.updateOwnedWorkspace(new WorkspaceDTO(workspace));
+            } catch (FileNotFoundException e) {
+                Log.d("[AirDesk]", e.getMessage());
+            }
+        }
     }
 
     /*public void deleteAllWorkspaces(){

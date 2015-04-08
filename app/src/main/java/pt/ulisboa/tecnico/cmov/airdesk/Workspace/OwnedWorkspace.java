@@ -159,6 +159,16 @@ public class OwnedWorkspace extends Workspace{
                 allowedUsers.add(username);*/
     }
 
+    public void uninvite(String username){
+        if(allowedUsers.contains(username))
+            allowedUsers.remove(username);
+
+        //todo 2nd deliever: network protocol
+        /*if(isOwner(user.getUsername()))
+            if(!allowedUsers.contains(username))
+                allowedUsers.add(username);*/
+    }
+
     public void setQuota(int max) throws NotDirectoryException, QuotaLimitExceededException {
         long workspaceSize = this.getSize();
         if(max < workspaceSize)
