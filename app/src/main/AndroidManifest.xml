@@ -59,6 +59,10 @@
             android:name=".Activity.FileEditActivity"
             android:label="@string/title_activity_file_edit" >
         </activity>
+        <activity
+            android:name=".Activity.InviteUsersActivity"
+            android:label="@string/title_activity_invite_users" >
+        </activity>
     </application>
 
 </manifest>

@@ -22,5 +22,7 @@
     <string name="title_activity_edit_workspace">editWorkspace</string>
     <string name="title_activity_new_file">NewFile</string>
     <string name="title_activity_file_edit">FileEditActivity</string>
+    <string name="title_activity_invite_users">InviteUsersActivity</string>
+    <string name="action_invite_users">Invite</string>
 
 </resources>

@@ -8,4 +8,7 @@
     <item android:id="@+id/editWorkspace"
         android:title="@string/action_edit_workspace"
         app:showAsAction="collapseActionView"/>
+    <item android:id="@+id/inviteUsers"
+        android:title="@string/action_invite_users"
+        app:showAsAction="collapseActionView"/>
 </menu>

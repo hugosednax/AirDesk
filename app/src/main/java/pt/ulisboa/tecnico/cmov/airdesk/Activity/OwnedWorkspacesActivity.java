@@ -100,6 +100,9 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
                     case R.id.editWorkspace:
                         startEditWorkspace();
                         return true;
+                    case R.id.inviteUsers:
+                        startInviteUsers();
+                        return true;
                     default:
                         return false;
                 }
@@ -142,6 +145,13 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
     /*Logic: Start a WorkspaceEditActivity, and send the name of the current workspace clicked on*/
     public void startEditWorkspace(){
         Intent intent = new Intent(this, WorkspaceEditActivity.class);
+        String nameOfWorkspace = selectedWorkSpaces.get(0);
+        intent.putExtra("nameOfWorkspace",nameOfWorkspace);
+        startActivity(intent);
+    }
+
+    public void startInviteUsers(){
+        Intent intent = new Intent(this, InviteUsersActivity.class);
         String nameOfWorkspace = selectedWorkSpaces.get(0);
         intent.putExtra("nameOfWorkspace",nameOfWorkspace);
         startActivity(intent);

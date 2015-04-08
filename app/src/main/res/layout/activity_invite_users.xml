@@ -1,0 +1,58 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="pt.ulisboa.tecnico.cmov.airdesk.Activity.InviteUsersActivity"
+    android:background="#BBCDE3">
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/previllgedUser"
+        android:layout_marginLeft="43dp"
+        android:layout_marginStart="43dp"
+        android:layout_alignTop="@+id/prevClientText"
+        android:layout_toRightOf="@+id/prevClientText"
+        android:layout_toEndOf="@+id/prevClientText" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Add Previliged Client"
+        android:id="@+id/prevClientText"
+        android:textColor="#AAAAAA"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="61dp" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/privClientList"
+        android:choiceMode="singleChoice"
+        android:longClickable="true"
+        android:smoothScrollbar="true"
+        android:stackFromBottom="false"
+        android:background="#F0F0F0"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/prevClientsText"
+        android:layout_toEndOf="@+id/prevClientsText"
+        android:layout_below="@+id/prevClientsText" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Previliged Clients"
+        android:id="@+id/prevClientsText"
+        android:textColor="#AAAAAA"
+        android:layout_below="@+id/previllgedUser"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="39dp" />
+
+</RelativeLayout>

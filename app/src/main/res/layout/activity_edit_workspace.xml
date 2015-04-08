@@ -13,11 +13,10 @@
         android:inputType="number"
         android:ems="10"
         android:id="@+id/newQuotaInput"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="73dp"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/prevClientsText"
-        android:layout_alignRight="@+id/privClientList"
-        android:layout_alignEnd="@+id/privClientList" />
+        android:layout_toRightOf="@+id/newQuota"
+        android:layout_toEndOf="@+id/newQuota" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -27,37 +26,8 @@
         android:id="@+id/newQuota"
         android:textColor="#AAAAAA"
         android:layout_alignBottom="@+id/newQuotaInput"
-        android:layout_toLeftOf="@+id/ConfirmEdit"
-        android:layout_toStartOf="@+id/ConfirmEdit" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Previliged Clients"
-        android:id="@+id/prevClientsText"
-        android:textColor="#AAAAAA"
-        android:layout_above="@+id/ConfirmEdit"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="165dp" />
-
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/privClientList"
-        android:choiceMode="singleChoice"
-        android:layout_alignTop="@+id/prevClientsText"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/prevClientsText"
-        android:layout_toEndOf="@+id/prevClientsText"
-        android:layout_marginBottom="90dp"
-        android:longClickable="true"
-        android:smoothScrollbar="true"
-        android:stackFromBottom="false"
-        android:background="#F0F0F0"
-        android:layout_marginLeft="10dp" />
+        android:layout_alignParentStart="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -69,25 +39,4 @@
         android:layout_centerHorizontal="true"
         android:background="#3FA9F5"
         android:textColor="#ffffffff" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/previllgedUser"
-        android:layout_above="@+id/privClientList"
-        android:layout_toRightOf="@+id/prevClientsText"
-        android:layout_marginBottom="40dp"
-        android:layout_alignRight="@+id/privClientList"
-        android:layout_alignEnd="@+id/privClientList" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Add Previliged Client"
-        android:id="@+id/prevClientText"
-        android:textColor="#AAAAAA"
-        android:layout_alignTop="@+id/previllgedUser"
-        android:layout_alignRight="@+id/newQuota"
-        android:layout_alignEnd="@+id/newQuota" />
 </RelativeLayout>
