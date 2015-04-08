@@ -11,6 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import java.util.List;
+
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
@@ -19,6 +21,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 public class ForeignWorkspacesActivity extends ActionBarActivity {
 
     private ListAdapter workspacesAdapter;
+    private List<Workspace> workspaces;
     private ListView listView;
 
     @Override
@@ -30,9 +33,12 @@ public class ForeignWorkspacesActivity extends ActionBarActivity {
          Retrieve the app context and retrieve the name of the current workspace, sent from the previous screen
         */
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
-        workspacesAdapter = new ArrayAdapter<Workspace>(this, android.R.layout.simple_list_item_1,airDeskApp.getUser().getForeignWorkspaces());
+        workspaces = airDeskApp.getUser().getForeignWorkspaces();
+        workspacesAdapter = new ArrayAdapter<Workspace>(this, android.R.layout.simple_list_item_1,workspaces);
         listView = (ListView) findViewById(R.id.listWorkspaces);
         listView.setAdapter(workspacesAdapter);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setLongClickable(true);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -41,6 +47,8 @@ public class ForeignWorkspacesActivity extends ActionBarActivity {
                 startListFiles(selectedFromList);
             }
         });
+
+       // addContextToList(listView, airDeskApp);
     }
 
     public void startListFiles(String nameOfWorkspace){
@@ -49,8 +57,6 @@ public class ForeignWorkspacesActivity extends ActionBarActivity {
         intent.putExtra("isForeign",true);
         startActivity(intent);
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
