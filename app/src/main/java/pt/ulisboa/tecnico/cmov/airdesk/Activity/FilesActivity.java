@@ -61,10 +61,10 @@ public class FilesActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String selectedFromList = listView.getItemAtPosition(position).toString();
                 startViewFile(selectedFromList);
-                /*Links the listView to the context Bar*/
-                addContextToList(listView, airDeskApp);
             }
         });
+        /*Links the listView to the context Bar*/
+        addContextToList(listView, airDeskApp);
     }
 
     public void setCurrentWorkspace(Workspace currentWorkspace){
