@@ -84,10 +84,10 @@ public class FilesActivity extends ActionBarActivity {
             public void onItemCheckedStateChanged(ActionMode mode, int position,
                                                   long id, boolean checked) {
                 String selectedFromList =listView.getItemAtPosition(position).toString();
-                if(selectedFiles.contains(selectedFromList)) { //why doesnt if(checked) work? xD
-                    selectedFiles.remove(selectedFromList);
-                }else {
+                if(checked && !selectedFiles.contains(selectedFromList)) { //why doesnt if(checked) work? xD
                     selectedFiles.add(selectedFromList);
+                }else if(selectedFiles.contains(selectedFromList)){
+                    selectedFiles.remove(selectedFromList);
                 }
                 mode.invalidate(); //automaticly calls onPrepareActionMode
             }
@@ -126,12 +126,13 @@ public class FilesActivity extends ActionBarActivity {
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
+                selectedFiles.clear();
             }
 
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
                 //Shows or hides the editFile button depending on the number of selected files
-                if (selectedFiles.size() <= 1){
+                if (selectedFiles.size() == 1){
                     MenuItem item = menu.findItem(R.id.editFile);
                     item.setVisible(true);
                     return true;
