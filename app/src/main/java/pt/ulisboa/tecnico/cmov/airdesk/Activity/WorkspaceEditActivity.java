@@ -41,6 +41,7 @@ public class WorkspaceEditActivity extends ActionBarActivity {
         quota = (EditText)findViewById(R.id.newQuotaInput);
         //name = (EditText)findViewById(R.id.newNameInput);
         String workspaceNameToEdit = getIntent().getExtras().getString("nameOfWorkspace");
+        setTitle("Edit "+workspaceNameToEdit);
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         try {
             user = airDeskApp.getUser();

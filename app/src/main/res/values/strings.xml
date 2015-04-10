@@ -4,13 +4,13 @@
     <string name="app_name">AirDesk</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_workspace_create">WorkspaceCreate</string>
+    <string name="title_activity_workspace_create">Create workspace</string>
     <string name="title_activity_workspaces">Workspaces</string>
-    <string name="title_activity_owned_workspaces">OwnedWorkspaces</string>
-    <string name="title_activity_foreign_workspaces">ForeignWorkspaces</string>
-    <string name="title_activity_list_files">ListFiles</string>
-    <string name="title_activity_edit_view_file">EditViewFile</string>
-    <string name="title_activity_sign_up">SignUp</string>
+    <string name="title_activity_owned_workspaces">Owned Workspaces</string>
+    <string name="title_activity_foreign_workspaces">Foreign Workspaces</string>
+    <string name="title_activity_list_files">Files</string>
+    <string name="title_activity_edit_view_file">View File</string>
+    <string name="title_activity_sign_up">Sign Up</string>
     <string name="title_activity_starter">StarterActivity</string>
     <string name="action_delete_workspace">Delete</string>
     <string name="action_new_workspace">New</string>
@@ -19,10 +19,10 @@
     <string name="action_confirm_file_edit">Confirm</string>
     <string name="action_delete_file">Delete</string>
     <string name="action_edit_file">Edit</string>
-    <string name="title_activity_edit_workspace">editWorkspace</string>
-    <string name="title_activity_new_file">NewFile</string>
-    <string name="title_activity_file_edit">FileEditActivity</string>
-    <string name="title_activity_invite_users">InviteUsersActivity</string>
+    <string name="title_activity_edit_workspace">Edit Workspace</string>
+    <string name="title_activity_new_file">New File</string>
+    <string name="title_activity_file_edit">Edit File</string>
+    <string name="title_activity_invite_users">Invite Users</string>
     <string name="action_invite_users">Invite</string>
 
 </resources>

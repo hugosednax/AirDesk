@@ -29,6 +29,7 @@ public class FilesTask extends AsyncTask<FilesActivity, Void, List<ADFile>> {
         Intent intent = activity.getIntent();
         AirDeskApp airDeskApp = (AirDeskApp) activity.getApplicationContext();
         String nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
+        activity.setTitle("Files of " + nameOfCurrWorkspace);
         boolean isForeign = intent.getBooleanExtra("isForeign",false); //default value is false
         try {
             /*
