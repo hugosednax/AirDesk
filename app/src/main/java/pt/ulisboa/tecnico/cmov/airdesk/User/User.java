@@ -137,6 +137,20 @@ public class User {
         return result;
     }
 
+    public boolean existWorkspace(String name){
+        Predicate<Workspace> validator = new WorkspaceNamePredicate(name);
+        Workspace result = null;
+        for(Workspace workspace : ownedWorkspaces){
+            if(validator.apply(workspace)){
+                result = workspace;
+                break;
+            }
+        }
+        if(result == null)
+            return false;
+        return true;
+    }
+
     public boolean hasForeignWorkspaceByName(String name){
         Predicate<Workspace> validator = new WorkspaceNamePredicate(name);
         boolean result = false;
@@ -165,6 +179,8 @@ public class User {
     }
 
     public Workspace createWorkspace(String name, boolean isPublic, int quota) throws CreateWorkspaceException {
+        if(existWorkspace(name)) throw new CreateWorkspaceException("Already exists a workspace with that name");
+
         Workspace newWorkspace = new OwnedWorkspace(name, isPublic, quota);
         ownedWorkspaces.add(newWorkspace);
         try {
