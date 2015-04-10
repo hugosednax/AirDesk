@@ -65,7 +65,7 @@ public class FileEditActivity extends ActionBarActivity {
             Context context = getApplicationContext();
             CharSequence toastText = e.getMessage();
             int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(context, toastText, duration);
+            Toast toast = Toast.makeText(context, text, duration);
             toast.show();
         }
 
@@ -77,20 +77,16 @@ public class FileEditActivity extends ActionBarActivity {
     }
 
     public void SaveChanges(View v){
-        new Thread(new Runnable() {
-            public void run() {
-                currFile.save(textView.getText().toString());
-                try {
-                    currWorkspace.updateFile(nameOfCurrFile, textView.getText().toString());
-                }catch( Exception e){
-                    Context context = getApplicationContext();
-                    CharSequence toastText = e.getMessage();
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(context, toastText, duration);
-                    toast.show();
-                }
-            }}).start();
-        finish();
+        currFile.save(textView.getText().toString());
+        try {
+            currWorkspace.updateFile(nameOfCurrFile, textView.getText().toString());
+        }catch(Exception e){
+            Context context = getApplicationContext();
+            CharSequence toastText = e.getMessage();
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(context, toastText, duration);
+            toast.show();
+        }
     }
 
     @Override
