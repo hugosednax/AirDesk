@@ -60,20 +60,23 @@ public class FileCreateActivity extends ActionBarActivity {
     the previous activity
     */
     public void createNewFile(View view){
-       // new Thread(new Runnable() {
-           // public void run() {
+        new Thread(new Runnable() {
+           public void run() {
                 EditText listView = (EditText) findViewById(R.id.FileName);
                 try {
                     airDeskApp.getUser().createFile(listView.getText().toString(), currWorkspace);
-                    finish();
                 } catch (Exception e) {
-                    Context context = getApplicationContext();
-                    CharSequence text = e.getMessage();
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
+                    final Context context = getApplicationContext();
+                    final CharSequence text = e.getMessage();
+
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
-           // }}).start();
+               finish();
+            }}).start();
 
     }
 
