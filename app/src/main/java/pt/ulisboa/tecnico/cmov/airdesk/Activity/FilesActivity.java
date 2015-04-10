@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +104,13 @@ public class FilesActivity extends ActionBarActivity {
                             for(int i=0; i<selectedFiles.size();i++){
                                 try {
                                     currentWorkspace.removeFile(selectedFiles.get(i));
-                                }catch (Exception e){}
+                                }catch (Exception e){
+                                    Context context = getApplicationContext();
+                                    CharSequence text = e.getMessage();
+                                    int duration = Toast.LENGTH_SHORT;
+                                    Toast toast = Toast.makeText(context, text, duration);
+                                    toast.show();
+                                }
                             }
                         filesAdapter.notifyDataSetChanged(); //warn the adapter that the original array has changed
                         selectedFiles.clear();

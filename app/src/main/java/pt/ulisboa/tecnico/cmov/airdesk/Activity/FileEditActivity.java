@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,16 +78,23 @@ public class FileEditActivity extends ActionBarActivity {
     }
 
     public void SaveChanges(View v){
-        try {
-            currWorkspace.updateFile(nameOfCurrFile, textView.getText().toString());
-            finish();
-        }catch(Exception e){
-            Context context = getApplicationContext();
-            CharSequence toastText = e.getMessage();
-            int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(context, toastText, duration);
-            toast.show();
-        }
+        new Thread(new Runnable() {
+            public void run() {
+                EditText listView = (EditText) findViewById(R.id.FileName);
+                try {
+                    currWorkspace.updateFile(nameOfCurrFile, textView.getText().toString());
+                    finish();
+                } catch (Exception e) {
+                    final Context context = getApplicationContext();
+                    final CharSequence text = e.getMessage();
+
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }}).start();
     }
 
     @Override

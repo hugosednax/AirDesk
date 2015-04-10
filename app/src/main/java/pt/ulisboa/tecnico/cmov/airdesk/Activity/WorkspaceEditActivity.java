@@ -62,12 +62,16 @@ public class WorkspaceEditActivity extends ActionBarActivity {
                     if (!quota.getText().toString().isEmpty()) {
                         try {
                             workspaceToEdit.setQuota(Integer.parseInt(quota.getText().toString()));
+                            finish();
                         } catch (Exception e) {
-                            Context context = getApplicationContext();
-                            CharSequence text = e.getMessage();
-                            int duration = Toast.LENGTH_SHORT;
-                            Toast toast = Toast.makeText(context, text, duration);
-                            toast.show();
+                            final Context context = getApplicationContext();
+                            final CharSequence text = e.getMessage();
+
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
                     }
                     /*
@@ -80,7 +84,6 @@ public class WorkspaceEditActivity extends ActionBarActivity {
                     }
                     */
                 }}).start();
-        finish();
     }
 
     @Override

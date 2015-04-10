@@ -27,8 +27,8 @@ public class WorkspaceCreateActivity extends ActionBarActivity {
 
 
     public void createWorkspace(View v){
-        //new Thread(new Runnable() {
-            //public void run() {
+        new Thread(new Runnable() {
+            public void run() {
                 EditText name = (EditText) findViewById(R.id.nameInput);
                 EditText quota = (EditText) findViewById(R.id.quotaInput);
                 CheckBox isPublic = (CheckBox) findViewById(R.id.isPublicCheckBox);
@@ -38,14 +38,16 @@ public class WorkspaceCreateActivity extends ActionBarActivity {
                 try {
                     airDeskApp.getUser().createWorkspace(name.getText().toString(), isPublic.isChecked(), Integer.parseInt(quota.getText().toString()));
                     finish();
-                } catch (Exception e) {
-                    Context context = getApplicationContext();
-                    CharSequence text = e.getMessage();
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
+                }catch (Exception e) {
+                    final Context context = getApplicationContext();
+                    final CharSequence text = e.getMessage();
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
-            //}}).start();
+            }}).start();
     }
 
     @Override

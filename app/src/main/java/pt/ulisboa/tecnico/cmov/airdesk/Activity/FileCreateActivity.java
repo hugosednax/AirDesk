@@ -65,6 +65,7 @@ public class FileCreateActivity extends ActionBarActivity {
                 EditText listView = (EditText) findViewById(R.id.FileName);
                 try {
                     airDeskApp.getUser().createFile(listView.getText().toString(), currWorkspace);
+                    finish();
                 } catch (Exception e) {
                     final Context context = getApplicationContext();
                     final CharSequence text = e.getMessage();
@@ -75,9 +76,7 @@ public class FileCreateActivity extends ActionBarActivity {
                         }
                     });
                 }
-               finish();
             }}).start();
-
     }
 
     @Override
