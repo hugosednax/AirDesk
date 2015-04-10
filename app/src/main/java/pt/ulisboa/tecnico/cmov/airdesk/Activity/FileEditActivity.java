@@ -80,6 +80,7 @@ public class FileEditActivity extends ActionBarActivity {
         currFile.save(textView.getText().toString());
         try {
             currWorkspace.updateFile(nameOfCurrFile, textView.getText().toString());
+            finish();
         }catch(Exception e){
             Context context = getApplicationContext();
             CharSequence toastText = e.getMessage();
