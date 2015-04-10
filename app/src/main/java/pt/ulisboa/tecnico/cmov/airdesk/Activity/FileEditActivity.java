@@ -77,7 +77,6 @@ public class FileEditActivity extends ActionBarActivity {
     }
 
     public void SaveChanges(View v){
-        currFile.save(textView.getText().toString());
         try {
             currWorkspace.updateFile(nameOfCurrFile, textView.getText().toString());
             finish();
