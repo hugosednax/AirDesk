@@ -18,11 +18,14 @@ import java.io.FileReader;
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 public class FileEditActivity extends ActionBarActivity {
 
     ADFile currFile;
     TextView textView;
+    String nameOfCurrFile;
+    Workspace currWorkspace;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +38,7 @@ public class FileEditActivity extends ActionBarActivity {
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         Intent intent = getIntent();
         String nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
-        String nameOfCurrFile = intent.getStringExtra("nameOfFile");
+        nameOfCurrFile = intent.getStringExtra("nameOfFile");
         StringBuilder text = new StringBuilder();
         boolean isForeign = intent.getBooleanExtra("isForeign",false);
         try {
@@ -43,10 +46,12 @@ public class FileEditActivity extends ActionBarActivity {
             Logic and Backend:
             Retrieve the user from the context and then get the current workspace by searching with the name and get the current Name by the name
             */
-            if(isForeign)
-                currFile = airDeskApp.getUser().getForeignWorkspaceByName(nameOfCurrWorkspace).getFileByName(nameOfCurrFile);
-            else
-                currFile = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace).getFileByName(nameOfCurrFile);
+            if(isForeign) {
+                currWorkspace = airDeskApp.getUser().getForeignWorkspaceByName(nameOfCurrWorkspace);
+            }else {
+                currWorkspace = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace);
+            }
+            currFile = currWorkspace.getFileByName(nameOfCurrFile);
             //Read text from file
             BufferedReader br = new BufferedReader(new FileReader(currFile.getFile()));
             String line;
@@ -60,7 +65,7 @@ public class FileEditActivity extends ActionBarActivity {
             Context context = getApplicationContext();
             CharSequence toastText = e.getMessage();
             int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(context, text, duration);
+            Toast toast = Toast.makeText(context, toastText, duration);
             toast.show();
         }
 
@@ -75,6 +80,15 @@ public class FileEditActivity extends ActionBarActivity {
         new Thread(new Runnable() {
             public void run() {
                 currFile.save(textView.getText().toString());
+                try {
+                    currWorkspace.updateFile(nameOfCurrFile, textView.getText().toString());
+                }catch( Exception e){
+                    Context context = getApplicationContext();
+                    CharSequence toastText = e.getMessage();
+                    int duration = Toast.LENGTH_SHORT;
+                    Toast toast = Toast.makeText(context, toastText, duration);
+                    toast.show();
+                }
             }}).start();
         finish();
     }

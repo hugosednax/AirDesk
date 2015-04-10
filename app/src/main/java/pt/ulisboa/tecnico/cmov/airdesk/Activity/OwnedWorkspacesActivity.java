@@ -131,12 +131,15 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
                 if (selectedWorkSpaces.size() == 1){
-                    MenuItem item = menu.findItem(R.id.editWorkspace);
-                    item.setVisible(true);
+                    MenuItem itemEdit = menu.findItem(R.id.editWorkspace);
+                    MenuItem itemInvite = menu.findItem(R.id.inviteUsers);
+                    itemEdit.setVisible(true);
+                    itemInvite.setVisible(true);
                 } else {
-                    MenuItem item = menu.findItem(R.id.editWorkspace);
-                    item.setVisible(false);
-
+                    MenuItem itemEdit = menu.findItem(R.id.editWorkspace);
+                    MenuItem itemInvite = menu.findItem(R.id.inviteUsers);
+                    itemEdit.setVisible(false);
+                    itemInvite.setVisible(false);
                 }
                 return true;
             }

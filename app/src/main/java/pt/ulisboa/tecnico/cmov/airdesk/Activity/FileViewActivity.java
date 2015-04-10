@@ -57,7 +57,7 @@ public class FileViewActivity extends ActionBarActivity {
             Context context = getApplicationContext();
             CharSequence toastText = e.getMessage();
             int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(context, text, duration);
+            Toast toast = Toast.makeText(context, toastText, duration);
             toast.show();
         }
 
