@@ -99,6 +99,7 @@ public class OwnedWorkspace extends Workspace{
             if(this.getSize() >= getQuota()){
                 throw new QuotaLimitExceededException("Quota limit exceeded while trying to create " + fileName + " in " + this.getName() + " your Workspace.");
             } else {
+                if(existFile(fileName)) throw new CreateFileException("Already exists a file with that name");
                 files.add(new ADFile(fileName, this.getName()));
             }
         } catch (NotDirectoryException e) {
@@ -135,6 +136,20 @@ public class OwnedWorkspace extends Workspace{
             throw new ADFileNotFoundException("File " + name + " not found in " + this.getName() + " Workspace.");
         return result;
     }
+
+    public boolean existFile(String name){
+        Predicate<ADFile> validator = new FileNamePredicate(name);
+        ADFile result = null;
+        for(ADFile file : getFiles())
+            if (validator.apply(file)) {
+                result = file;
+                break;
+            }
+        if(result == null)
+            return false;
+        return true;
+    }
+
     //endregion
 
     //region Workspace Functions

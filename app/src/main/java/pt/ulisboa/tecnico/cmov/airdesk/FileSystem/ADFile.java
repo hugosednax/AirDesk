@@ -63,7 +63,7 @@ public class ADFile {
         PrintWriter writer = null;
         try {
             writer = new PrintWriter(file.getAbsolutePath());
-            writer.println(text);
+            writer.print(text);
         } catch (FileNotFoundException e) {
             Log.d(AirDeskApp.LOG_TAG, e.getMessage());
         } finally{
