@@ -182,27 +182,27 @@ public class User {
     public void invite(OwnedWorkspace workspace, String email){
         workspace.invite(email);
         Workspace newForeign = new ForeignLocalWorkspace(workspace, email);
-        //if(email.equals(this.getEmail())){
+        if(email.equals(this.getEmail())){
             foreignWorkspaces.add(newForeign);
             try {
                 settings.updateOwnedWorkspace(new WorkspaceDTO(workspace));
             } catch (FileNotFoundException e) {
                 Log.d("[AirDesk]", e.getMessage());
             }
-        //}
+        }
     }
 
     public void uninvite(OwnedWorkspace workspace, String email){
         workspace.uninvite(email);
         Workspace newForeign = new ForeignLocalWorkspace(workspace, email);
-        //if(email.equals(this.getEmail())){
+        if(email.equals(this.getEmail())){
             foreignWorkspaces.remove(newForeign);
             try {
                 settings.updateOwnedWorkspace(new WorkspaceDTO(workspace));
             } catch (FileNotFoundException e) {
                 Log.d("[AirDesk]", e.getMessage());
             }
-        //}
+        }
     }
 
     /*public void deleteAllWorkspaces(){
