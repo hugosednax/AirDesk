@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -43,8 +45,12 @@ public class FileCreateActivity extends ActionBarActivity {
                 currWorkspace = airDeskApp.getUser().getForeignWorkspaceByName(nameOfCurrWorkspace);
             else
                 currWorkspace = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace);
-        }catch(WorkspaceNotFoundException e){
-
+        }catch (Exception e){
+            Context context = getApplicationContext();
+            CharSequence text = e.getMessage();
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
         }
     }
 

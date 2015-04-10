@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,8 +93,12 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
                                 Workspace w = airDeskApp.getUser().getOwnedWorkspaceByName(selectedWorkSpaces.get(i));
                                 airDeskApp.getUser().deleteWorkspace(w);
                             }
-                        }catch(WorkspaceNotFoundException e){
-                            Log.w("yap","exception this workspace does not exist");
+                        }catch (Exception e){
+                            Context context = getApplicationContext();
+                            CharSequence text = e.getMessage();
+                            int duration = Toast.LENGTH_SHORT;
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.show();
                         }
                         workspacesAdapter.notifyDataSetChanged(); //warn the adapter that the original array has changed
                         selectedWorkSpaces.clear();

@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -37,8 +39,12 @@ public class InviteUsersActivity extends ActionBarActivity {
         try {
             user = airDeskApp.getUser();
             workspaceToEdit = (OwnedWorkspace) user.getOwnedWorkspaceByName(workspaceNameToEdit);
-        }catch(WorkspaceNotFoundException e){
-            //TODO
+        }catch (Exception e){
+            Context context = getApplicationContext();
+            CharSequence text = e.getMessage();
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
         }
 
         // Link the array of previliged users to an adapter, user has a toString overriden so it will display its nick and not the object

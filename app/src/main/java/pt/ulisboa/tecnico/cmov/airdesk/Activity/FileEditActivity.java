@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -55,7 +56,13 @@ public class FileEditActivity extends ActionBarActivity {
                 text.append('\n');
             }
             br.close();
-        }catch (Exception e){}
+        }catch (Exception e){
+            Context context = getApplicationContext();
+            CharSequence toastText = e.getMessage();
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+        }
 
         //Find the view by its id
         textView = (TextView)findViewById(R.id.FileContent);
@@ -65,7 +72,6 @@ public class FileEditActivity extends ActionBarActivity {
     }
 
     public void SaveChanges(View v){
-        Log.d("TRY2",currFile.getName());
         currFile.save(textView.getText().toString());
         finish();
     }
@@ -76,16 +82,4 @@ public class FileEditActivity extends ActionBarActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        //if confirm edit is clicked then actually save the file
-        if (id == R.id.ConfirmEdit) {
-            //currFile.save(textView.getText().toString());
-            finish();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }

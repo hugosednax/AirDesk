@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
@@ -34,8 +35,12 @@ public class WorkspaceCreateActivity extends ActionBarActivity {
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         try {
             airDeskApp.getUser().createWorkspace(name.getText().toString(), isPublic.isChecked(), Integer.parseInt(quota.getText().toString()));
-        }catch(CreateWorkspaceException e){
-            Toast.makeText(this.getApplicationContext(),"Can't create it (need proper handle)", Toast.LENGTH_SHORT);
+        }catch (Exception e){
+            Context context = getApplicationContext();
+            CharSequence text = e.getMessage();
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
         }
         finish(); //redirect to previous screen (OwnedWorkspacesActivity)
     }

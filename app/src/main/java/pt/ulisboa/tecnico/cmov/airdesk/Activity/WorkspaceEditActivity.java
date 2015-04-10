@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,12 +12,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.User.User;
@@ -56,8 +59,12 @@ public class WorkspaceEditActivity extends ActionBarActivity {
         if (!quota.getText().toString().isEmpty()) {
             try {
                 workspaceToEdit.setQuota(Integer.parseInt(quota.getText().toString()));
-            } catch (Exception e) {
-                //TODO
+            } catch (Exception e){
+                Context context = getApplicationContext();
+                CharSequence text = e.getMessage();
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
             }
         }
         /*

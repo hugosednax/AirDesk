@@ -1,11 +1,13 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -51,7 +53,13 @@ public class FileViewActivity extends ActionBarActivity {
                 text.append('\n');
             }
             br.close();
-        }catch (Exception e){}
+        }catch (Exception e){
+            Context context = getApplicationContext();
+            CharSequence toastText = e.getMessage();
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+        }
 
             //Find the view by its id
             TextView tv = (TextView)findViewById(R.id.FileContent);
