@@ -117,6 +117,7 @@ public class OwnedWorkspace extends Workspace{
 
     public void updateFile(String name, String text) throws ADFileNotFoundException, NotDirectoryException, QuotaLimitExceededException {
         ADFile file = getFileByName(name);
+        Log.w("[AirDesk]", "size of workspace = " + this.getSize() + " file size = " + file.getSize() + " text length" + text.length() + " quota=" + this.getQuota());
         if(this.getSize() - file.getSize() + text.length() > this.getQuota())
             throw new QuotaLimitExceededException("Quota limit exceeded while trying to update " + name + " in " + this.getName() + " your Workspace.");
         file.save(text);
