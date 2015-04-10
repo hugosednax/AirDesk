@@ -156,11 +156,11 @@ public class OwnedWorkspace extends Workspace{
     public void delete() throws NotDirectoryException{
         File mainDir = AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
         File directory = new File(""+mainDir+File.separatorChar+name);
-        if (directory.isDirectory())
+        //if (directory.isDirectory())
             for (File child : directory.listFiles())
                 if(!child.delete())
                     Log.d(AirDeskApp.LOG_TAG, "Error at deleting file: " + child.getName());
-        else throw new NotDirectoryException("Can't delete workspace, the provided name isn't a directory.");
+        //else throw new NotDirectoryException("Can't delete workspace, the provided name isn't a directory.");
         if(!directory.delete())
             Log.d(AirDeskApp.LOG_TAG,"Error at deleting directory: " + directory.getName());
     }
