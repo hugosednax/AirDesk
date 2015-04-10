@@ -72,7 +72,10 @@ public class FileEditActivity extends ActionBarActivity {
     }
 
     public void SaveChanges(View v){
-        currFile.save(textView.getText().toString());
+        new Thread(new Runnable() {
+            public void run() {
+                currFile.save(textView.getText().toString());
+            }}).start();
         finish();
     }
 

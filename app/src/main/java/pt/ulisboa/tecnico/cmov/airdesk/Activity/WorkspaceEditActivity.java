@@ -56,26 +56,29 @@ public class WorkspaceEditActivity extends ActionBarActivity {
 
     //called when the button is pressed and changes the Quota of the workspace
     public void ConfirmChanges(View view) {
-        if (!quota.getText().toString().isEmpty()) {
-            try {
-                workspaceToEdit.setQuota(Integer.parseInt(quota.getText().toString()));
-            } catch (Exception e){
-                Context context = getApplicationContext();
-                CharSequence text = e.getMessage();
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-            }
-        }
-        /*
-        if (!name.getText().toString().isEmpty()) {
-            try {
-                workspaceToEdit.setName(name.getText().toString());
-            } catch (Exception e) {
-                //TODO
-            }
-        }
-        */
+            new Thread(new Runnable() {
+                public void run() {
+                    if (!quota.getText().toString().isEmpty()) {
+                        try {
+                            workspaceToEdit.setQuota(Integer.parseInt(quota.getText().toString()));
+                        } catch (Exception e) {
+                            Context context = getApplicationContext();
+                            CharSequence text = e.getMessage();
+                            int duration = Toast.LENGTH_SHORT;
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.show();
+                        }
+                    }
+                    /*
+                    if (!name.getText().toString().isEmpty()) {
+                        try {
+                            workspaceToEdit.setName(name.getText().toString());
+                        } catch (Exception e) {
+                            //TODO
+                        }
+                    }
+                    */
+                }}).start();
         finish();
     }
 

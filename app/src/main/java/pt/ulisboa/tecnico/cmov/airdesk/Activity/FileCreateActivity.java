@@ -60,13 +60,16 @@ public class FileCreateActivity extends ActionBarActivity {
     the previous activity
     */
     public void createNewFile(View view){
-        EditText listView = (EditText) findViewById(R.id.FileName);
-        try {
-            airDeskApp.getUser().createFile(listView.getText().toString(),currWorkspace);
+        new Thread(new Runnable() {
+            public void run() {
+                EditText listView = (EditText) findViewById(R.id.FileName);
+                try {
+                    airDeskApp.getUser().createFile(listView.getText().toString(), currWorkspace);
 
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }}).start();
         finish();
     }
 

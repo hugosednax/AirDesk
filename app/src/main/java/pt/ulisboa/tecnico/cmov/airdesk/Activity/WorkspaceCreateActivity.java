@@ -27,21 +27,24 @@ public class WorkspaceCreateActivity extends ActionBarActivity {
 
 
     public void createWorkspace(View v){
-        EditText name = (EditText)findViewById(R.id.nameInput);
-        EditText quota = (EditText)findViewById(R.id.quotaInput);
-        CheckBox isPublic = (CheckBox)findViewById(R.id.isPublicCheckBox);
+        new Thread(new Runnable() {
+            public void run() {
+                EditText name = (EditText) findViewById(R.id.nameInput);
+                EditText quota = (EditText) findViewById(R.id.quotaInput);
+                CheckBox isPublic = (CheckBox) findViewById(R.id.isPublicCheckBox);
 
-        //Call workspace constructor and use the View inputs to fill in its attributes
-        AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
-        try {
-            airDeskApp.getUser().createWorkspace(name.getText().toString(), isPublic.isChecked(), Integer.parseInt(quota.getText().toString()));
-        }catch (Exception e){
-            Context context = getApplicationContext();
-            CharSequence text = e.getMessage();
-            int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
-        }
+                //Call workspace constructor and use the View inputs to fill in its attributes
+                AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
+                try {
+                    airDeskApp.getUser().createWorkspace(name.getText().toString(), isPublic.isChecked(), Integer.parseInt(quota.getText().toString()));
+                } catch (Exception e) {
+                    Context context = getApplicationContext();
+                    CharSequence text = e.getMessage();
+                    int duration = Toast.LENGTH_SHORT;
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                }
+            }}).start();
         finish(); //redirect to previous screen (OwnedWorkspacesActivity)
     }
 
