@@ -55,18 +55,6 @@ public class User {
         if(settings.hadSettings()){
             loadSavedWorkspaces();
         }
-
-        /*
-        deleteAllWorkspaces();
-        try {
-            createWorkspace("workspace", true, 5);
-            createWorkspace("workspace1", true, 1);
-            ownedWorkspaces.get(0).createFile("test");
-            ownedWorkspaces.get(0).createFile("test2");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }*/
     }
     //endregion
 
@@ -221,14 +209,6 @@ public class User {
         }
     }
 
-    /*public void deleteAllWorkspaces(){
-        File file = new File(".");
-        for (File workFile : file.listFiles()) {
-            workFile.delete();
-        }
-        ownedWorkspaces = new ArrayList<Workspace>();
-    }*/
-
     public void deleteWorkspace(Workspace workspace){
         try {
             workspace.delete();
@@ -239,9 +219,13 @@ public class User {
         }
     }
 
-    public List<Workspace> searchWorkspaces(String keywords[]){
-        //TODO
-        return null;
+    public List<WorkspaceDTO> searchWorkspaces(String keyword){
+        List<WorkspaceDTO> results = new ArrayList<>();
+        for(Workspace workspace : this.getOwnedWorkspaces()){
+            if(workspace.hasKeyword(keyword))
+                results.add(new WorkspaceDTO((OwnedWorkspace) workspace));
+        }
+        return results;
     }
     //endregion
 

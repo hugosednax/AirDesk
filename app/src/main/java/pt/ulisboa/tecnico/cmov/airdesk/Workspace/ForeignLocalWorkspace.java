@@ -44,6 +44,11 @@ public class ForeignLocalWorkspace extends Workspace{
     public void setQuota(int quota) throws NotDirectoryException, QuotaLimitExceededException {
         workspaceLink.setQuota(quota);
     }
+
+    @Override
+    public boolean hasKeyword(String keyword) {
+        return this.workspaceLink.hasKeyword(keyword);
+    }
     //endregion
 
     //region File Methods

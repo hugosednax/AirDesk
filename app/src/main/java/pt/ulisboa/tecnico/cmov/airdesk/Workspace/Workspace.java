@@ -14,25 +14,25 @@ import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 /**
  * Created by hugo__000 on 10/03/2015.
  */
-public abstract class Workspace {
+public abstract class     Workspace {
 
-    //region Class Variables
-    protected String name;
-    protected List<ADFile> files;
-    protected List<String> keywords;
-    protected int quota;
-    //endregion
+        //region Class Variables
+        protected String name;
+        protected List<ADFile> files;
+        protected List<String> keywords;
+        protected int quota;
+        //endregion
 
-    //region Constructors
-    public Workspace(String name){
-        this.name = name;
-        this.files = new ArrayList<ADFile>();
-        this.keywords = new ArrayList<String>();
-        this.quota = 0;
-    }
-    //endregion
+        //region Constructors
+        public Workspace(String name){
+            this.name = name;
+            this.files = new ArrayList<ADFile>();
+            this.keywords = new ArrayList<String>();
+            this.quota = 0;
+        }
+        //endregion
 
-    //region Abstract Methods
+        //region Abstract Methods
     abstract public void delete() throws NotDirectoryException;
 
     abstract public void createFile(String name) throws QuotaLimitExceededException, CreateFileException, IOException;
@@ -46,6 +46,8 @@ public abstract class Workspace {
     abstract public int getSize() throws NotDirectoryException;
 
     abstract public void setQuota(int quota) throws NotDirectoryException, QuotaLimitExceededException;
+
+    abstract public boolean hasKeyword(String keyword);
     //endregion
 
     //region Getters
@@ -53,14 +55,6 @@ public abstract class Workspace {
 
     public List<ADFile> getFiles(){
         return files;
-    }
-
-    public ArrayList<String> getFilesName(){
-        ArrayList<String> ArrayListNames = new ArrayList();
-        for(int i=0;i<files.size();i++)
-            ArrayListNames.add(files.get(i).getFileName());
-
-        return ArrayListNames;
     }
 
     public int getQuota(){

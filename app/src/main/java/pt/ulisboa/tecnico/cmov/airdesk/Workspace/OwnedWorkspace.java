@@ -81,6 +81,10 @@ public class OwnedWorkspace extends Workspace{
         return allowedUsers;
     }
 
+    public List<String> getKeywords() {
+        return keywords;
+    }
+
     public int getSize() throws NotDirectoryException {
         File mainDir = AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE);
         File currentDir = new File(""+mainDir+File.separatorChar+name);
@@ -200,6 +204,14 @@ public class OwnedWorkspace extends Workspace{
     public void setName(String name){ //needs to throw some new exceptions
         if(!name.equals(this.getName()))
             this.name = name;
+    }
+
+    public void addKeyword(String keyword){
+        this.getKeywords().add(keyword);
+    }
+
+    public boolean hasKeyword(String keyword){
+        return this.getKeywords().contains(keyword);
     }
     //endregion
 }
