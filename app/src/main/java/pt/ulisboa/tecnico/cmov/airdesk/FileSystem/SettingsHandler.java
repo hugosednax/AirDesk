@@ -108,6 +108,12 @@ public class SettingsHandler {
                                     nextLine = br.readLine();
                                     nextLineSplit = nextLine.split("\\s+");
                                 }
+                                while(nextLineSplit[0].equals("[K]")){
+                                    newWS.addKeyword(nextLineSplit[1]);
+                                    br.mark(10);
+                                    nextLine = br.readLine();
+                                    nextLineSplit = nextLine.split("\\s+");
+                                }
                                 br.reset();
                             }
                         }
@@ -149,9 +155,13 @@ public class SettingsHandler {
             String line = br.readLine();
             fileContent += line + "\n";
             fileContent += ws.getName() + " " + (ws.isPublic() ? 1 : 0) + " " + ws.getQuota() + "\n";
-            for(String user : ws.getAllowedUsers()){
+
+            for(String user : ws.getAllowedUsers())
                 fileContent += "[P] " + user + "\n";
-            }
+
+            for(String keyword : ws.getKeywords())
+                fileContent += "[K] " + keyword + "\n";
+
             line = br.readLine();
             while (line != null) {
                 fileContent += line + "\n";
@@ -194,7 +204,7 @@ public class SettingsHandler {
                     if(wsLine[0].equals(ws.getName()))
                         atWS = true;
                     else if(atWS){
-                        if(!wsLine[0].equals("[P]")) {
+                        if(!wsLine[0].equals("[P]")&&!wsLine[0].equals("[K]")) {
                             fileContent += line + "\n";
                             atWS = false;
                         }

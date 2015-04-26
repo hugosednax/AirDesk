@@ -16,6 +16,7 @@ public class WorkspaceDTO {
     private boolean isPublic;
     private int quota;
     private List<String> allowedUsers;
+    private List<String> keywords;
     //endregion
 
     //region Constructors
@@ -24,12 +25,14 @@ public class WorkspaceDTO {
         this.isPublic = isPublic;
         this.quota = quota;
         this.allowedUsers = new ArrayList<>();
+        this.keywords = new ArrayList<>();
     }
 
     public WorkspaceDTO(OwnedWorkspace ws){
         this.name = ws.getName();
         this.quota = ws.getQuota();
         this.allowedUsers = ws.getAllowedUsers();
+        this.keywords = new ArrayList<>();
     }
     //endregion
 
@@ -45,6 +48,10 @@ public class WorkspaceDTO {
     public List<String> getAllowedUsers() {
         return allowedUsers;
     }
+
+    public List<String> getKeywords() {
+        return keywords;
+    }
     //endregion
 
     //region Setters
@@ -52,13 +59,11 @@ public class WorkspaceDTO {
         return isPublic;
     }
 
-    public void setAllowedUsers(List<String> allowedUsers) {
-        this.allowedUsers = allowedUsers;
-    }
-
     public void addAllowedUser(String user){
         this.getAllowedUsers().add(user);
     }
+
+    public void addKeyword(String keyword) { this.getKeywords().add(keyword); }
 
     //endregion
 }

@@ -30,6 +30,7 @@ public class OwnedWorkspace extends Workspace{
     //region Class Variables
     private List<String> allowedUsers;
     private boolean isPublic;
+    private List<String> keywords;
     //endregion
 
     //region Constructors
@@ -43,6 +44,7 @@ public class OwnedWorkspace extends Workspace{
         currentDir.mkdir();
         if(!currentDir.isDirectory())
             throw new CreateWorkspaceException("Can't create a new directory for this Workspace");
+        this.keywords = new ArrayList<String>();
     }
 
     public OwnedWorkspace(WorkspaceDTO workspaceDTO) {
@@ -50,9 +52,12 @@ public class OwnedWorkspace extends Workspace{
         this.isPublic = workspaceDTO.isPublic();
         this.quota = workspaceDTO.getQuota();
         this.allowedUsers = new ArrayList<String>();
+        this.keywords = new ArrayList<String>();
 
         for(String username : workspaceDTO.getAllowedUsers())
             allowedUsers.add(username);
+        for(String keyword : workspaceDTO.getKeywords())
+            keywords.add(keyword);
 
         File mainDir = AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE);
         File currentDir = new File(""+mainDir+File.separatorChar+name);
