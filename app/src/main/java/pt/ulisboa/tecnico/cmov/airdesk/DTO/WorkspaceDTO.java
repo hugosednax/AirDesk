@@ -1,5 +1,11 @@
 package pt.ulisboa.tecnico.cmov.airdesk.DTO;
 
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,5 +71,24 @@ public class WorkspaceDTO {
 
     public void addKeyword(String keyword) { this.getKeywords().add(keyword); }
 
+    public JSONObject toJSON() {
+        JSONObject jsonWS = new JSONObject();
+        JSONArray allowedUsers = new JSONArray();
+        JSONArray keywords = new JSONArray();
+        try {
+            jsonWS.put("name", this.getName());
+            jsonWS.put("quota", this.getQuota());
+            jsonWS.put("isPublic", this.isPublic());
+            for (String user : this.getAllowedUsers())
+                allowedUsers.put(user);
+            for (String keyword : this.getKeywords())
+                keywords.put(keyword);
+            jsonWS.put("allowedUsers", allowedUsers);
+            jsonWS.put("keywords", keywords);
+        } catch (JSONException e) {
+            Log.d("[AirDesk]", "JSON exception at the parsing an owned WS to JSON string\n" + e.getMessage());
+        }
+        return jsonWS;
+    }
     //endregion
 }

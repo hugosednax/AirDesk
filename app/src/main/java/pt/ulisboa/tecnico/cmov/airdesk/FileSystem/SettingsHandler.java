@@ -34,6 +34,7 @@ public class SettingsHandler {
     private List<WorkspaceDTO> ownedWorkspaces;
     private List<WorkspaceDTO> foreignWorkspaces;
     private boolean hadSettings;
+    JSONHandler handler;
     //endregion
 
     //region Constructor
@@ -44,6 +45,8 @@ public class SettingsHandler {
         ownedWorkspaces = new ArrayList<WorkspaceDTO>();
         foreignWorkspaces = new ArrayList<WorkspaceDTO>();
         hadSettings = false;
+
+        handler = new JSONHandler();
 
         if(settings.isFile()){
             hadSettings = true;
@@ -149,6 +152,11 @@ public class SettingsHandler {
     }
 
     public void saveOwnedWorkspace(WorkspaceDTO ws) throws FileNotFoundException {
+        try {
+            handler.saveOwnedWorkspace(ws);
+        } catch (WriteToFileException e) {
+            Log.d("[AirDesk]", e.getMessage());
+        }
         BufferedReader br = new BufferedReader(new FileReader(settings.getPath()));
         String fileContent = "";
         try {
