@@ -17,6 +17,8 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.WriteToFileException;
+import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.JSONHandler;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.SettingsHandler;
 import pt.ulisboa.tecnico.cmov.airdesk.Predicate.WorkspaceNamePredicate;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
@@ -34,7 +36,7 @@ public class User {
     private String email;
     private List<Workspace> foreignWorkspaces;
     private List<Workspace> ownedWorkspaces;
-    private SettingsHandler settings;
+    private JSONHandler settings;
     //endregion
 
     //region Constructors
@@ -46,7 +48,8 @@ public class User {
 
         try {
             Log.d(AirDeskApp.LOG_TAG, "create handler");
-            this.settings = new SettingsHandler();
+            //this.settings = new SettingsHandler();
+            this.settings = new JSONHandler();
             Log.d(AirDeskApp.LOG_TAG, "finished handler creating");
         } catch (Exception e) {
             Log.d(AirDeskApp.LOG_TAG, e.getMessage());
@@ -173,7 +176,7 @@ public class User {
         ownedWorkspaces.add(newWorkspace);
         try {
             settings.saveOwnedWorkspace(new WorkspaceDTO((OwnedWorkspace)newWorkspace));
-        } catch (FileNotFoundException e) {
+        } catch (WriteToFileException e) {
             throw new CreateWorkspaceException(e.getMessage());
         }
         return newWorkspace;
@@ -190,7 +193,7 @@ public class User {
             foreignWorkspaces.add(newForeign);
             try {
                 settings.updateOwnedWorkspace(new WorkspaceDTO(workspace));
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
                 Log.d("[AirDesk]", e.getMessage());
             }
         }
@@ -203,7 +206,7 @@ public class User {
             foreignWorkspaces.remove(newForeign);
             try {
                 settings.updateOwnedWorkspace(new WorkspaceDTO(workspace));
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
                 Log.d("[AirDesk]", e.getMessage());
             }
         }

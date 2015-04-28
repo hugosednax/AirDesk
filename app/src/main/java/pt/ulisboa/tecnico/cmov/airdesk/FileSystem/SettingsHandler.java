@@ -152,11 +152,6 @@ public class SettingsHandler {
     }
 
     public void saveOwnedWorkspace(WorkspaceDTO ws) throws FileNotFoundException {
-        try {
-            handler.saveOwnedWorkspace(ws);
-        } catch (WriteToFileException e) {
-            Log.d("[AirDesk]", e.getMessage());
-        }
         BufferedReader br = new BufferedReader(new FileReader(settings.getPath()));
         String fileContent = "";
         try {
