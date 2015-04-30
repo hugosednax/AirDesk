@@ -8,16 +8,11 @@ import android.net.wifi.p2p.WifiP2pManager;
 /**
  * Created by Filipe Teixeira on 29/04/2015.
  */
-public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
-    private WifiP2pManager mManager;
-    private WifiP2pManager.Channel mChannel;
+public class WifiP2pBroadcastReceiver extends BroadcastReceiver {
     private WifiNotificationHandler notificationHandler;
 
-    public WifiDirectBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel,
-                                       WifiNotificationHandler notificationHandler) {
+    public WifiP2pBroadcastReceiver(WifiNotificationHandler notificationHandler) {
         super();
-        this.mManager = manager;
-        this.mChannel = channel;
         this.notificationHandler = notificationHandler;
     }
 

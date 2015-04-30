@@ -24,5 +24,6 @@
     <string name="title_activity_file_edit">Edit File</string>
     <string name="title_activity_invite_users">Invite Users</string>
     <string name="action_invite_users">Invite</string>
+    <string name="port">10001</string>
 
 </resources>
