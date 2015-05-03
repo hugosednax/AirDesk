@@ -139,6 +139,7 @@ public class JSONHandler {
         try{
             JSONObject JSONSettings = new JSONObject(this.toJSONString());
             JSONArray ownedWorkspaces = JSONSettings.getJSONArray(TAG_OWNED_WORKSPACES);
+            int toRemove = 0;
             for(int i = 0; i < ownedWorkspaces.length(); i++){
                 JSONObject workspace = (JSONObject)ownedWorkspaces.get(i);
                 if(workspace.get(TAG_NAME).equals(ws.getName())){

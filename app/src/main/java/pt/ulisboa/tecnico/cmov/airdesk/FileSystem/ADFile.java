@@ -3,6 +3,9 @@ package pt.ulisboa.tecnico.cmov.airdesk.FileSystem;
 import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -55,6 +58,18 @@ public class ADFile {
 
     public String toString(){
         return name;
+    }
+
+    public JSONObject toJSON(){
+        JSONObject json = new JSONObject();
+        try {
+            json.put("name", name);
+            json.put("editable", editable);
+            json.put("file", file.toString());
+        }catch (Exception e){
+
+        }
+        return json;
     }
     //endregion
 

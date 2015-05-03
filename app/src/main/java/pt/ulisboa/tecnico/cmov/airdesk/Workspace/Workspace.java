@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -68,6 +69,21 @@ public abstract class     Workspace {
     @Override
     public String toString(){
         return name;
+    }
+
+    public JSONObject toJSON(){
+        JSONObject json = new JSONObject();
+        try {
+            json.put("name", name);
+            json.put("quota", quota);
+            JSONArray jFiles = new JSONArray();
+            for (ADFile file : getFiles())
+                jFiles.put(file.toJSON());
+            json.put("files", jFiles);
+        }catch (Exception e){
+
+        }
+        return json;
     }
     //endregion
 }
