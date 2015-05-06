@@ -30,3 +30,12 @@ repositories{
         dirs 'libs'
     }
 }
+
+dependencies {
+  compile(name:'Termite-WifiP2P-API-20150419', ext:'aar')
+}
+repositories{
+  flatDir{
+    dirs 'libs'
+  }
+}
