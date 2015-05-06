@@ -32,7 +32,7 @@ repositories{
 }
 
 dependencies {
-  compile(name:'Termite-WifiP2P-API-20150419', ext:'aar')
+  compile(name:'Termite-WifiP2P-API-20150503', ext:'aar')
 }
 repositories{
   flatDir{
