@@ -69,6 +69,7 @@
             android:name=".Activity.InviteUsersActivity"
             android:label="@string/title_activity_invite_users" >
         </activity>
+        <service android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService" />
     </application>
 
 </manifest>
