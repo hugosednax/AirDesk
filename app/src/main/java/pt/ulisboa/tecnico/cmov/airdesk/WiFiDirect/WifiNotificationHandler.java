@@ -56,9 +56,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
     private final String TAG = "[AirDesk]";
 
-    public WifiNotificationHandler(Activity currentActivity) {
-        this.currentActivity = currentActivity;
-        this.context = currentActivity.getApplicationContext();
+    public WifiNotificationHandler(Context context) {
+        Log.d(TAG, "WifiNotificationHandler started");
+        this.context = context;
         // initialize the WDSim API
         SimWifiP2pSocketManager.Init(context);
 
@@ -70,6 +70,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
         WifiP2pBroadcastReceiver receiver = new WifiP2pBroadcastReceiver(this);
         context.registerReceiver(receiver, filter);
+        Log.d(TAG, "WifiNotificationHandler creation done");
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -92,13 +93,40 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         }
     };
 
+    protected void notifyWifiOn(){
+        Toast.makeText(this.currentActivity, "WiFi Direct enabled",
+                Toast.LENGTH_SHORT).show();
+
+    }
+    protected void notifyWifiOff(){
+        Toast.makeText(this.currentActivity, "WiFi Direct disabled",
+                Toast.LENGTH_SHORT).show();
+
+    }
+    protected void notifyPeersChanged(){
+        Toast.makeText(this.currentActivity, "Peer list changed",
+                Toast.LENGTH_SHORT).show();
+
+        if (mBound) {
+            mManager.requestPeers(mChannel, (SimWifiP2pManager.PeerListListener) WifiNotificationHandler.this);
+        }
+    }
+    protected void notifyNetworkChanged(){
+        Toast.makeText(this.currentActivity, "Network membership changed",
+                Toast.LENGTH_SHORT).show();
+    }
+    protected void notifyGroupChanged(){
+        Toast.makeText(this.currentActivity, "Group ownership changed",
+                Toast.LENGTH_SHORT).show();
+    }
+
     public void wifiOn() {
         Intent intent = new Intent(context, SimWifiP2pService.class);
         context.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         mBound = true;
 
         // spawn the chat server background task
-        new IncommingCommTask().executeOnExecutor(
+        new IncomingCommTask().executeOnExecutor(
                 AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -111,7 +139,14 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
     public void spamNetwork(String message) throws ServiceNotBoundException {
         if (mBound) {
-            mManager.requestPeers(mChannel, (SimWifiP2pManager.PeerListListener) WifiNotificationHandler.this);
+            try {
+                for(String ip : peersList) {
+                    mCliSocket = new SimWifiP2pSocket(ip, Integer.parseInt(context.getString(R.string.port)));
+                    mCliSocket.getOutputStream().write((message).getBytes());
+                }
+            } catch (IOException e) {
+                Log.d(TAG, e.getMessage());
+            }
         } else {
             throw new ServiceNotBoundException("Service not Bound");
         }
@@ -127,8 +162,6 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         } else {
             throw new ServiceNotBoundException("Service not Bound");
         }
-
-
     }
 
     @Override
@@ -159,12 +192,12 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 	 * Classes implementing chat message exchange
 	 */
 
-    public class IncommingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
+    public class IncomingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
 
-            Log.d(TAG, "IncommingCommTask started (" + this.hashCode() + ").");
+            Log.d(TAG, "IncomingCommTask started (" + this.hashCode() + ").");
 
             try {
                 mSrvSocket = new SimWifiP2pSocketServer(
@@ -202,52 +235,22 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         }
     }
 
-    public class OutgoingCommTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected void onPreExecute() {
-            mTextOutput.setText("Connecting...");
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                mCliSocket = new SimWifiP2pSocket(params[0],
-                        Integer.parseInt(context.getString(R.string.port)));
-            } catch (UnknownHostException e) {
-                return "Unknown Host:" + e.getMessage();
-            } catch (IOException e) {
-                return "IO error:" + e.getMessage();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            if (result != null) {
-                mTextOutput.setText(result);
-            } else {
-                mComm = new ReceiveCommTask();
-                mComm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mCliSocket);
-            }
-        }
-    }
-
     public class ReceiveCommTask extends AsyncTask<SimWifiP2pSocket, String, Void> {
         SimWifiP2pSocket s;
 
         @Override
         protected Void doInBackground(SimWifiP2pSocket... params) {
             BufferedReader sockIn;
-            String st;
+            String st, result = "";
 
             s = params[0];
             try {
                 sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
 
                 while ((st = sockIn.readLine()) != null) {
-                    publishProgress(st);
+                    result = result + "\n" + st;
                 }
+                Log.d(TAG, "Received: " + result);
             } catch (IOException e) {
                 Log.d("Error reading socket:", e.getMessage());
             }

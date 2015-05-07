@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import pt.ulisboa.tecnico.cmov.airdesk.User.User;
+import pt.ulisboa.tecnico.cmov.airdesk.WiFiDirect.WifiNotificationHandler;
 
 /**
  * Created by Toninho on 3/12/2015.
@@ -17,6 +18,7 @@ public class AirDeskApp extends Application {
     private User user;
     SharedPreferences prefs;
     private static Context context;
+    private WifiNotificationHandler wifiHandler;
     //endregion
 
     //region Constructors
@@ -30,6 +32,8 @@ public class AirDeskApp extends Application {
     public void onCreate() {
         super.onCreate();
         AirDeskApp.context = getApplicationContext();
+        wifiHandler = new WifiNotificationHandler(context);
+        wifiHandler.wifiOn();
     }
 
     @Override
@@ -42,6 +46,8 @@ public class AirDeskApp extends Application {
     public User getUser() {
         return user;
     }
+
+    public WifiNotificationHandler getWifiHandler() { return wifiHandler; }
 
     public SharedPreferences getPrefs() {
         return prefs;

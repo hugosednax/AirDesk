@@ -9,6 +9,7 @@ import android.view.MenuItem;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.WiFiDirect.WifiNotificationHandler;
 
 
 public class StarterActivity extends ActionBarActivity {
@@ -40,8 +41,8 @@ public class StarterActivity extends ActionBarActivity {
             intent = new Intent(this, WorkspaceTypeActivity.class);
             Log.d("PREFERENCES HERE","user: "+nick+" email: "+userEmail);
         }
-        
         startActivity(intent);
+        airDeskApp.getWifiHandler().setCurrentActivity(this);
         finish(); //finish to close this activity and not allow to use the back button to travel to it
     }
 

@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.Tag;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.ServiceNotBoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
@@ -45,6 +47,14 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
                 set itemClick Listener
             */
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
+
+        airDeskApp.getWifiHandler().setCurrentActivity(this);
+        try {
+            airDeskApp.getWifiHandler().spamNetwork("broadcast");
+        } catch (ServiceNotBoundException e) {
+            Log.d(airDeskApp.LOG_TAG, e.getMessage());
+        }
+
         workspaces = airDeskApp.getUser().getOwnedWorkspaces();
         workspacesAdapter = new ArrayAdapter<Workspace>(this, android.R.layout.simple_list_item_1, workspaces);
         listView = (ListView) findViewById(R.id.listWorkspaces);
