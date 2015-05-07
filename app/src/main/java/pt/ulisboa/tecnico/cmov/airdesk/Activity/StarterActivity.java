@@ -40,6 +40,7 @@ public class StarterActivity extends ActionBarActivity {
             intent = new Intent(this, WorkspaceTypeActivity.class);
             Log.d("PREFERENCES HERE","user: "+nick+" email: "+userEmail);
         }
+        
         startActivity(intent);
         finish(); //finish to close this activity and not allow to use the back button to travel to it
     }
