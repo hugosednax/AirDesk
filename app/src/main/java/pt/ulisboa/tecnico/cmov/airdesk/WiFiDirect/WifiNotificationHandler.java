@@ -49,10 +49,8 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     private SimWifiP2pSocketServer mSrvSocket = null;
     private SimWifiP2pSocket mCliSocket = null;
     private ReceiveCommTask mComm = null;
-    private TextView mTextInput;
-    private TextView mTextOutput;
 
-    List<String> peersList = null;
+    List<String> peersList;
 
     private final String TAG = "[AirDesk]";
 
@@ -61,7 +59,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         this.context = context;
         // initialize the WDSim API
         SimWifiP2pSocketManager.Init(context);
-
+        peersList = new ArrayList<>();
         // register broadcast receiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -140,9 +138,11 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     public void spamNetwork(String message) throws ServiceNotBoundException {
         if (mBound) {
             try {
-                for(String ip : peersList) {
-                    mCliSocket = new SimWifiP2pSocket(ip, Integer.parseInt(context.getString(R.string.port)));
-                    mCliSocket.getOutputStream().write((message).getBytes());
+                if(peersList!=null) {
+                    for (String ip : peersList) {
+                        mCliSocket = new SimWifiP2pSocket(ip, Integer.parseInt(context.getString(R.string.port)));
+                        mCliSocket.getOutputStream().write((message).getBytes());
+                    }
                 }
             } catch (IOException e) {
                 Log.d(TAG, e.getMessage());
@@ -166,12 +166,11 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
-        List<String> peersList = new ArrayList<>();
         // compile list of devices in range
+        Log.d(TAG, "ON PEERS AVAILABLE");
         for (SimWifiP2pDevice device : peers.getDeviceList()) {
             peersList.add(device.getVirtIp());
         }
-        this.peersList = peersList;
     }
 
     @Override
