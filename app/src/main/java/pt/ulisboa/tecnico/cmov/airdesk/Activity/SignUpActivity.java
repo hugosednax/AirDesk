@@ -20,6 +20,7 @@ public class SignUpActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        ((AirDeskApp)getApplicationContext()).getWifiHandler().setCurrentActivity(this);
     }
 
     //called when the button is pressed

@@ -31,9 +31,9 @@ public class AirDeskApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        AirDeskApp.context = getApplicationContext();
-        wifiHandler = new WifiNotificationHandler(context);
-        wifiHandler.wifiOn();
+        this.context = getApplicationContext();
+        wifiHandler = new WifiNotificationHandler(getApplicationContext());
+        //wifiHandler.wifiOn(); wifi is turned on in the WorkspaceTypeActivity
     }
 
     @Override

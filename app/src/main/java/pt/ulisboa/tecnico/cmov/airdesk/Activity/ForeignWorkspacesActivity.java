@@ -45,7 +45,7 @@ public class ForeignWorkspacesActivity extends ActionBarActivity {
                 startListFiles(selectedFromList);
             }
         });
-
+        airDeskApp.getWifiHandler().setCurrentActivity(this);
     }
 
     public void startListFiles(String nameOfWorkspace){

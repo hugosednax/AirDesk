@@ -49,6 +49,7 @@ public class FilesActivity extends ActionBarActivity {
         isForeign = intent.getBooleanExtra("isForeign",false); //default value is false
         selectedFiles = new ArrayList<String>();
         new FilesTask().execute(this);
+        airDeskApp.getWifiHandler().setCurrentActivity(this);
     }
 
     public void assignArrayAdapter(List<ADFile> array){

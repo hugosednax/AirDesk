@@ -23,6 +23,7 @@ public class WorkspaceCreateActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workspace_create);
+        ((AirDeskApp) getApplicationContext()).getWifiHandler().setCurrentActivity(this);
     }
 
 

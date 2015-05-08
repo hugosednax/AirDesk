@@ -53,6 +53,7 @@ public class WorkspaceEditActivity extends ActionBarActivity {
         //Fill the quotaView with the current Quota of the Workspace
         quota.setText(String.valueOf(workspaceToEdit.getQuota()));
         //name.setText(String.valueOf(workspaceToEdit.getName()));
+        ((AirDeskApp) getApplicationContext()).getWifiHandler().setCurrentActivity(this);
     }
 
     //called when the button is pressed and changes the Quota of the workspace

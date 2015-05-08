@@ -52,6 +52,7 @@ public class FileCreateActivity extends ActionBarActivity {
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();
         }
+        airDeskApp.getWifiHandler().setCurrentActivity(this);
     }
 
     /*

@@ -75,6 +75,7 @@ public class FileEditActivity extends ActionBarActivity {
 
         //Set the text
         textView.setText(text);
+        airDeskApp.getWifiHandler().setCurrentActivity(this);
     }
 
     public void SaveChanges(View v){

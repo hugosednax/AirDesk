@@ -66,6 +66,7 @@ public class FileViewActivity extends ActionBarActivity {
 
             //Set the text
             tv.setText(text);
+        airDeskApp.getWifiHandler().setCurrentActivity(this);
     }
 
 

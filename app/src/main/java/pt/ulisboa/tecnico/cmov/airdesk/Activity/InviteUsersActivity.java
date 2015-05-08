@@ -78,6 +78,7 @@ public class InviteUsersActivity extends ActionBarActivity {
                 return false;
             }
         });
+        airDeskApp.getWifiHandler().setCurrentActivity(this);
     }
 
 

@@ -1,0 +1,29 @@
+﻿
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Your branch is up-to-date with 'origin/master'.
+#
+# Changes to be committed:
+#	modified:   .idea/gradle.xml
+#	modified:   .idea/misc.xml
+#	modified:   AirDesk.iml
+#
+# Changes not staged for commit:
+#	modified:   app/app.iml
+#	modified:   app/src/main/java/pt/ulisboa/tecnico/cmov/airdesk/Activity/FileCreateActivity.java
+#	modified:   app/src/main/java/pt/ulisboa/tecnico/cmov/airdesk/Activity/FileEditActivity.java
+#	modified:   app/src/main/java/pt/ulisboa/tecnico/cmov/airdesk/Activity/FileViewActivity.java
+#	modified:   app/src/main/java/pt/ulisboa/tecnico/cmov/airdesk/Activity/FilesActivity.java
+#	modified:   app/src/main/java/pt/ulisboa/tecnico/cmov/airdesk/Activity/ForeignWorkspacesActivity.java
+#	modified:   app/src/main/java/pt/ulisboa/tecnico/cmov/airdesk/Activity/InviteUsersActivity.java
+#	modified:   app/src/main/java/pt/ulisboa/tecnico/cmov/airdesk/Activity/OwnedWorkspacesActivity.java
+#	modified:   app/src/main/java/pt/ulisboa/tecnico/cmov/airdesk/Activity/SignUpActivity.java
+#	modified:   app/src/main/java/pt/ulisboa/tecnico/cmov/airdesk/Activity/WorkspaceCreateActivity.java
+#	modified:   app/src/main/java/pt/ulisboa/tecnico/cmov/airdesk/Activity/WorkspaceEditActivity.java
+#	modified:   app/src/main/java/pt/ulisboa/tecnico/cmov/airdesk/Activity/WorkspaceTypeActivity.java
+#	modified:   app/src/main/java/pt/ulisboa/tecnico/cmov/airdesk/Application/AirDeskApp.java
+#	modified:   app/src/main/java/pt/ulisboa/tecnico/cmov/airdesk/WiFiDirect/SimWifiP2pBroadcastReceiver.java
+#	modified:   app/src/main/java/pt/ulisboa/tecnico/cmov/airdesk/WiFiDirect/WifiNotificationHandler.java
+#
+

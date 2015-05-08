@@ -57,17 +57,20 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     public WifiNotificationHandler(Context context) {
         Log.d(TAG, "WifiNotificationHandler started");
         this.context = context;
+        this.peersList = new ArrayList<>();
+
         // initialize the WDSim API
         SimWifiP2pSocketManager.Init(context);
-        peersList = new ArrayList<>();
+
         // register broadcast receiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
-        WifiP2pBroadcastReceiver receiver = new WifiP2pBroadcastReceiver(this);
+        SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver(this);
         context.registerReceiver(receiver, filter);
+
         Log.d(TAG, "WifiNotificationHandler creation done");
     }
 
@@ -80,6 +83,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             mManager = new SimWifiP2pManager(mService);
             mChannel = mManager.initialize(currentActivity.getApplication(), context.getMainLooper(), null);
             mBound = true;
+            mManager.requestPeers(mChannel, WifiNotificationHandler.this);
         }
 
         @Override
@@ -91,32 +95,37 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         }
     };
 
+    //region Notifiers
     protected void notifyWifiOn(){
         Toast.makeText(this.currentActivity, "WiFi Direct enabled",
                 Toast.LENGTH_SHORT).show();
-
     }
+
     protected void notifyWifiOff(){
         Toast.makeText(this.currentActivity, "WiFi Direct disabled",
                 Toast.LENGTH_SHORT).show();
 
     }
+
     protected void notifyPeersChanged(){
         Toast.makeText(this.currentActivity, "Peer list changed",
                 Toast.LENGTH_SHORT).show();
 
         if (mBound) {
-            mManager.requestPeers(mChannel, (SimWifiP2pManager.PeerListListener) WifiNotificationHandler.this);
+            mManager.requestPeers(mChannel, WifiNotificationHandler.this);
         }
     }
+
     protected void notifyNetworkChanged(){
         Toast.makeText(this.currentActivity, "Network membership changed",
                 Toast.LENGTH_SHORT).show();
     }
+
     protected void notifyGroupChanged(){
         Toast.makeText(this.currentActivity, "Group ownership changed",
                 Toast.LENGTH_SHORT).show();
     }
+    //endregion
 
     public void wifiOn() {
         Intent intent = new Intent(context, SimWifiP2pService.class);
@@ -132,20 +141,15 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         if (mBound) {
             context.unbindService(mConnection);
             mBound = false;
+            Toast.makeText(this.currentActivity, "WiFi Off",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
     public void spamNetwork(String message) throws ServiceNotBoundException {
         if (mBound) {
-            try {
-                if(peersList!=null) {
-                    for (String ip : peersList) {
-                        mCliSocket = new SimWifiP2pSocket(ip, Integer.parseInt(context.getString(R.string.port)));
-                        mCliSocket.getOutputStream().write((message).getBytes());
-                    }
-                }
-            } catch (IOException e) {
-                Log.d(TAG, e.getMessage());
+            for (String ip : peersList) {
+                new OutgoingCommTask(message).execute(ip);
             }
         } else {
             throw new ServiceNotBoundException("Service not Bound");
@@ -156,21 +160,15 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         this.currentActivity = currentActivity;
     }
 
-    protected void notifyWifi(boolean isOn) throws ServiceNotBoundException {
-        if (mBound) {
-            mManager.requestPeers(mChannel, (SimWifiP2pManager.PeerListListener) WifiNotificationHandler.this);
-        } else {
-            throw new ServiceNotBoundException("Service not Bound");
-        }
-    }
-
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
         // compile list of devices in range
-        Log.d(TAG, "ON PEERS AVAILABLE");
+        List<String> peersListResult = new ArrayList<>();
         for (SimWifiP2pDevice device : peers.getDeviceList()) {
-            peersList.add(device.getVirtIp());
+            peersListResult.add(device.getVirtIp());
+            Log.d(TAG, "peer: " + device.getVirtIp());
         }
+        peersList = peersListResult;
     }
 
     @Override
@@ -202,24 +200,16 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 mSrvSocket = new SimWifiP2pSocketServer(
                         Integer.parseInt(context.getString(R.string.port)));
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.d(TAG, e.getMessage());
             }
             while (!Thread.currentThread().isInterrupted()) {
                 try {
+                    Log.d(TAG, "IncomingCommTask waiting for connection");
                     SimWifiP2pSocket sock = mSrvSocket.accept();
-                    if (mCliSocket != null && mCliSocket.isClosed()) {
-                        mCliSocket = null;
-                    }
-                    if (mCliSocket != null) {
-                        Log.d(TAG, "Closing accepted socket because mCliSocket still active.");
-                        sock.close();
-                    } else {
-                        publishProgress(sock);
-                    }
+                    publishProgress(sock);
                 } catch (IOException e) {
                     Log.d("Error accepting socket:", e.getMessage());
                     break;
-                    //e.printStackTrace();
                 }
             }
             return null;
@@ -227,15 +217,18 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
         @Override
         protected void onProgressUpdate(SimWifiP2pSocket... values) {
-            mCliSocket = values[0];
-            mComm = new ReceiveCommTask();
-
-            mComm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mCliSocket);
+            SimWifiP2pSocket socket = values[0];
+            new ReceiveCommTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, socket);
         }
     }
 
     public class ReceiveCommTask extends AsyncTask<SimWifiP2pSocket, String, Void> {
         SimWifiP2pSocket s;
+
+        @Override
+        protected void onPreExecute() {
+            Log.d(TAG, "Receiving info");
+        }
 
         @Override
         protected Void doInBackground(SimWifiP2pSocket... params) {
@@ -247,13 +240,69 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
 
                 while ((st = sockIn.readLine()) != null) {
+                    Log.d(TAG, "Received: " + st);
                     result = result + "\n" + st;
                 }
-                Log.d(TAG, "Received: " + result);
             } catch (IOException e) {
-                Log.d("Error reading socket:", e.getMessage());
+                Log.d(TAG, "Error reading socket: " + e.getMessage());
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if (!s.isClosed()) {
+                try {
+                    s.close();
+                }
+                catch (Exception e) {
+                    Log.d(TAG, "Error closing socket: " + e.getMessage());
+                }
+            }
+            s = null;
+        }
+    }
+
+    public class OutgoingCommTask extends AsyncTask<String, Void, String> {
+        SimWifiP2pSocket sendSocket;
+        String message;
+
+        public OutgoingCommTask(String message){
+            this.message = message;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            Log.d(TAG, "Connecting to socket");
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                sendSocket = new SimWifiP2pSocket(params[0],
+                        Integer.parseInt(context.getString(R.string.port)));
+            } catch (UnknownHostException e) {
+                return "Unknown Host:" + e.getMessage();
+            } catch (IOException e) {
+                return "IO error:" + e.getMessage();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (result != null) {
+                Log.d(TAG, "Error at sending " + result);
+            }
+            else {
+                try {
+                    Log.d(TAG, "Sending: " + message);
+                    sendSocket.getOutputStream().write(message.getBytes());
+                    sendSocket.close();
+                } catch (IOException e) {
+                    Log.d(TAG, "Error at sending " + e.getMessage());
+                }
+            }
         }
     }
 }
