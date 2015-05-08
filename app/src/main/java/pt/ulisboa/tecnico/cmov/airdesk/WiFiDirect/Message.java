@@ -12,9 +12,9 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
  */
 public class Message {
 
-String content;
-Workspace workspace;
-Type typeOfMessage;
+    String content;
+    Workspace workspace;
+    Type typeOfMessage;
     public enum Type{
         INVITE, INHERE, IGOTTHIS, INTEREST, UGOTTHIS, CONNECTO;
     }

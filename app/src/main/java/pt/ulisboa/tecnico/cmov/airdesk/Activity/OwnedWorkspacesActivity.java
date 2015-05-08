@@ -47,14 +47,6 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
                 set itemClick Listener
             */
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
-
-        airDeskApp.getWifiHandler().setCurrentActivity(this);
-        try {
-            airDeskApp.getWifiHandler().spamNetwork("broadcast");
-        } catch (ServiceNotBoundException e) {
-            Log.d(airDeskApp.LOG_TAG, e.getMessage());
-        }
-
         workspaces = airDeskApp.getUser().getOwnedWorkspaces();
         workspacesAdapter = new ArrayAdapter<Workspace>(this, android.R.layout.simple_list_item_1, workspaces);
         listView = (ListView) findViewById(R.id.listWorkspaces);
@@ -75,9 +67,9 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
         addContextToList(listView, airDeskApp);
         airDeskApp.getWifiHandler().setCurrentActivity(this);
         try {
-            airDeskApp.getWifiHandler().spamNetwork("im here");
+            airDeskApp.getWifiHandler().broadcast("SPAM");
         } catch (ServiceNotBoundException e) {
-            Log.d("[AirDesk]", "sercvice not bound exception at spam");
+            Log.d("[AirDesk]", "service not bound exception at spam");
         }
     }
 

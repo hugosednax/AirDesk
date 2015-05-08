@@ -146,7 +146,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         }
     }
 
-    public void spamNetwork(String message) throws ServiceNotBoundException {
+    public void broadcast(String message) throws ServiceNotBoundException {
         if (mBound) {
             for (String ip : peersList) {
                 new OutgoingCommTask(message).execute(ip);
@@ -172,21 +172,13 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     }
 
     @Override
-    public void onGroupInfoAvailable(SimWifiP2pDeviceList devices,
-                                     SimWifiP2pInfo groupInfo) {
-
-        // compile list of network members
-        StringBuilder peersStr = new StringBuilder();
-        for (String deviceName : groupInfo.getDevicesInNetwork()) {
-            SimWifiP2pDevice device = devices.getByName(deviceName);
-            String devstr = "" + deviceName + " (" +
-                    ((device == null)?"??":device.getVirtIp()) + ")\n";
-            peersStr.append(devstr);
-        }
+    public void onGroupInfoAvailable(SimWifiP2pDeviceList devices, SimWifiP2pInfo groupInfo) {
+        //TODO
     }
 
+
     /*
-	 * Classes implementing chat message exchange
+	 * Classes implementing message exchange
 	 */
 
     public class IncomingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
