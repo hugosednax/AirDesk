@@ -12,14 +12,18 @@ import android.content.Context;
 import android.content.Intent;
 
 public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
+    //region Class Variables
+    private WifiNotificationHandler wifiHandler;
+    //endregion
 
-    private WifiNotificationHandler wifiHandler = null;
-
+    //region Constructor
     public SimWifiP2pBroadcastReceiver(WifiNotificationHandler wifiHandler) {
         super();
         this.wifiHandler = wifiHandler;
     }
+    //endregion
 
+    //region BroadcastReceiver implementation
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
@@ -59,4 +63,5 @@ public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
             wifiHandler.notifyGroupChanged();
         }
     }
+    //endregion
 }

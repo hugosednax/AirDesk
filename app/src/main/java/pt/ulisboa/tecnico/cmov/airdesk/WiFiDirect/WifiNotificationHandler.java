@@ -40,8 +40,13 @@ import pt.ulisboa.tecnico.cmov.airdesk.R;
  * Created by Filipe Teixeira on 30/04/2015.
  */
 public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
-    Activity currentActivity;
-    Context context;
+    //region Constants
+    private static final String TAG = "[AirDesk]";
+    //endregion
+
+    //region Class Variables
+    private Activity currentActivity;
+    private Context context;
     private SimWifiP2pManager mManager = null;
     private SimWifiP2pManager.Channel mChannel = null;
     private Messenger mService = null;
@@ -49,13 +54,11 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     private SimWifiP2pSocketServer mSrvSocket = null;
     private SimWifiP2pSocket mCliSocket = null;
     private ReceiveCommTask mComm = null;
+    private List<String> peersList;
+    //endregion
 
-    List<String> peersList;
-
-    private final String TAG = "[AirDesk]";
-
+    //region Constructor
     public WifiNotificationHandler(Context context) {
-        Log.d(TAG, "WifiNotificationHandler started");
         this.context = context;
         this.peersList = new ArrayList<>();
 
@@ -70,10 +73,16 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
         SimWifiP2pBroadcastReceiver receiver = new SimWifiP2pBroadcastReceiver(this);
         context.registerReceiver(receiver, filter);
-
-        Log.d(TAG, "WifiNotificationHandler creation done");
     }
+    //endregion
 
+    //region Setters
+    public void setCurrentActivity(Activity currentActivity) {
+        this.currentActivity = currentActivity;
+    }
+    //endregion
+
+    //region Service Controller
     private ServiceConnection mConnection = new ServiceConnection() {
         // callbacks for service binding, passed to bindService()
 
@@ -94,6 +103,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             mBound = false;
         }
     };
+    //endregion
 
     //region Notifiers
     protected void notifyWifiOn(){
@@ -127,6 +137,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     }
     //endregion
 
+    //region Wifi Controller
     public void wifiOn() {
         Intent intent = new Intent(context, SimWifiP2pService.class);
         context.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -145,7 +156,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                     Toast.LENGTH_SHORT).show();
         }
     }
+    //endregion
 
+    //region Communication API
     public void broadcast(String message) throws ServiceNotBoundException {
         if (mBound) {
             for (String ip : peersList) {
@@ -155,11 +168,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             throw new ServiceNotBoundException("Service not Bound");
         }
     }
+    //endregion
 
-    public void setCurrentActivity(Activity currentActivity) {
-        this.currentActivity = currentActivity;
-    }
-
+    //region Listener Implementation
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
         // compile list of devices in range
@@ -175,13 +186,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     public void onGroupInfoAvailable(SimWifiP2pDeviceList devices, SimWifiP2pInfo groupInfo) {
         //TODO
     }
+    //endregion
 
-
-    /*
-	 * Classes implementing message exchange
-	 */
-
-    public class IncomingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
+    private class IncomingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -214,7 +221,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         }
     }
 
-    public class ReceiveCommTask extends AsyncTask<SimWifiP2pSocket, String, Void> {
+    private class ReceiveCommTask extends AsyncTask<SimWifiP2pSocket, String, Void> {
         SimWifiP2pSocket s;
 
         @Override
@@ -255,7 +262,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         }
     }
 
-    public class OutgoingCommTask extends AsyncTask<String, Void, String> {
+    private class OutgoingCommTask extends AsyncTask<String, Void, String> {
         SimWifiP2pSocket sendSocket;
         String message;
 
