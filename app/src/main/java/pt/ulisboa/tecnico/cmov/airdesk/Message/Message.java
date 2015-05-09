@@ -12,17 +12,25 @@ public abstract class Message {
     public static final String MESSAGE_USER = "USER";
     public static final String MESSAGE_WORKSPACE = "WORKSPACE";
 
-    Type typeOfMessage;
+
+    private Type typeOfMessage;
+    private String user;
     public enum Type{
         IMHERE, INVITE, INHERE, IGOTTHIS, INTEREST, UGOTTHIS, CONNECTO;
     }
 
-    public Message(Type typeOfMessage){
+    public Message(Type typeOfMessage, String user){
+        this.user = user;
         this.typeOfMessage = typeOfMessage;
     }
 
     public Type getTypeOfMessage() {
         return typeOfMessage;
+    }
+
+
+    public String getUser() {
+        return user;
     }
 
     public void setTypeOfMessage(Type typeOfMessage) {

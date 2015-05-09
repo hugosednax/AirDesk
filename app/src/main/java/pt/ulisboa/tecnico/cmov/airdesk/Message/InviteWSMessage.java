@@ -11,10 +11,16 @@ import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
 public class InviteWSMessage extends Message {
     private WorkspaceDTO workspace;
 
-    public InviteWSMessage(WorkspaceDTO workspace) {
-        super(Type.INVITE);
+    public InviteWSMessage(String user, WorkspaceDTO workspace) {
+        super(Type.INVITE, user);
         this.workspace = workspace;
     }
+
+    public InviteWSMessage(String user, JSONObject workspace) {
+        super(Type.INVITE, user);
+
+    }
+
 
     public WorkspaceDTO getWorkspaceDTO() {
         return this.workspace;

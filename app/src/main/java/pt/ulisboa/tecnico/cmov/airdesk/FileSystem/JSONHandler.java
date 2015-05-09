@@ -24,13 +24,14 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.WriteToFileException;
  */
 public class JSONHandler {
     //region Static String
-    private static final String TAG_OWNED_WORKSPACES = "OwnedWorkspaces";
-    private static final String TAG_FOREIGN_WORKSPACES = "ForeignWorkspaces";
-    private static final String TAG_NAME = "name";
-    private static final String TAG_PUBLIC = "isPublic";
-    private static final String TAG_QUOTA = "quota";
-    private static final String TAG_KEYWORDS = "keywords";
-    private static final String TAG_ALLOWED_USERS = "allowedUsers";
+    public static final String TAG_OWNED_WORKSPACES = "OwnedWorkspaces";
+    public static final String TAG_FOREIGN_WORKSPACES = "ForeignWorkspaces";
+    public static final String TAG_NAME = "name";
+    public static final String TAG_PUBLIC = "isPublic";
+    public static final String TAG_QUOTA = "quota";
+    public static final String TAG_KEYWORDS = "keywords";
+    public static final String TAG_ALLOWED_USERS = "allowedUsers";
+    public static final String TAG_FILE_NAMES = "fileNames";
     //endregion
 
     //region Class Variables

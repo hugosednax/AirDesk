@@ -5,6 +5,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.MessageParsingException;
 
 /**
@@ -18,7 +19,8 @@ public class MessageHandler {
         if(messageType == Message.Type.IMHERE){
             MessageHandler.executeMessage(new ImHereMessage((String)JSONMessage.get(Message.MESSAGE_USER)));
         } else if(messageType == Message.Type.INVITE){
-            MessageHandler.executeMessage(new ImHereMessage((String)JSONMessage.get(Message.MESSAGE_USER)));
+            MessageHandler.executeMessage(new InviteWSMessage((String)JSONMessage.get(Message.MESSAGE_USER),
+                    new WorkspaceDTO((JSONObject)JSONMessage.get(Message.MESSAGE_WORKSPACE))));
         } else
             throw new MessageParsingException("No compatible Type found");
     }
@@ -26,5 +28,10 @@ public class MessageHandler {
     private static void executeMessage(ImHereMessage message){
         //TODO
         Log.d("[AirDesk]", "Parsed an ImHereMessage from " + message.getUser());
+    }
+
+    private static void executeMessage(InviteWSMessage message){
+        //TODO
+        Log.d("[AirDesk]", "Parsed an InviteMessage from" + message.getUser() + " for workspace " + message.getWorkspaceDTO().getName());
     }
 }

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
+import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.JSONHandler;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.OwnedWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
@@ -24,7 +25,7 @@ public class WorkspaceDTO {
     private int quota;
     private List<String> allowedUsers;
     private List<String> keywords;
-    private List<String> files;
+    private List<String> fileNames;
     //endregion
 
     //region Constructors
@@ -34,6 +35,7 @@ public class WorkspaceDTO {
         this.quota = quota;
         this.allowedUsers = new ArrayList<>();
         this.keywords = new ArrayList<>();
+        this.fileNames = new ArrayList<>();
     }
 
     public WorkspaceDTO(OwnedWorkspace ws){
@@ -41,9 +43,26 @@ public class WorkspaceDTO {
         this.quota = ws.getQuota();
         this.allowedUsers = ws.getAllowedUsers();
         this.keywords = new ArrayList<>();
-        this.files = new ArrayList<>();
+        this.fileNames = new ArrayList<>();
         for(ADFile file : ws.getFiles()){
-            files.add(file.getFileName());
+            fileNames.add(file.getFileName());
+        }
+    }
+
+    public WorkspaceDTO(JSONObject workspace) throws JSONException {
+        this.name=(String)workspace.get(JSONHandler.TAG_NAME);
+        this.isPublic = (boolean)workspace.get(JSONHandler.TAG_PUBLIC);
+        this.quota = (int)workspace.get(JSONHandler.TAG_QUOTA);
+        this.allowedUsers = new ArrayList<>();
+        this.keywords = new ArrayList<>();
+        this.fileNames = new ArrayList<>();
+        JSONArray keywords = workspace.getJSONArray(JSONHandler.TAG_KEYWORDS);
+        JSONArray allowedUsers = workspace.getJSONArray(JSONHandler.TAG_ALLOWED_USERS);
+        for(int j = 0; j < keywords.length(); j++){
+            this.addKeyword((String)keywords.get(j));
+        }
+        for(int j = 0; j < allowedUsers.length(); j++){
+            this.addAllowedUser((String)allowedUsers.get(j));
         }
     }
     //endregion
@@ -65,7 +84,7 @@ public class WorkspaceDTO {
         return keywords;
     }
 
-    public List<String> getFileNames() { return files; }
+    public List<String> getFileNames() { return fileNames; }
     //endregion
 
     //region Setters
@@ -88,18 +107,18 @@ public class WorkspaceDTO {
         JSONArray keywords = new JSONArray();
         JSONArray fileNames = new JSONArray();
         try {
-            jsonWS.put("name", this.getName());
-            jsonWS.put("quota", this.getQuota());
-            jsonWS.put("isPublic", this.isPublic());
+            jsonWS.put(JSONHandler.TAG_NAME, this.getName());
+            jsonWS.put(JSONHandler.TAG_QUOTA, this.getQuota());
+            jsonWS.put(JSONHandler.TAG_PUBLIC, this.isPublic());
             for (String user : this.getAllowedUsers())
                 allowedUsers.put(user);
             for (String keyword : this.getKeywords())
                 keywords.put(keyword);
-            jsonWS.put("allowedUsers", allowedUsers);
-            jsonWS.put("keywords", keywords);
+            jsonWS.put(JSONHandler.TAG_ALLOWED_USERS, allowedUsers);
+            jsonWS.put(JSONHandler.TAG_KEYWORDS, keywords);
             for (String filename : this.getFileNames())
                 fileNames.put(filename);
-            jsonWS.put("fileNames", fileNames);
+            jsonWS.put(JSONHandler.TAG_FILE_NAMES, fileNames);
         } catch (JSONException e) {
             Log.d("[AirDesk]", "JSON exception at the parsing an owned WS to JSON string\n" + e.getMessage());
         }

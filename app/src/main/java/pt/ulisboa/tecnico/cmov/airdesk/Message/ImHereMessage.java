@@ -7,22 +7,16 @@ import org.json.JSONObject;
  * Created by Filipe Teixeira on 09/05/2015.
  */
 public class ImHereMessage extends Message {
-    private String user;
 
     public ImHereMessage(String user) {
-        super(Type.IMHERE);
-        this.user = user;
-    }
-
-    public String getUser() {
-        return user;
+        super(Type.IMHERE, user);
     }
 
     @Override
     public JSONObject toJSON() throws JSONException {
         JSONObject result = new JSONObject();
         result.put(MESSAGE_TYPE, this.getTypeOfMessage());
-        result.put(MESSAGE_USER, this.user);
+        result.put(MESSAGE_USER, this.getUser());
         return result;
     }
 }
