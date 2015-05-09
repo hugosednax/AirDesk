@@ -1,30 +1,28 @@
 package pt.ulisboa.tecnico.cmov.airdesk.WiFiDirect;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.Messenger;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
-import java.nio.channels.NotYetBoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
@@ -36,11 +34,12 @@ import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
+import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.MessageParsingException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ServiceNotBoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.ImHereMessage;
+import pt.ulisboa.tecnico.cmov.airdesk.Message.InviteWSMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.Message;
-import pt.ulisboa.tecnico.cmov.airdesk.Message.MessageHandler;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 
 /**
@@ -59,15 +58,16 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     private Messenger mService = null;
     private boolean mBound = false;
     private SimWifiP2pSocketServer mSrvSocket = null;
-    private SimWifiP2pSocket mCliSocket = null;
-    private ReceiveCommTask mComm = null;
     private List<String> peersList;
+    private TreeMap<String, String> userNetworkList;
+    private String ip;
     //endregion
 
     //region Constructor
     public WifiNotificationHandler(Context context) {
         this.context = context;
         this.peersList = new ArrayList<>();
+        this.userNetworkList = new TreeMap<>();
 
         // initialize the WDSim API
         SimWifiP2pSocketManager.Init(context);
@@ -185,6 +185,33 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     }
     //endregion
 
+    //region Message API
+    public void parseMessage(String message) throws JSONException, MessageParsingException {
+        JSONObject JSONMessage = new JSONObject(message);
+        Message.Type messageType = (Message.Type)JSONMessage.get(Message.MESSAGE_TYPE);
+
+        if(messageType == Message.Type.IMHERE){
+            executeMessage(new ImHereMessage((String) JSONMessage.get(Message.MESSAGE_USER)));
+
+        } else if(messageType == Message.Type.INVITE){
+            executeMessage(new InviteWSMessage((String) JSONMessage.get(Message.MESSAGE_USER),
+                    new WorkspaceDTO((JSONObject) JSONMessage.get(Message.MESSAGE_WORKSPACE))));
+
+        } else
+            throw new MessageParsingException("No compatible Type found");
+    }
+
+    private void executeMessage(ImHereMessage message){
+        //TODO
+        Log.d("[AirDesk]", "Parsed an ImHereMessage from " + message.getUser());
+    }
+
+    private void executeMessage(InviteWSMessage message){
+        //TODO
+        Log.d("[AirDesk]", "Parsed an InviteMessage from" + message.getUser() + " for workspace " + message.getWorkspaceDTO().getName());
+    }
+    //endregion
+
     //region Listener Implementation
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
@@ -259,7 +286,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 while ((st = sockIn.readLine()) != null) {
                     result = result + "\n" + st;
                 }
-                MessageHandler.parseMessage(result);
+                parseMessage(result);
             } catch (IOException e) {
                 Log.d(TAG, "Error reading socket: " + e.getMessage());
             } catch (MessageParsingException e) {
