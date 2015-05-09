@@ -16,6 +16,8 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,7 +35,12 @@ import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
+import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.MessageParsingException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ServiceNotBoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Message.ImHereMessage;
+import pt.ulisboa.tecnico.cmov.airdesk.Message.Message;
+import pt.ulisboa.tecnico.cmov.airdesk.Message.MessageHandler;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 
 /**
@@ -185,9 +192,18 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         List<String> peersListResult = new ArrayList<>();
         for (SimWifiP2pDevice device : peers.getDeviceList()) {
             peersListResult.add(device.getVirtIp());
-            Log.d(TAG, "peer: " + device.getVirtIp());
+            Log.d(TAG, "Reachable peer: " + device.getVirtIp());
         }
         peersList = peersListResult;
+        String user = ((AirDeskApp) currentActivity.getApplication()).getUser().getNick();
+        Message imHereMessage = new ImHereMessage(user);
+        try {
+            this.broadcast(imHereMessage.toJSON().toString());
+        } catch (ServiceNotBoundException e) {
+            Log.d(TAG, "Service not bound at onPeersAvailable");
+        } catch (JSONException e) {
+            Log.d(TAG, "Error at JSON generation onPeersAvailable");
+        }
     }
 
     @Override
@@ -201,7 +217,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         @Override
         protected Void doInBackground(Void... params) {
 
-            Log.d(TAG, "IncomingCommTask started (" + this.hashCode() + ").");
+            Log.d(TAG, "IncomingCommTask started and is waiting for connections(" + this.hashCode() + ").");
 
             try {
                 mSrvSocket = new SimWifiP2pSocketServer(
@@ -211,7 +227,6 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             }
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    Log.d(TAG, "IncomingCommTask waiting for connection");
                     SimWifiP2pSocket sock = mSrvSocket.accept();
                     publishProgress(sock);
                 } catch (IOException e) {
@@ -233,11 +248,6 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         SimWifiP2pSocket s;
 
         @Override
-        protected void onPreExecute() {
-            Log.d(TAG, "Receiving info");
-        }
-
-        @Override
         protected Void doInBackground(SimWifiP2pSocket... params) {
             BufferedReader sockIn;
             String st, result = "";
@@ -247,11 +257,15 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
 
                 while ((st = sockIn.readLine()) != null) {
-                    Log.d(TAG, "Received: " + st);
                     result = result + "\n" + st;
                 }
+                MessageHandler.parseMessage(result);
             } catch (IOException e) {
                 Log.d(TAG, "Error reading socket: " + e.getMessage());
+            } catch (MessageParsingException e) {
+                Log.d(TAG, "Received message with unknown type" + "\n Message:" + result);
+            } catch (JSONException e) {
+                Log.d(TAG, "Received message with bad or none JSON encoding" + "\n Message:" + result);
             }
             return null;
         }

@@ -33,6 +33,7 @@ public class User {
     private String email;
     private List<Workspace> foreignWorkspaces;
     private List<Workspace> ownedWorkspaces;
+    private List<String> interestKeywords;
     private JSONHandler settings;
     //endregion
 
@@ -40,8 +41,9 @@ public class User {
     public User(String nick, String email){
         this.nick = nick;
         this.email = email;
-        foreignWorkspaces = new ArrayList<Workspace>();
-        ownedWorkspaces = new ArrayList<Workspace>();
+        foreignWorkspaces = new ArrayList<>();
+        ownedWorkspaces = new ArrayList<>();
+        interestKeywords = new ArrayList<>();
 
         try {
             Log.d(AirDeskApp.LOG_TAG, "create handler");
@@ -60,12 +62,14 @@ public class User {
 
     //region Getters
     public String getNick(){
-        return nick;
+        return this.nick;
     }
 
     public String getEmail(){
-        return email;
+        return this.email;
     }
+
+    public List<String> getInterestKeywords() { return this.interestKeywords; }
 
     @Override
     public String toString(){
@@ -243,5 +247,11 @@ public class User {
     public void deleteFile(String fileName, String workspaceName) throws WorkspaceNotFoundException, ADFileNotFoundException, DeleteFileException {
         getOwnedWorkspaceByName(workspaceName).removeFile(fileName);
     }
+    //endregion
+
+    //region User Methods
+    public void addInterestKeyword(String keyword) { this.getInterestKeywords().add(keyword); }
+
+    public void removeInterestKeyword(String keyword) { this.getInterestKeywords().remove(keyword); }
     //endregion
 }
