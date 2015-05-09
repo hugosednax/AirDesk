@@ -168,6 +168,14 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             throw new ServiceNotBoundException("Service not Bound");
         }
     }
+
+    public void sendMessage(String message, String ip) throws ServiceNotBoundException {
+        if (mBound) {
+            new OutgoingCommTask(message).execute(ip);
+        } else {
+            throw new ServiceNotBoundException("Service not Bound");
+        }
+    }
     //endregion
 
     //region Listener Implementation

@@ -136,7 +136,7 @@ public class JSONHandler {
     }
 
     public void removeOwnedWorkspace(WorkspaceDTO ws) throws WriteToFileException {
-        /*try{
+        try{
             JSONObject JSONSettings = new JSONObject(this.toJSONString());
             JSONArray ownedWorkspaces = JSONSettings.getJSONArray(TAG_OWNED_WORKSPACES);
             int toRemove = 0;
@@ -152,7 +152,7 @@ public class JSONHandler {
             Log.d("[AirDesk]", "Error creating JSON object" + "\n" + e.getMessage());
         } catch (IOException e) {
             throw new WriteToFileException(e.getMessage());
-        }*/
+        }
     }
 
     public void updateOwnedWorkspace(WorkspaceDTO ws) throws WriteToFileException {

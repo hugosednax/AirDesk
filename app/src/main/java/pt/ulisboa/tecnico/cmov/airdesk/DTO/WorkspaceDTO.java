@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.OwnedWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
@@ -23,6 +24,7 @@ public class WorkspaceDTO {
     private int quota;
     private List<String> allowedUsers;
     private List<String> keywords;
+    private List<String> files;
     //endregion
 
     //region Constructors
@@ -39,6 +41,10 @@ public class WorkspaceDTO {
         this.quota = ws.getQuota();
         this.allowedUsers = ws.getAllowedUsers();
         this.keywords = new ArrayList<>();
+        this.files = new ArrayList<>();
+        for(ADFile file : ws.getFiles()){
+            files.add(file.getFileName());
+        }
     }
     //endregion
 
@@ -58,6 +64,8 @@ public class WorkspaceDTO {
     public List<String> getKeywords() {
         return keywords;
     }
+
+    public List<String> getFileNames() { return files; }
     //endregion
 
     //region Setters
@@ -71,10 +79,14 @@ public class WorkspaceDTO {
 
     public void addKeyword(String keyword) { this.getKeywords().add(keyword); }
 
+    public void addFileName(String fileName) { this.getFileNames().add(fileName); }
+    //endregion
+
     public JSONObject toJSON() {
         JSONObject jsonWS = new JSONObject();
         JSONArray allowedUsers = new JSONArray();
         JSONArray keywords = new JSONArray();
+        JSONArray fileNames = new JSONArray();
         try {
             jsonWS.put("name", this.getName());
             jsonWS.put("quota", this.getQuota());
@@ -85,10 +97,12 @@ public class WorkspaceDTO {
                 keywords.put(keyword);
             jsonWS.put("allowedUsers", allowedUsers);
             jsonWS.put("keywords", keywords);
+            for (String filename : this.getFileNames())
+                fileNames.put(filename);
+            jsonWS.put("fileNames", fileNames);
         } catch (JSONException e) {
             Log.d("[AirDesk]", "JSON exception at the parsing an owned WS to JSON string\n" + e.getMessage());
         }
         return jsonWS;
     }
-    //endregion
 }
