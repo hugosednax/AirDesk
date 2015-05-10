@@ -49,9 +49,15 @@ public class FuncCallMessage extends Message{
         return arg2;
     }
 
+    public FuncResponseMessage execute(){
+        //TODO
+        return null;
+    }
+
     @Override
     public JSONObject toJSON() throws JSONException {
         JSONObject result = new JSONObject();
+        result.put(MESSAGE_TYPE, Type.FUNC_CALL);
         result.put(MESSAGE_FUNC_TYPE, this.getTypeOfFunction());
         if(argNumber>0){
             result.put(MESSAGE_ARG1, arg1);

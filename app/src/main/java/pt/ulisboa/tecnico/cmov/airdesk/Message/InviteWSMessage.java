@@ -21,7 +21,6 @@ public class InviteWSMessage extends Message {
 
     }
 
-
     public WorkspaceDTO getWorkspaceDTO() {
         return this.workspace;
     }

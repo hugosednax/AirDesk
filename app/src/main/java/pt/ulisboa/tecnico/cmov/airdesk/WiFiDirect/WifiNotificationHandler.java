@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
@@ -35,7 +38,10 @@ import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.MessageParsingException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.RemoteMethodException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ServiceNotBoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Message.FuncCallMessage;
+import pt.ulisboa.tecnico.cmov.airdesk.Message.FuncResponseMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.InviteWSMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.Message;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
@@ -189,24 +195,51 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             throw new ServiceNotBoundException("Service not Bound");
         }
     }
+
+    public FuncResponseMessage remoteMethodInvoke(String user, FuncCallMessage message) throws JSONException, RemoteMethodException {
+        RemoteMethodCallTask remoteMethodCallTask = new RemoteMethodCallTask();
+        remoteMethodCallTask.doInBackground(user, message.toJSON().toString());
+        try {
+            remoteMethodCallTask.get(1000, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            throw new RemoteMethodException("Remote Method Call Task exception Interrupted thrown: " + e.getMessage());
+        } catch (ExecutionException e) {
+            throw new RemoteMethodException("Remote Method Call Task exception Execution thrown: " + e.getMessage());
+        } catch (TimeoutException e) {
+            throw new RemoteMethodException("Remote Method Call Task exception Timeout thrown: " + e.getMessage());
+        }
+        String result = remoteMethodCallTask.getResult();
+        if(result.equals("error"))
+            throw new RemoteMethodException("Timout");
+        JSONObject responseJSON = new JSONObject(result);
+        FuncResponseMessage funcResponseMessage = new FuncResponseMessage("remove", responseJSON.getBoolean(Message.MESSAGE_EXCEPTION_THROWN),
+                responseJSON.getBoolean(Message.MESSAGE_EXCEPTION_THROWN) ? responseJSON.getString(Message.MESSAGE_EXCEPTION) :
+                        responseJSON.getString(Message.MESSAGE_RESULT));
+        return funcResponseMessage;
+    }
     //endregion
 
     //region Message API
-    public void parseMessage(String message) throws JSONException, MessageParsingException {
+    public Message parseMessage(String message) throws JSONException, MessageParsingException {
         JSONObject JSONMessage = new JSONObject(message);
+        Log.d(TAG, "Message : " + message);
         Message.Type messageType = (Message.Type)JSONMessage.get(Message.MESSAGE_TYPE);
+        Log.d(TAG, "Message Type: " + messageType.toString());
 
-        if(messageType == Message.Type.INVITE){
-            executeMessage(new InviteWSMessage((String) JSONMessage.get(Message.MESSAGE_USER),
-                    new WorkspaceDTO((JSONObject) JSONMessage.get(Message.MESSAGE_WORKSPACE))));
-
+        if(messageType == Message.Type.INVITE) {
+            return new InviteWSMessage((String) JSONMessage.get(Message.MESSAGE_USER),
+                    new WorkspaceDTO((JSONObject) JSONMessage.get(Message.MESSAGE_WORKSPACE)));
+        } else if(messageType == Message.Type.FUNC_CALL) {
+            if (JSONMessage.get(Message.MESSAGE_FUNC_TYPE) == FuncCallMessage.FuncType.CREATE_FILE)
+                return new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE, "remove", JSONMessage.getString(Message.MESSAGE_ARG1));
+            else if (JSONMessage.get(Message.MESSAGE_FUNC_TYPE) == FuncCallMessage.FuncType.REMOVE_FILE)
+                return new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE, "remove", JSONMessage.getString(Message.MESSAGE_ARG1));
+            else if (JSONMessage.get(Message.MESSAGE_FUNC_TYPE) == FuncCallMessage.FuncType.UPDATE_FILE)
+                return new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE, "remove", JSONMessage.getString(Message.MESSAGE_ARG1),
+                        JSONMessage.getString(Message.MESSAGE_ARG2));
+            else throw new MessageParsingException("No compatible FuncType found");
         } else
             throw new MessageParsingException("No compatible Type found");
-    }
-
-    private void executeMessage(InviteWSMessage message){
-        //TODO
-        Log.d("[AirDesk]", "Parsed an InviteMessage from" + message.getUser() + " for workspace " + message.getWorkspaceDTO().getName());
     }
     //endregion
 
@@ -256,7 +289,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                     Log.d(TAG, "received user: " + user);
 
                     if(!groupOwner) {
-                        ipPeerList = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
+                        //ipPeerList = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
                         Log.d(TAG, "received ipPeerList");
                     }
                     socket.getOutputStream().write((myUser + "\n").getBytes());
@@ -292,30 +325,29 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             s = params[0];
             try {
                 sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                int i =1;
                 while ((st = sockIn.readLine()) != null) {
-                    publishProgress(st);
-                    if(i==2) {
-                        parseIPlist(st);
-                    }
-                    i++;
-                }
+                    Message message = parseMessage(st);
+                    if(message.getClass().equals(InviteWSMessage.class)){
+                        Log.d(TAG, "Received WS invite");
+                        //TODO: run new foreign etc etc, can be async
+                    } if (message.getClass().equals(FuncCallMessage.class)){
+                        Log.d(TAG, "Received Function Call");
+                        FuncCallMessage funcCallMessage = (FuncCallMessage) message;
+                        FuncResponseMessage funcResponseMessage = funcCallMessage.execute();
+                        Log.d(TAG, "Sending Function Response");
+                        s.getOutputStream().write((funcResponseMessage.toJSON().toString()+"\n").getBytes());
+                    } else {
 
+                    }
+                }
             } catch (IOException e) {
                 Log.d(TAG, "Error reading socket: " + e.getMessage());
+            } catch (MessageParsingException e) {
+                Log.d(TAG, "Error Parsing the Message: " + e.getMessage());
+            } catch (JSONException e) {
+                Log.d(TAG, "Error Creating the JSON: " + e.getMessage());
             }
             return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            try {
-                parseMessage(values[0]);
-            }              catch (MessageParsingException e) {
-                Log.d(TAG, "Received message with unknown type" + "\n Message:" + values[0]);
-            } catch (JSONException e) {
-                Log.d(TAG, "Received message with bad or none JSON encoding" + "\n Message:" + values[0]);
-            }
         }
 
         @Override
@@ -360,7 +392,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                     for(String ipClient : peersList){
                         peerListString+=ipClient+"|";
                     }
-                    sendSocket.getOutputStream().write((peerListString+"\n").getBytes());
+                    //sendSocket.getOutputStream().write((peerListString+"\n").getBytes());
                 }
                 user = (new BufferedReader(new InputStreamReader(sendSocket.getInputStream()))).readLine();
             } catch (UnknownHostException e) {
@@ -386,6 +418,11 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     }
 
     private class RemoteMethodCallTask extends AsyncTask<String, Void, String>{
+        String result = "error";
+
+        public String getResult(){ return result; }
+
+        private void setResult(String result) { this.result = result; }
 
         @Override
         protected String doInBackground(String... params) {
@@ -394,17 +431,19 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             String result = null;
             SimWifiP2pSocket socket = userNetworkList.get(user);
             if (socket == null){
-                Log.d(TAG, "User not in network list");
+                Log.d(TAG, "User " + user + " not in network list");
                 return null;
             }
-
             try {
-                socket.getOutputStream().write(message.getBytes());
+                Log.d(TAG, "Sending message");
+                socket.getOutputStream().write((message+"\n").getBytes());
+                Log.d(TAG, "Waiting for response");
                 result = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
+                Log.d(TAG, "Received function result: " + result);
             } catch (IOException e) {
                 Log.d(TAG, "IO error: " + e.getMessage());
             }
-
+            this.setResult(result);
             return result;
         }
     }

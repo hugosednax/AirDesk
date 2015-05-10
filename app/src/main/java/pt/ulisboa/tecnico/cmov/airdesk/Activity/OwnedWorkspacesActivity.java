@@ -17,12 +17,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.RemoteMethodException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ServiceNotBoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Message.FuncCallMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
@@ -66,6 +70,14 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
         selectedWorkSpaces = new ArrayList<>();
         addContextToList(listView, airDeskApp);
         airDeskApp.getWifiHandler().setCurrentActivity(this);
+        String nick = airDeskApp.getPrefs().getString("nick_pref","DEFAULT");
+        try {
+            airDeskApp.getWifiHandler().remoteMethodInvoke("filipe", new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE, nick, "file1"));
+        } catch (JSONException e) {
+            Log.d(airDeskApp.LOG_TAG, "JSON exception " + e.getMessage());
+        } catch (RemoteMethodException e) {
+            Log.d(airDeskApp.LOG_TAG, "RMI exception " + e.getMessage());
+        }
     }
 
     public void addContextToList(final ListView listView, final AirDeskApp airDeskApp){
