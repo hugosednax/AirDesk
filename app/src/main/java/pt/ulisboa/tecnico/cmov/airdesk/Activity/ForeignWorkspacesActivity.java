@@ -64,6 +64,11 @@ public class ForeignWorkspacesActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        if (id == R.id.addKeyword) {
+            Intent intent = new Intent(this, KeywordAddActivity.class);
+            startActivity(intent);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 }

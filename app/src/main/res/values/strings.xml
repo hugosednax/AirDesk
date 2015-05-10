@@ -19,11 +19,13 @@
     <string name="action_confirm_file_edit">Confirm</string>
     <string name="action_delete_file">Delete</string>
     <string name="action_edit_file">Edit</string>
+    <string name="action_input_keyword">KeyWords</string>
     <string name="title_activity_edit_workspace">Edit Workspace</string>
     <string name="title_activity_new_file">New File</string>
     <string name="title_activity_file_edit">Edit File</string>
     <string name="title_activity_invite_users">Invite Users</string>
     <string name="action_invite_users">Invite</string>
     <string name="port">10001</string>
+    <string name="title_activity_keyword_manager">keywordManager</string>
 
 </resources>

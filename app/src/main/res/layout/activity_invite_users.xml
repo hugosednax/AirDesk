@@ -15,7 +15,9 @@
         android:layout_toRightOf="@+id/prevClientText"
         android:layout_toEndOf="@+id/prevClientText"
         android:layout_marginLeft="25dp"
-        android:layout_marginStart="25dp" />
+        android:layout_marginStart="25dp"
+        android:autoText="false"
+        android:background="#F0F0F0" />
 
     <TextView
         android:layout_width="wrap_content"

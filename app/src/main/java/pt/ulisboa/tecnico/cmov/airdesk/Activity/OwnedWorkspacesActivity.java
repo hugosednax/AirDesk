@@ -189,6 +189,12 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
             return true;
         }
 
+        if (id == R.id.addKeyword) {
+            Intent intent = new Intent(this, KeywordAddActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
