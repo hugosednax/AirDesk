@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -235,6 +236,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
     private class IncomingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
         String user = "error";
+        String ipPeerList = "";
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -252,7 +254,13 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                     Log.d(TAG, "socket accepted");
                     user = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
                     Log.d(TAG, "received user: " + user);
+
+                    if(!groupOwner) {
+                        ipPeerList = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
+                        Log.d(TAG, "received ipPeerList");
+                    }
                     socket.getOutputStream().write((myUser + "\n").getBytes());
+
                     Log.d(TAG, "sent user: " + myUser);
                     publishProgress(socket);
                 } catch (IOException e) {
@@ -284,10 +292,15 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             s = params[0];
             try {
                 sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
-
+                int i =1;
                 while ((st = sockIn.readLine()) != null) {
                     publishProgress(st);
+                    if(i==2) {
+                        parseIPlist(st);
+                    }
+                    i++;
                 }
+
             } catch (IOException e) {
                 Log.d(TAG, "Error reading socket: " + e.getMessage());
             }
@@ -317,6 +330,12 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             }
             s = null;
         }
+
+        protected ArrayList<String> parseIPlist(String iplist){
+            String delims = "[|]";
+            String[] tokens = iplist.split(delims);
+            return (ArrayList<String>)Arrays.asList(tokens);
+        }
     }
 
     private class OutgoingCommTask extends AsyncTask<String, Void, String> {
@@ -336,6 +355,13 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 Log.d(TAG, "Socket connected");
                 sendSocket.getOutputStream().write((myUser + "\n").getBytes());
                 Log.d(TAG, "Sent user: " + myUser);
+                if(groupOwner) {
+                    String peerListString="";
+                    for(String ipClient : peersList){
+                        peerListString+=ipClient+"|";
+                    }
+                    sendSocket.getOutputStream().write((peerListString+"\n").getBytes());
+                }
                 user = (new BufferedReader(new InputStreamReader(sendSocket.getInputStream()))).readLine();
             } catch (UnknownHostException e) {
                 return "Unknown Host:" + e.getMessage();
