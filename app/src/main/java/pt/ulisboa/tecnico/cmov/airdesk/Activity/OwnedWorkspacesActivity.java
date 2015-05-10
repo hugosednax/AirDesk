@@ -66,11 +66,6 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
         selectedWorkSpaces = new ArrayList<>();
         addContextToList(listView, airDeskApp);
         airDeskApp.getWifiHandler().setCurrentActivity(this);
-        try {
-            airDeskApp.getWifiHandler().broadcast("SPAM");
-        } catch (ServiceNotBoundException e) {
-            Log.d("[AirDesk]", "service not bound exception at spam");
-        }
     }
 
     public void addContextToList(final ListView listView, final AirDeskApp airDeskApp){

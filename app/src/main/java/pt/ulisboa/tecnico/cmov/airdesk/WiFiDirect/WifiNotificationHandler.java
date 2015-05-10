@@ -59,8 +59,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     private boolean mBound = false;
     private SimWifiP2pSocketServer mSrvSocket = null;
     private List<String> peersList;
-    private TreeMap<String, String> userNetworkList;
-    private String ip;
+    private TreeMap<String, SimWifiP2pSocket> userNetworkList;
+    private String myUser;
+    private boolean groupOwner = false;
     //endregion
 
     //region Constructor
@@ -86,6 +87,10 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     //region Setters
     public void setCurrentActivity(Activity currentActivity) {
         this.currentActivity = currentActivity;
+    }
+
+    public void setMyUser(String user){
+        this.myUser = user;
     }
     //endregion
 
@@ -141,6 +146,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     protected void notifyGroupChanged(){
         Toast.makeText(this.currentActivity, "Group ownership changed",
                 Toast.LENGTH_SHORT).show();
+        mManager.requestGroupInfo(mChannel, WifiNotificationHandler.this);
     }
     //endregion
 
@@ -166,10 +172,11 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     //endregion
 
     //region Communication API
-    public void broadcast(String message) throws ServiceNotBoundException {
+    public void broadcast() throws ServiceNotBoundException {
         if (mBound) {
             for (String ip : peersList) {
-                new OutgoingCommTask(message).execute(ip);
+                Log.d(TAG, "Broadcasting to " + ip);
+                new OutgoingCommTask().execute(ip);
             }
         } else {
             throw new ServiceNotBoundException("Service not Bound");
@@ -178,7 +185,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
     public void sendMessage(String message, String ip) throws ServiceNotBoundException {
         if (mBound) {
-            new OutgoingCommTask(message).execute(ip);
+            //new OutgoingCommTask(message).execute(ip);
         } else {
             throw new ServiceNotBoundException("Service not Bound");
         }
@@ -222,28 +229,26 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             Log.d(TAG, "Reachable peer: " + device.getVirtIp());
         }
         peersList = peersListResult;
-        String user = ((AirDeskApp) currentActivity.getApplication()).getUser().getNick();
-        Message imHereMessage = new ImHereMessage(user);
-        try {
-            this.broadcast(imHereMessage.toJSON().toString());
-        } catch (ServiceNotBoundException e) {
-            Log.d(TAG, "Service not bound at onPeersAvailable");
-        } catch (JSONException e) {
-            Log.d(TAG, "Error at JSON generation onPeersAvailable");
-        }
     }
 
     @Override
     public void onGroupInfoAvailable(SimWifiP2pDeviceList devices, SimWifiP2pInfo groupInfo) {
-        //TODO
+        groupOwner = groupInfo.askIsGO();
+        if(this.groupOwner && mBound){
+            try {
+                broadcast();
+            } catch (ServiceNotBoundException e) {
+                Log.d(TAG, "This exception is verified, so this is bad, really bad");
+            }
+        }
     }
     //endregion
 
     private class IncomingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
+        String user = "error";
 
         @Override
         protected Void doInBackground(Void... params) {
-
             Log.d(TAG, "IncomingCommTask started and is waiting for connections(" + this.hashCode() + ").");
 
             try {
@@ -254,8 +259,10 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             }
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    SimWifiP2pSocket sock = mSrvSocket.accept();
-                    publishProgress(sock);
+                    SimWifiP2pSocket socket = mSrvSocket.accept();
+                    user = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
+                    socket.getOutputStream().write(myUser.getBytes());
+                    publishProgress(socket);
                 } catch (IOException e) {
                     Log.d("Error accepting socket:", e.getMessage());
                     break;
@@ -267,6 +274,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         @Override
         protected void onProgressUpdate(SimWifiP2pSocket... values) {
             SimWifiP2pSocket socket = values[0];
+            Log.d(TAG, "Inserting socket with User: " + user);
+            userNetworkList.put(user, socket);
+            user = "error";
             new ReceiveCommTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, socket);
         }
     }
@@ -277,24 +287,30 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         @Override
         protected Void doInBackground(SimWifiP2pSocket... params) {
             BufferedReader sockIn;
-            String st, result = "";
+            String st;
 
             s = params[0];
             try {
                 sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
 
                 while ((st = sockIn.readLine()) != null) {
-                    result = result + "\n" + st;
+                    publishProgress(st);
                 }
-                parseMessage(result);
             } catch (IOException e) {
                 Log.d(TAG, "Error reading socket: " + e.getMessage());
-            } catch (MessageParsingException e) {
-                Log.d(TAG, "Received message with unknown type" + "\n Message:" + result);
-            } catch (JSONException e) {
-                Log.d(TAG, "Received message with bad or none JSON encoding" + "\n Message:" + result);
             }
             return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            try {
+                parseMessage(values[0]);
+            }              catch (MessageParsingException e) {
+                Log.d(TAG, "Received message with unknown type" + "\n Message:" + values[0]);
+            } catch (JSONException e) {
+                Log.d(TAG, "Received message with bad or none JSON encoding" + "\n Message:" + values[0]);
+            }
         }
 
         @Override
@@ -313,11 +329,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
     private class OutgoingCommTask extends AsyncTask<String, Void, String> {
         SimWifiP2pSocket sendSocket;
-        String message;
-
-        public OutgoingCommTask(String message){
-            this.message = message;
-        }
+        String user= "error";
 
         @Override
         protected void onPreExecute() {
@@ -329,6 +341,10 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             try {
                 sendSocket = new SimWifiP2pSocket(params[0],
                         Integer.parseInt(context.getString(R.string.port)));
+                sendSocket.getOutputStream().write(myUser.getBytes());
+                user = (new BufferedReader(new InputStreamReader(sendSocket.getInputStream()))).readLine();
+                Log.d(TAG, "Inserting socket with User: " + user);
+                userNetworkList.put(user, sendSocket);
             } catch (UnknownHostException e) {
                 return "Unknown Host:" + e.getMessage();
             } catch (IOException e) {
@@ -340,16 +356,11 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         @Override
         protected void onPostExecute(String result) {
             if (result != null) {
-                Log.d(TAG, "Error at sending " + result);
+                Log.d(TAG, "Error at outgoing task: " + result);
             }
             else {
-                try {
-                    Log.d(TAG, "Sending: " + message);
-                    sendSocket.getOutputStream().write(message.getBytes());
-                    sendSocket.close();
-                } catch (IOException e) {
-                    Log.d(TAG, "Error at sending " + e.getMessage());
-                }
+                Log.d(TAG, "Inserting socket with User: " + user);
+                userNetworkList.put(user, sendSocket);
             }
         }
     }
