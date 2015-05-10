@@ -226,7 +226,6 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         List<String> peersListResult = new ArrayList<>();
         for (SimWifiP2pDevice device : peers.getDeviceList()) {
             peersListResult.add(device.getVirtIp());
-            Log.d(TAG, "Reachable peer: " + device.getVirtIp());
         }
         peersList = peersListResult;
     }
@@ -260,11 +259,14 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     SimWifiP2pSocket socket = mSrvSocket.accept();
+                    Log.d(TAG, "socket accepted");
                     user = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
-                    socket.getOutputStream().write(myUser.getBytes());
+                    Log.d(TAG, "received user: " + user);
+                    socket.getOutputStream().write((myUser+"\n").getBytes());
+                    Log.d(TAG, "sent user: " + myUser);
                     publishProgress(socket);
                 } catch (IOException e) {
-                    Log.d("Error accepting socket:", e.getMessage());
+                    Log.d(TAG, "Error accepting socket: " + e.getMessage());
                     break;
                 }
             }
@@ -341,10 +343,10 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             try {
                 sendSocket = new SimWifiP2pSocket(params[0],
                         Integer.parseInt(context.getString(R.string.port)));
-                sendSocket.getOutputStream().write(myUser.getBytes());
+                Log.d(TAG, "Socket connected");
+                sendSocket.getOutputStream().write((myUser+"\n").getBytes());
+                Log.d(TAG, "Sent user: " + myUser);
                 user = (new BufferedReader(new InputStreamReader(sendSocket.getInputStream()))).readLine();
-                Log.d(TAG, "Inserting socket with User: " + user);
-                userNetworkList.put(user, sendSocket);
             } catch (UnknownHostException e) {
                 return "Unknown Host:" + e.getMessage();
             } catch (IOException e) {
