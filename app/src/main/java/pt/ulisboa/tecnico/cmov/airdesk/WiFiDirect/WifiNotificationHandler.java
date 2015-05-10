@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.Messenger;
@@ -33,11 +32,9 @@ import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
-import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.MessageParsingException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ServiceNotBoundException;
-import pt.ulisboa.tecnico.cmov.airdesk.Message.ImHereMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.InviteWSMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.Message;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
@@ -46,6 +43,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.R;
  * Created by Filipe Teixeira on 30/04/2015.
  */
 public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
+
     //region Constants
     private static final String TAG = "[AirDesk]";
     //endregion
@@ -197,20 +195,12 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         JSONObject JSONMessage = new JSONObject(message);
         Message.Type messageType = (Message.Type)JSONMessage.get(Message.MESSAGE_TYPE);
 
-        if(messageType == Message.Type.IMHERE){
-            executeMessage(new ImHereMessage((String) JSONMessage.get(Message.MESSAGE_USER)));
-
-        } else if(messageType == Message.Type.INVITE){
+        if(messageType == Message.Type.INVITE){
             executeMessage(new InviteWSMessage((String) JSONMessage.get(Message.MESSAGE_USER),
                     new WorkspaceDTO((JSONObject) JSONMessage.get(Message.MESSAGE_WORKSPACE))));
 
         } else
             throw new MessageParsingException("No compatible Type found");
-    }
-
-    private void executeMessage(ImHereMessage message){
-        //TODO
-        Log.d("[AirDesk]", "Parsed an ImHereMessage from " + message.getUser());
     }
 
     private void executeMessage(InviteWSMessage message){
@@ -262,7 +252,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                     Log.d(TAG, "socket accepted");
                     user = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
                     Log.d(TAG, "received user: " + user);
-                    socket.getOutputStream().write((myUser+"\n").getBytes());
+                    socket.getOutputStream().write((myUser + "\n").getBytes());
                     Log.d(TAG, "sent user: " + myUser);
                     publishProgress(socket);
                 } catch (IOException e) {
@@ -344,7 +334,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 sendSocket = new SimWifiP2pSocket(params[0],
                         Integer.parseInt(context.getString(R.string.port)));
                 Log.d(TAG, "Socket connected");
-                sendSocket.getOutputStream().write((myUser+"\n").getBytes());
+                sendSocket.getOutputStream().write((myUser + "\n").getBytes());
                 Log.d(TAG, "Sent user: " + myUser);
                 user = (new BufferedReader(new InputStreamReader(sendSocket.getInputStream()))).readLine();
             } catch (UnknownHostException e) {
