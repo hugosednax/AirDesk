@@ -363,6 +363,8 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             else {
                 Log.d(TAG, "Inserting socket with User: " + user);
                 userNetworkList.put(user, sendSocket);
+                user = "error";
+                new ReceiveCommTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, sendSocket);
             }
         }
     }
