@@ -30,11 +30,6 @@ public class ForeignRemoteWorkspace extends Workspace{
     //endregion
 
     //region Getters
-    @Override
-    public List<ADFile> getFiles(){
-        //TODO (no idea)
-        return null;
-    }
 
     public int getSize() throws NotDirectoryException {
         //TODO

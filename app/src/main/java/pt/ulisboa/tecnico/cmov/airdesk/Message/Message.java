@@ -11,12 +11,17 @@ public abstract class Message {
     public static final String MESSAGE_TYPE = "TYPE";
     public static final String MESSAGE_USER = "USER";
     public static final String MESSAGE_WORKSPACE = "WORKSPACE";
+    public static final String MESSAGE_FUNC_TYPE = "FUNC_TYPE";
+    public static final String MESSAGE_ARG1 = "ARG1";
+    public static final String MESSAGE_ARG2 = "ARG2";
+    public static final String MESSAGE_EXCEPTION = "EXCEPTION_THROWN";
+    public static final String MESSAGE_RESULT = "RESULT";
 
 
     private Type typeOfMessage;
     private String user;
     public enum Type{
-        IMHERE, INVITE, INHERE, IGOTTHIS, INTEREST, UGOTTHIS, CONNECTO;
+        FUNC_CALL, FUNC_RESP, INVITE, INHERE, IGOTTHIS, INTEREST, UGOTTHIS, CONNECTO;
     }
 
     public Message(Type typeOfMessage, String user){

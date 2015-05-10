@@ -384,4 +384,28 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             }
         }
     }
+
+    private class RemoteMethodCallTask extends AsyncTask<String, Void, String>{
+
+        @Override
+        protected String doInBackground(String... params) {
+            String user = params[0];
+            String message = params[1];
+            String result = null;
+            SimWifiP2pSocket socket = userNetworkList.get(user);
+            if (socket == null){
+                Log.d(TAG, "User not in network list");
+                return null;
+            }
+
+            try {
+                socket.getOutputStream().write(message.getBytes());
+                result = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
+            } catch (IOException e) {
+                Log.d(TAG, "IO error: " + e.getMessage());
+            }
+
+            return result;
+        }
+    }
 }
