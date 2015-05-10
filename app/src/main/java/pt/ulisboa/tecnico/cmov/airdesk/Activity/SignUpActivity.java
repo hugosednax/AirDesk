@@ -34,7 +34,7 @@ public class SignUpActivity extends ActionBarActivity {
         SharedPreferences.Editor prefEditor = airDeskApp.getPrefs().edit();
         prefEditor.putString("email_pref",email.getText().toString());
         prefEditor.putString("nick_pref",nick.getText().toString());
-        prefEditor.commit();
+        prefEditor.apply();
         Intent intent = new Intent(this, WorkspaceTypeActivity.class);
         startActivity(intent);
     }

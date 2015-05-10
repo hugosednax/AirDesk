@@ -144,7 +144,7 @@ public class JSONHandler {
             for(int i = 0; i < ownedWorkspaces.length(); i++){
                 JSONObject workspace = (JSONObject)ownedWorkspaces.get(i);
                 if(workspace.get(TAG_NAME).equals(ws.getName())){
-                    ownedWorkspaces.remove(i);
+                   // ownedWorkspaces.remove(i);
                 }
 
             }
