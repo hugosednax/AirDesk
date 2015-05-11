@@ -8,10 +8,12 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -70,6 +72,19 @@ public class InviteUsersActivity extends ActionBarActivity {
 
                 input = (EditText)v;
                 if(keyCode == KeyEvent.KEYCODE_ENTER && input.getText().toString()!=null){
+                    user.invite(workspaceToEdit, input.getText().toString());
+                    usersAdapter.notifyDataSetChanged();
+                    input.getText().clear();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        prevlgdUserInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
                     user.invite(workspaceToEdit, input.getText().toString());
                     usersAdapter.notifyDataSetChanged();
                     input.getText().clear();
