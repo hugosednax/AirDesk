@@ -248,7 +248,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                         JSONMessage.getString(Message.MESSAGE_ARG2));
             else throw new MessageParsingException("No compatible FuncType found");
         } else if(messageType == Message.Type.FUNC_RESP){
-            return null;
+            return new FuncResponseMessage("", true, null);
         }
             throw new MessageParsingException("No compatible Type found");
     }
@@ -295,17 +295,13 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     SimWifiP2pSocket socket = mSrvSocket.accept();
-                    Log.d(TAG, "socket accepted");
                     user = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
-                    Log.d(TAG, "received user: " + user);
 
                     if(!groupOwner) {
                         //ipPeerList = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
                         Log.d(TAG, "received ipPeerList");
                     }
                     socket.getOutputStream().write((myUser + "\n").getBytes());
-
-                    Log.d(TAG, "sent user: " + myUser);
                     publishProgress(socket);
                 } catch (IOException e) {
                     Log.d(TAG, "Error accepting socket: " + e.getMessage());
@@ -318,11 +314,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         @Override
         protected void onProgressUpdate(SimWifiP2pSocket... values) {
             SimWifiP2pSocket socket = values[0];
-            Log.d(TAG, "Inserting socket with User: " + user);
             userNetworkList.put(user, socket);
             ReceiveCommTask receiveCommTask = new ReceiveCommTask();
             commReceiveTaskTreeMap.put(user, receiveCommTask);
-            Log.d(TAG, "inserted comm with user " + user);
             receiveCommTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, socket);
             user = "error";
         }
@@ -330,6 +324,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
     private class ReceiveCommTask extends AsyncTask<SimWifiP2pSocket, String, Void> {
         SimWifiP2pSocket s;
+        String response = null;
 
         @Override
         protected Void doInBackground(SimWifiP2pSocket... params) {
@@ -341,16 +336,14 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 while (!isCancelled() && (st = sockIn.readLine()) != null) {
                     Message message = parseMessage(st);
-                    if(message == null){
-                        //ignore
+                    if(message.getClass().equals(FuncResponseMessage.class)){
+                        response = st;
                     } else if(message.getClass().equals(InviteWSMessage.class)){
                         Log.d(TAG, "Received WS invite");
                         //TODO: run new foreign etc etc, can be async
                     } else if (message.getClass().equals(FuncCallMessage.class)){
-                        Log.d(TAG, "Received Function Call");
                         FuncCallMessage funcCallMessage = (FuncCallMessage) message;
                         FuncResponseMessage funcResponseMessage = funcCallMessage.execute();
-                        Log.d(TAG, "Sending Function Response: " + funcResponseMessage.toJSON().toString());
                         s.getOutputStream().write((funcResponseMessage.toJSON().toString()+"\n").getBytes());
                     }
                         //else ignore
@@ -379,8 +372,8 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         }
 
         protected ArrayList<String> parseIPlist(String iplist){
-            String delims = "[|]";
-            String[] tokens = iplist.split(delims);
+            String delimit = "[|]";
+            String[] tokens = iplist.split(delimit);
             return (ArrayList<String>)Arrays.asList(tokens);
         }
     }
@@ -399,9 +392,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             try {
                 sendSocket = new SimWifiP2pSocket(params[0],
                         Integer.parseInt(context.getString(R.string.port)));
-                Log.d(TAG, "Socket connected");
                 sendSocket.getOutputStream().write((myUser + "\n").getBytes());
-                Log.d(TAG, "Sent user: " + myUser);
                 if(groupOwner) {
                     String peerListString="";
                     for(String ipClient : peersList){
@@ -424,11 +415,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 Log.d(TAG, "Error at outgoing task: " + result);
             }
             else {
-                Log.d(TAG, "Inserting socket with User: " + user);
                 userNetworkList.put(user, sendSocket);
                 ReceiveCommTask receiveCommTask = new ReceiveCommTask();
                 commReceiveTaskTreeMap.put(user, receiveCommTask);
-                Log.d(TAG, "inserted comm with user " + user);
                 receiveCommTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, sendSocket);
                 user = "error";
             }
@@ -456,22 +445,12 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             }
             try {
                 ReceiveCommTask receiveCommTask = commReceiveTaskTreeMap.get(user);
-                receiveCommTask.cancel(true);
-                commReceiveTaskTreeMap.remove(user);
-
-                Log.d(TAG, "Sending message");
                 socket.getOutputStream().write((message + "\n").getBytes());
-
-                Log.d(TAG, "Waiting for response");
-                result = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
-                Log.d(TAG, "Received function result: " + result);
+                while(receiveCommTask.response == null) {}
+                result = receiveCommTask.response;
+                receiveCommTask.response = null;
             } catch (IOException e) {
                 Log.d(TAG, "IO error: " + e.getMessage());
-            } finally{
-                ReceiveCommTask receiveCommTask = new ReceiveCommTask();
-                commReceiveTaskTreeMap.put(user, receiveCommTask);
-                Log.d(TAG, "inserted comm with user " + user);
-                receiveCommTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, socket);
             }
             this.setResult(result);
             return result;
