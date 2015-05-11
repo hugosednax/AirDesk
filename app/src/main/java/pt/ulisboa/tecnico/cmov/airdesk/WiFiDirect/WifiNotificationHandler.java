@@ -65,6 +65,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     private SimWifiP2pSocketServer mSrvSocket = null;
     private List<String> peersList;
     private TreeMap<String, SimWifiP2pSocket> userNetworkList;
+    private TreeMap<String, ReceiveCommTask> commReceiveTaskTreeMap;
     private String myUser;
     private boolean groupOwner = false;
     //endregion
@@ -74,6 +75,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         this.context = context;
         this.peersList = new ArrayList<>();
         this.userNetworkList = new TreeMap<>();
+        this.commReceiveTaskTreeMap = new TreeMap<>();
 
         // initialize the WDSim API
         SimWifiP2pSocketManager.Init(context);
@@ -204,7 +206,8 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
     public FuncResponseMessage remoteMethodInvoke(String user, FuncCallMessage message) throws JSONException, RemoteMethodException {
         RemoteMethodCallTask remoteMethodCallTask = new RemoteMethodCallTask();
-        remoteMethodCallTask.doInBackground(user, message.toJSON().toString());
+        remoteMethodCallTask.execute(user, message.toJSON().toString());
+
         try {
             remoteMethodCallTask.get(1000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
@@ -216,7 +219,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         }
         String result = remoteMethodCallTask.getResult();
         if(result.equals("error"))
-            throw new RemoteMethodException("Timout");
+            throw new RemoteMethodException("Timeout");
         JSONObject responseJSON = new JSONObject(result);
         FuncResponseMessage funcResponseMessage = new FuncResponseMessage("remove", responseJSON.getBoolean(Message.MESSAGE_EXCEPTION_THROWN),
                 responseJSON.getBoolean(Message.MESSAGE_EXCEPTION_THROWN) ? responseJSON.getString(Message.MESSAGE_EXCEPTION) :
@@ -229,22 +232,24 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     public Message parseMessage(String message) throws JSONException, MessageParsingException {
         JSONObject JSONMessage = new JSONObject(message);
         Log.d(TAG, "Message : " + message);
-        Message.Type messageType = (Message.Type)JSONMessage.get(Message.MESSAGE_TYPE);
-        Log.d(TAG, "Message Type: " + messageType.toString());
+        Message.Type messageType = Message.stringToEnum(JSONMessage.getString(Message.MESSAGE_TYPE));
 
         if(messageType == Message.Type.INVITE) {
             return new InviteWSMessage((String) JSONMessage.get(Message.MESSAGE_USER),
                     new WorkspaceDTO((JSONObject) JSONMessage.get(Message.MESSAGE_WORKSPACE)));
         } else if(messageType == Message.Type.FUNC_CALL) {
-            if (JSONMessage.get(Message.MESSAGE_FUNC_TYPE) == FuncCallMessage.FuncType.CREATE_FILE)
+            FuncCallMessage.FuncType funcType = FuncCallMessage.stringToFuncEnum(JSONMessage.getString(Message.MESSAGE_FUNC_TYPE));
+            if (funcType == FuncCallMessage.FuncType.CREATE_FILE)
                 return new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE, "remove", JSONMessage.getString(Message.MESSAGE_ARG1));
-            else if (JSONMessage.get(Message.MESSAGE_FUNC_TYPE) == FuncCallMessage.FuncType.REMOVE_FILE)
+            else if (funcType == FuncCallMessage.FuncType.REMOVE_FILE)
                 return new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE, "remove", JSONMessage.getString(Message.MESSAGE_ARG1));
-            else if (JSONMessage.get(Message.MESSAGE_FUNC_TYPE) == FuncCallMessage.FuncType.UPDATE_FILE)
+            else if (funcType == FuncCallMessage.FuncType.UPDATE_FILE)
                 return new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE, "remove", JSONMessage.getString(Message.MESSAGE_ARG1),
                         JSONMessage.getString(Message.MESSAGE_ARG2));
             else throw new MessageParsingException("No compatible FuncType found");
-        } else
+        } else if(messageType == Message.Type.FUNC_RESP){
+            return null;
+        }
             throw new MessageParsingException("No compatible Type found");
     }
     //endregion
@@ -315,8 +320,11 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             SimWifiP2pSocket socket = values[0];
             Log.d(TAG, "Inserting socket with User: " + user);
             userNetworkList.put(user, socket);
+            ReceiveCommTask receiveCommTask = new ReceiveCommTask();
+            commReceiveTaskTreeMap.put(user, receiveCommTask);
+            Log.d(TAG, "inserted comm with user " + user);
+            receiveCommTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, socket);
             user = "error";
-            new ReceiveCommTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, socket);
         }
     }
 
@@ -331,20 +339,21 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             s = params[0];
             try {
                 sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                while ((st = sockIn.readLine()) != null) {
+                while (!isCancelled() && (st = sockIn.readLine()) != null) {
                     Message message = parseMessage(st);
-                    if(message.getClass().equals(InviteWSMessage.class)){
+                    if(message == null){
+                        //ignore
+                    } else if(message.getClass().equals(InviteWSMessage.class)){
                         Log.d(TAG, "Received WS invite");
                         //TODO: run new foreign etc etc, can be async
-                    } if (message.getClass().equals(FuncCallMessage.class)){
+                    } else if (message.getClass().equals(FuncCallMessage.class)){
                         Log.d(TAG, "Received Function Call");
                         FuncCallMessage funcCallMessage = (FuncCallMessage) message;
                         FuncResponseMessage funcResponseMessage = funcCallMessage.execute();
-                        Log.d(TAG, "Sending Function Response");
+                        Log.d(TAG, "Sending Function Response: " + funcResponseMessage.toJSON().toString());
                         s.getOutputStream().write((funcResponseMessage.toJSON().toString()+"\n").getBytes());
-                    } else {
-
                     }
+                        //else ignore
                 }
             } catch (IOException e) {
                 Log.d(TAG, "Error reading socket: " + e.getMessage());
@@ -417,14 +426,19 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             else {
                 Log.d(TAG, "Inserting socket with User: " + user);
                 userNetworkList.put(user, sendSocket);
+                ReceiveCommTask receiveCommTask = new ReceiveCommTask();
+                commReceiveTaskTreeMap.put(user, receiveCommTask);
+                Log.d(TAG, "inserted comm with user " + user);
+                receiveCommTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, sendSocket);
                 user = "error";
-                new ReceiveCommTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, sendSocket);
             }
         }
     }
 
     private class RemoteMethodCallTask extends AsyncTask<String, Void, String>{
         String result = "error";
+        String user = "";
+        SimWifiP2pSocket socket;
 
         public String getResult(){ return result; }
 
@@ -432,22 +446,32 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
         @Override
         protected String doInBackground(String... params) {
-            String user = params[0];
+            user = params[0];
             String message = params[1];
             String result = null;
-            SimWifiP2pSocket socket = userNetworkList.get(user);
+            socket = userNetworkList.get(user);
             if (socket == null){
                 Log.d(TAG, "User " + user + " not in network list");
                 return null;
             }
             try {
+                ReceiveCommTask receiveCommTask = commReceiveTaskTreeMap.get(user);
+                receiveCommTask.cancel(true);
+                commReceiveTaskTreeMap.remove(user);
+
                 Log.d(TAG, "Sending message");
-                socket.getOutputStream().write((message+"\n").getBytes());
+                socket.getOutputStream().write((message + "\n").getBytes());
+
                 Log.d(TAG, "Waiting for response");
                 result = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
                 Log.d(TAG, "Received function result: " + result);
             } catch (IOException e) {
                 Log.d(TAG, "IO error: " + e.getMessage());
+            } finally{
+                ReceiveCommTask receiveCommTask = new ReceiveCommTask();
+                commReceiveTaskTreeMap.put(user, receiveCommTask);
+                Log.d(TAG, "inserted comm with user " + user);
+                receiveCommTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, socket);
             }
             this.setResult(result);
             return result;

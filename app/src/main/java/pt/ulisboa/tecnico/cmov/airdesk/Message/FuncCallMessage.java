@@ -3,6 +3,8 @@ package pt.ulisboa.tecnico.cmov.airdesk.Message;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.MessageParsingException;
+
 /**
  * Created by Filipe Teixeira on 10/05/2015.
  */
@@ -14,6 +16,16 @@ public class FuncCallMessage extends Message{
 
     public enum FuncType{
         CREATE_FILE, UPDATE_FILE, REMOVE_FILE;
+    }
+
+    public static FuncType stringToFuncEnum(String type) throws MessageParsingException {
+        if(type.equals("CREATE_FILE")){
+            return FuncType.CREATE_FILE;
+        } else if(type.equals("UPDATE_FILE"))
+            return FuncType.UPDATE_FILE;
+        else if(type.equals("REMOVE_FILE"))
+            return FuncType.REMOVE_FILE;
+        else throw new MessageParsingException("No known type = " + type);
     }
 
     public FuncCallMessage(FuncType typeOfFunction, String user) {
@@ -50,8 +62,8 @@ public class FuncCallMessage extends Message{
     }
 
     public FuncResponseMessage execute(){
-        //TODO
-        return null;
+        FuncResponseMessage funcResponseMessage = new FuncResponseMessage("error", false, "2");
+        return funcResponseMessage;
     }
 
     @Override

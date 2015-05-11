@@ -46,7 +46,7 @@ public class ForeignRemoteWorkspace extends Workspace{
     //region Getters
 
     public int getSize() throws NotDirectoryException {
-        //TODO
+        //impossible
         return 0;
     }
     //endregion
