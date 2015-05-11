@@ -18,44 +18,26 @@ import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 public class ForeignLocalWorkspace extends Workspace{
 
     //region Class Variables
-    private Workspace workspaceLink;
+    private OwnedWorkspace workspaceLink;
     //endregion
 
     //region Constructors
-    public ForeignLocalWorkspace(Workspace workspace, String username) {
+    public ForeignLocalWorkspace(OwnedWorkspace workspace, String username) {
         super(workspace.getName() + "@" + username);
         this.workspaceLink = workspace;
     }
     //endregion
 
-    //region Getters
-    @Override
-    public List<ADFile> getFiles(){
-        return workspaceLink.getFiles();
-    }
-
-    public int getSize() throws NotDirectoryException {
-        return workspaceLink.getSize();
-    }
-    //endregion
-
-    //region Setters
-    @Override
-    public void setQuota(int quota) throws NotDirectoryException, QuotaLimitExceededException {
-        workspaceLink.setQuota(quota);
-    }
-
-    @Override
-    public boolean hasKeyword(String keyword) {
-        return this.workspaceLink.hasKeyword(keyword);
-    }
-    //endregion
-
     //region File Methods
-
     @Override
     public ADFile getFileByName(String name) throws FileNotFoundException {
         return workspaceLink.getFileByName(name);
+    }
+
+    @Override
+    public List<String> getFileNames() {
+
+        return null;
     }
 
     public void createFile(String fileName) throws QuotaLimitExceededException, IOException, CreateFileException {

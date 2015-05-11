@@ -29,7 +29,6 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 public class FilesActivity extends ActionBarActivity {
     private ArrayAdapter filesAdapter;
     private ListView listView;
-    private FilesTask filesThread;
     private AirDeskApp airDeskApp;
     private List<String> selectedFiles;
     private Workspace currentWorkspace;
@@ -47,13 +46,13 @@ public class FilesActivity extends ActionBarActivity {
         airDeskApp = (AirDeskApp) getApplicationContext();
         Intent intent = getIntent();
         isForeign = intent.getBooleanExtra("isForeign",false); //default value is false
-        selectedFiles = new ArrayList<String>();
+        selectedFiles = new ArrayList<>();
         new FilesTask().execute(this);
         airDeskApp.getWifiHandler().setCurrentActivity(this);
     }
 
-    public void assignArrayAdapter(List<ADFile> array){
-        filesAdapter = new ArrayAdapter<ADFile>(this, android.R.layout.simple_list_item_1, array);
+    public void assignArrayAdapter(List<String> array){
+        filesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, array);
         listView = (ListView) findViewById(R.id.listFiles);
         listView.setAdapter(filesAdapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);

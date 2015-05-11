@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.FileNotFoundException;
@@ -25,7 +26,6 @@ public class ForeignRemoteWorkspace extends Workspace{
 
     //region Class Variables
     String owner;
-
     WifiNotificationHandler wifiHandler;
     String myUser;
     //endregion
@@ -39,31 +39,14 @@ public class ForeignRemoteWorkspace extends Workspace{
     }
     //endregion
 
-    //region Getters
-
-    public int getSize() throws NotDirectoryException {
-        //impossible
-        return 0;
-    }
-    //endregion
-
-    //region Setters
-    @Override
-    public void setQuota(int quota) throws NotDirectoryException, QuotaLimitExceededException {
-       //TODO impossible
-    }
-
-    @Override
-    public boolean hasKeyword(String keyword) {
-        //TODO impossible
-        return false;
-    }
-    //endregion
-
     //region File Methods
-    @Override
     public ADFile getFileByName(String filename) throws FileNotFoundException {
         //FuncCallMessage newFuncCallMessage = new FuncCallMessage(owner, filename);
+        return null;
+    }
+
+    @Override
+    public List<String> getFileNames() {
         return null;
     }
 
@@ -132,9 +115,9 @@ public class ForeignRemoteWorkspace extends Workspace{
                 }
             }
         }catch(RemoteMethodException e){
-            //throw new RemoteMethodException();
+            //TODO throw new RemoteMethodException();
         }catch(JSONException e) {
-            //welp
+            //TODO help
         }
     }
     //endregion

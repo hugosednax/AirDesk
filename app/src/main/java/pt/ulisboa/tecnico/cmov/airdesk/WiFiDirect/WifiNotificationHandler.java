@@ -341,7 +341,11 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         protected ArrayList<String> parseIPlist(String iplist){
             String delimit = "[|]";
             String[] tokens = iplist.split(delimit);
-            return (ArrayList<String>)Arrays.asList(tokens);
+            ArrayList<String> list = new ArrayList<>();
+            for(int i = 0; i<tokens.length; i++){
+                list.add(tokens[i]);
+            }
+            return list;
         }
     }
 

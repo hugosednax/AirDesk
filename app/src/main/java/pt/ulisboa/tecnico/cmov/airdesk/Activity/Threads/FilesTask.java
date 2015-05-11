@@ -20,11 +20,11 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 /**
  * Created by hugo__000 on 25/03/2015.
  */
-public class FilesTask extends AsyncTask<FilesActivity, Void, List<ADFile>> {
+public class FilesTask extends AsyncTask<FilesActivity, Void, List<String>> {
 
     private FilesActivity activity;
     @Override
-    protected List<ADFile> doInBackground(FilesActivity... params) {
+    protected List<String> doInBackground(FilesActivity... params) {
         activity = params[0];
         Intent intent = activity.getIntent();
         AirDeskApp airDeskApp = (AirDeskApp) activity.getApplicationContext();
@@ -47,11 +47,11 @@ public class FilesTask extends AsyncTask<FilesActivity, Void, List<ADFile>> {
         }catch(WorkspaceNotFoundException e){
 
         }
-        return activity.getCurrentWorkspace().getFiles();
+        return activity.getCurrentWorkspace().getFileNames();
     }
 
     @Override
-    protected void onPostExecute(List<ADFile> adFiles) {
-        activity.assignArrayAdapter(adFiles);
+    protected void onPostExecute(List<String> files) {
+        activity.assignArrayAdapter(files);
     }
 }

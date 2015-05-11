@@ -251,9 +251,9 @@ public class User {
 
     public List<WorkspaceDTO> searchWorkspaces(String keyword){
         List<WorkspaceDTO> results = new ArrayList<>();
-        for(Workspace workspace : this.getOwnedWorkspaces()){
+        for(OwnedWorkspace workspace : this.getOwnedWorkspaces()){
             if(workspace.hasKeyword(keyword))
-                results.add(new WorkspaceDTO((OwnedWorkspace) workspace));
+                results.add(new WorkspaceDTO(workspace));
         }
         return results;
     }

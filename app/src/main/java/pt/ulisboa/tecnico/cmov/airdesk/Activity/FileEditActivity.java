@@ -4,12 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,11 +59,7 @@ public class FileEditActivity extends ActionBarActivity {
             }
             br.close();
         }catch (Exception e){
-            Context context = getApplicationContext();
-            CharSequence toastText = e.getMessage();
-            int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
+            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
         }
 
         //Find the view by its id
@@ -81,7 +73,6 @@ public class FileEditActivity extends ActionBarActivity {
     public void SaveChanges(View v){
         new Thread(new Runnable() {
             public void run() {
-                EditText listView = (EditText) findViewById(R.id.FileName);
                 try {
                     currWorkspace.updateFile(nameOfCurrFile, textView.getText().toString());
                     finish();

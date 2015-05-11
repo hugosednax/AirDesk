@@ -30,6 +30,8 @@ public class OwnedWorkspace extends Workspace{
     private List<String> allowedUsers;
     private boolean isPublic;
     private List<String> keywords;
+    protected List<ADFile> files;
+    protected int quota;
     //endregion
 
     //region Constructors
@@ -37,7 +39,7 @@ public class OwnedWorkspace extends Workspace{
         super(name);
         this.isPublic = isPublic;
         this.quota = quota;
-        this.allowedUsers = new ArrayList<String>();
+        this.allowedUsers = new ArrayList<>();
         File mainDir = AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE);
         File currentDir = new File(""+mainDir+File.separatorChar+name);
         currentDir.mkdir();
@@ -50,8 +52,8 @@ public class OwnedWorkspace extends Workspace{
         super(workspaceDTO.getName());
         this.isPublic = workspaceDTO.isPublic();
         this.quota = workspaceDTO.getQuota();
-        this.allowedUsers = new ArrayList<String>();
-        this.keywords = new ArrayList<String>();
+        this.allowedUsers = new ArrayList<>();
+        this.keywords = new ArrayList<>();
 
         for(String username : workspaceDTO.getAllowedUsers())
             allowedUsers.add(username);
@@ -75,6 +77,10 @@ public class OwnedWorkspace extends Workspace{
     public boolean isPublic() {
         return isPublic;
     }
+
+    public List<ADFile> getFiles() { return files; }
+
+    public int getQuota() { return quota; }
 
     public List<String> getAllowedUsers() {
         return allowedUsers;
@@ -142,6 +148,14 @@ public class OwnedWorkspace extends Workspace{
             }
         if(result == null)
             throw new FileNotFoundException("File " + name + " not found in " + this.getName() + " Workspace.");
+        return result;
+    }
+
+    @Override
+    public List<String> getFileNames() {
+        List<String> result = new ArrayList<>();
+        for(ADFile file : getFiles())
+            result.add(file.getFileName());
         return result;
     }
 
