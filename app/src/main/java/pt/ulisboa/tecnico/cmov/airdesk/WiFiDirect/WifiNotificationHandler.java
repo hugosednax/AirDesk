@@ -99,6 +99,12 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     }
     //endregion
 
+    //region Getters
+    public String getMyUser(){
+        return myUser;
+    }
+    //endregion
+
     //region Service Controller
     private ServiceConnection mConnection = new ServiceConnection() {
         // callbacks for service binding, passed to bindService()
