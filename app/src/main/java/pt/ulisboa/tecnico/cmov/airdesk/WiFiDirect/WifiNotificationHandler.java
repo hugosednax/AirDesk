@@ -314,7 +314,8 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                     user = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
 
                     if(!groupOwner) {
-                        //ipPeerList = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
+                        ipPeerList = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
+                        peersList = parseIPlist(ipPeerList);
                         Log.d(TAG, "received ipPeerList");
                     }
                     socket.getOutputStream().write((myUser + "\n").getBytes());
@@ -335,6 +336,12 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             commReceiveTaskTreeMap.put(user, receiveCommTask);
             receiveCommTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, socket);
             user = "error";
+        }
+
+        protected ArrayList<String> parseIPlist(String iplist){
+            String delimit = "[|]";
+            String[] tokens = iplist.split(delimit);
+            return (ArrayList<String>)Arrays.asList(tokens);
         }
     }
 
@@ -387,12 +394,6 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             }
             s = null;
         }
-
-        protected ArrayList<String> parseIPlist(String iplist){
-            String delimit = "[|]";
-            String[] tokens = iplist.split(delimit);
-            return (ArrayList<String>)Arrays.asList(tokens);
-        }
     }
 
     private class OutgoingCommTask extends AsyncTask<String, Void, String> {
@@ -415,7 +416,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                     for(String ipClient : peersList){
                         peerListString+=ipClient+"|";
                     }
-                    //sendSocket.getOutputStream().write((peerListString+"\n").getBytes());
+                    sendSocket.getOutputStream().write((peerListString+"\n").getBytes());
                 }
                 user = (new BufferedReader(new InputStreamReader(sendSocket.getInputStream()))).readLine();
             } catch (UnknownHostException e) {
