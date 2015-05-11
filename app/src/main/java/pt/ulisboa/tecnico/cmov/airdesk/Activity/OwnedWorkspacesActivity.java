@@ -28,12 +28,13 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.ServiceNotBoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.FuncCallMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.Workspace.OwnedWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 
 public class OwnedWorkspacesActivity extends ActionBarActivity {
     private ArrayAdapter workspacesAdapter;
-    private List<Workspace> workspaces;
+    private List<OwnedWorkspace> workspaces;
     private ListView listView;
     private List<String> selectedWorkSpaces;
 
@@ -52,7 +53,7 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
             */
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         workspaces = airDeskApp.getUser().getOwnedWorkspaces();
-        workspacesAdapter = new ArrayAdapter<Workspace>(this, android.R.layout.simple_list_item_1, workspaces);
+        workspacesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, workspaces);
         listView = (ListView) findViewById(R.id.listWorkspaces);
         listView.setAdapter(workspacesAdapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -97,7 +98,7 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
                     case R.id.deleteWorkspace:
                         try{
                             for(int i=0; i<selectedWorkSpaces.size();i++){
-                                Workspace w = airDeskApp.getUser().getOwnedWorkspaceByName(selectedWorkSpaces.get(i));
+                                OwnedWorkspace w = airDeskApp.getUser().getOwnedWorkspaceByName(selectedWorkSpaces.get(i));
                                 airDeskApp.getUser().deleteWorkspace(w);
                             }
                         }catch (Exception e){

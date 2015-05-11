@@ -108,7 +108,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         return myUser;
     }
 
-    public String getMyUserName() { return getMyUser().getNick(); }
+    public String getMyUserEmail() { return getMyUser().getEmail(); }
 
     public boolean gotConnectionTo(String name){
         if(userNetworkList.get(name) == null)

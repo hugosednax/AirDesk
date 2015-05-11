@@ -5,10 +5,6 @@ import android.util.Log;
 
 import com.android.internal.util.Predicate;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +12,7 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
-import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.FileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
@@ -24,7 +20,6 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 import pt.ulisboa.tecnico.cmov.airdesk.Predicate.FileNamePredicate;
-import pt.ulisboa.tecnico.cmov.airdesk.User.User;
 
 /**
  * Created by Filipe Teixeira on 12/03/2015.
@@ -121,7 +116,7 @@ public class OwnedWorkspace extends Workspace{
             }
     }
 
-    public void removeFile(String name) throws ADFileNotFoundException, DeleteFileException {
+    public void removeFile(String name) throws FileNotFoundException, DeleteFileException {
         ADFile file = getFileByName(name);
         files.remove(file);
 
@@ -129,7 +124,7 @@ public class OwnedWorkspace extends Workspace{
             throw new DeleteFileException("Can't delete file in Android File System");
     }
 
-    public void updateFile(String name, String text) throws ADFileNotFoundException, NotDirectoryException, QuotaLimitExceededException {
+    public void updateFile(String name, String text) throws FileNotFoundException, NotDirectoryException, QuotaLimitExceededException {
         ADFile file = getFileByName(name);
         Log.w("[AirDesk]", "size of workspace = " + this.getSize() + " file size = " + file.getSize() + " text length" + text.length() + " quota=" + this.getQuota());
         if(this.getSize() - file.getSize() + text.length() > this.getQuota())
@@ -137,7 +132,7 @@ public class OwnedWorkspace extends Workspace{
         file.save(text);
     }
 
-    public ADFile getFileByName(String name) throws ADFileNotFoundException {
+    public ADFile getFileByName(String name) throws FileNotFoundException {
         Predicate<ADFile> validator = new FileNamePredicate(name);
         ADFile result = null;
         for(ADFile file : getFiles())
@@ -146,7 +141,7 @@ public class OwnedWorkspace extends Workspace{
                 break;
             }
         if(result == null)
-            throw new ADFileNotFoundException("File " + name + " not found in " + this.getName() + " Workspace.");
+            throw new FileNotFoundException("File " + name + " not found in " + this.getName() + " Workspace.");
         return result;
     }
 

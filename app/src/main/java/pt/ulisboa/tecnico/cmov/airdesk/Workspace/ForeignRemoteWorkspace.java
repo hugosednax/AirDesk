@@ -1,14 +1,11 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
-import android.widget.Toast;
-
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
-import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.FileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
@@ -38,7 +35,7 @@ public class ForeignRemoteWorkspace extends Workspace{
         super(workspaceDTO.getName() + "@" + owner);
         this.owner = owner;
         this.wifiHandler = wifiHandler;
-        this.myUser = wifiHandler.getMyUserName();
+        this.myUser = wifiHandler.getMyUserEmail();
     }
     //endregion
 
@@ -65,7 +62,7 @@ public class ForeignRemoteWorkspace extends Workspace{
 
     //region File Methods
     @Override
-    public ADFile getFileByName(String filename) throws ADFileNotFoundException {
+    public ADFile getFileByName(String filename) throws FileNotFoundException {
         //FuncCallMessage newFuncCallMessage = new FuncCallMessage(owner, filename);
         return null;
     }
@@ -95,7 +92,7 @@ public class ForeignRemoteWorkspace extends Workspace{
         }
     }
 
-    public void removeFile(String filename) throws ADFileNotFoundException, DeleteFileException {
+    public void removeFile(String filename) throws FileNotFoundException, DeleteFileException {
         FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.REMOVE_FILE, myUser, this.getName(), filename);
 
         try {
@@ -104,8 +101,8 @@ public class ForeignRemoteWorkspace extends Workspace{
                 Exception exc = response.getException();
                 Class<?> excClass = exc.getClass();
 
-                if(excClass.equals(ADFileNotFoundException.class)) {
-                    throw new ADFileNotFoundException(exc.getMessage());
+                if(excClass.equals(FileNotFoundException.class)) {
+                    throw new FileNotFoundException(exc.getMessage());
                 }else if(excClass.equals(DeleteFileException.class)) {
                     throw new DeleteFileException(exc.getMessage());
                 }
@@ -117,7 +114,7 @@ public class ForeignRemoteWorkspace extends Workspace{
         }
     }
 
-    public void updateFile(String filename, String text) throws QuotaLimitExceededException, ADFileNotFoundException, NotDirectoryException {
+    public void updateFile(String filename, String text) throws QuotaLimitExceededException, FileNotFoundException, NotDirectoryException {
         FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.UPDATE_FILE, myUser, this.getName(), filename, text);
 
         try {
@@ -126,8 +123,8 @@ public class ForeignRemoteWorkspace extends Workspace{
                 Exception exc = response.getException();
                 Class<?> excClass = exc.getClass();
 
-                if(excClass.equals(ADFileNotFoundException.class)) {
-                    throw new ADFileNotFoundException(exc.getMessage());
+                if(excClass.equals(FileNotFoundException.class)) {
+                    throw new FileNotFoundException(exc.getMessage());
                 }else if(excClass.equals(QuotaLimitExceededException.class)) {
                     throw new QuotaLimitExceededException(exc.getMessage());
                 }else if(excClass.equals(NotDirectoryException.class)) {

@@ -12,10 +12,11 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
-import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.FileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ServiceNotBoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WriteToFileException;
@@ -25,6 +26,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.Predicate.WorkspaceNamePredicate;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.WiFiDirect.WifiNotificationHandler;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.ForeignLocalWorkspace;
+import pt.ulisboa.tecnico.cmov.airdesk.Workspace.ForeignRemoteWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.OwnedWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
@@ -32,14 +34,15 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
  * Created by hugo__000 on 10/03/2015.
  */
 public class User {
-
+    //region Class Const
     private static final String TAG = "[AirDesk]";
+    //endregion
 
     //region Class Variables
     private String nick;
     private String email;
-    private List<Workspace> foreignWorkspaces;
-    private List<Workspace> ownedWorkspaces;
+    private List<ForeignRemoteWorkspace> foreignWorkspaces;
+    private List<OwnedWorkspace> ownedWorkspaces;
     private List<String> interestKeywords;
     private JSONHandler settings;
     private WifiNotificationHandler wifiHandler;
@@ -55,10 +58,7 @@ public class User {
         interestKeywords = new ArrayList<>();
 
         try {
-            Log.d(AirDeskApp.LOG_TAG, "create handler");
-            //this.settings = new SettingsHandler();
             this.settings = new JSONHandler();
-            Log.d(AirDeskApp.LOG_TAG, "finished handler creating");
         } catch (Exception e) {
             Log.d(AirDeskApp.LOG_TAG, e.getMessage());
         }
@@ -82,7 +82,7 @@ public class User {
 
     @Override
     public String toString(){
-        return nick;
+        return email;
     }
     //endregion
 
@@ -92,8 +92,8 @@ public class User {
             OwnedWorkspace savedWS = new OwnedWorkspace(wsDTO);
             ownedWorkspaces.add(savedWS);
             if(savedWS.getAllowedUsers().size() != 0)
-                for(String username : savedWS.getAllowedUsers())
-                    this.invite(savedWS, username);
+                for(String email : savedWS.getAllowedUsers())
+                    this.invite(savedWS, email);
         }
         for(WorkspaceDTO wsDTO : settings.getForeignWorkspaces()){
             //TODO: something to do
@@ -102,11 +102,11 @@ public class User {
     //endregion
 
     //region Workspace Methods
-    public List<Workspace> getForeignWorkspaces() {
+    public List<ForeignRemoteWorkspace> getForeignWorkspaces() {
         return foreignWorkspaces;
     }
 
-    public List<Workspace> getOwnedWorkspaces() {
+    public List<OwnedWorkspace> getOwnedWorkspaces() {
         return ownedWorkspaces;
     }
 
@@ -124,10 +124,10 @@ public class User {
         return workspaceNames;
     }
 
-    public Workspace getOwnedWorkspaceByName(String name) throws WorkspaceNotFoundException{
+    public OwnedWorkspace getOwnedWorkspaceByName(String name) throws WorkspaceNotFoundException{
         Predicate<Workspace> validator = new WorkspaceNamePredicate(name);
-        Workspace result = null;
-        for(Workspace workspace : ownedWorkspaces){
+        OwnedWorkspace result = null;
+        for(OwnedWorkspace workspace : ownedWorkspaces){
             if(validator.apply(workspace)){
                 result = workspace;
                 break;
@@ -165,10 +165,10 @@ public class User {
         return result;
     }
 
-    public Workspace getForeignWorkspaceByName(String name) throws WorkspaceNotFoundException{
+    public ForeignRemoteWorkspace getForeignWorkspaceByName(String name) throws WorkspaceNotFoundException{
         Predicate<Workspace> validator = new WorkspaceNamePredicate(name);
-        Workspace result = null;
-        for(Workspace workspace : foreignWorkspaces){
+        ForeignRemoteWorkspace result = null;
+        for(ForeignRemoteWorkspace workspace : foreignWorkspaces){
             if(validator.apply(workspace)){
                 result = workspace;
                 break;
@@ -182,34 +182,32 @@ public class User {
     public Workspace createWorkspace(String name, boolean isPublic, int quota) throws CreateWorkspaceException {
         if(existWorkspace(name)) throw new CreateWorkspaceException("Already exists a workspace with that name");
 
-        Workspace newWorkspace = new OwnedWorkspace(name, isPublic, quota);
+        OwnedWorkspace newWorkspace = new OwnedWorkspace(name, isPublic, quota);
         ownedWorkspaces.add(newWorkspace);
         try {
-            settings.saveOwnedWorkspace(new WorkspaceDTO((OwnedWorkspace)newWorkspace));
+            settings.saveOwnedWorkspace(new WorkspaceDTO(newWorkspace));
         } catch (WriteToFileException e) {
             throw new CreateWorkspaceException(e.getMessage());
         }
         return newWorkspace;
     }
 
-    public void addForeignWorkspace(Workspace workspace){
+    public void addForeignWorkspace(ForeignRemoteWorkspace workspace){
         foreignWorkspaces.add(workspace);
     }
 
-    public void invite(OwnedWorkspace workspace, String name){
-        workspace.invite(name);
-        Workspace newForeign = new ForeignLocalWorkspace(workspace, email);
-        if(name.equals(this.getNick())){
-            foreignWorkspaces.add(newForeign);
-            try {
-                settings.updateOwnedWorkspace(new WorkspaceDTO(workspace));
-            } catch (Exception e) {
-                Log.d("[AirDesk]", e.getMessage());
-            }
+    public void removeForeignWorkspace(String workspace){
+        //TODO
+    }
+
+    public void invite(OwnedWorkspace workspace, String email){
+        workspace.invite(email);
+        if(email.equals(this.getEmail())){
+            Log.d(TAG, "added yourself to the list, whaaaat?");
         } else {
-            if(wifiHandler.gotConnectionTo(name)){
+            if(wifiHandler.gotConnectionTo(email)){
                 try {
-                    wifiHandler.sendMessage(new InviteWSMessage(getNick(), new WorkspaceDTO(workspace)).toJSON().toString(), name);
+                    wifiHandler.sendMessage(new InviteWSMessage(getEmail(), new WorkspaceDTO(workspace)).toJSON().toString(), email);
                 } catch (ServiceNotBoundException e) {
                     Log.d(TAG, "Service not bound at invite: " + e.getMessage());
                 } catch (JSONException e) {
@@ -232,11 +230,20 @@ public class User {
         }
     }
 
-    public void deleteWorkspace(Workspace workspace){
+    public void deleteWorkspace(OwnedWorkspace workspace){
         try {
             workspace.delete();
             ownedWorkspaces.remove(workspace);
-            settings.removeOwnedWorkspace(new WorkspaceDTO((OwnedWorkspace)workspace));
+            settings.removeOwnedWorkspace(new WorkspaceDTO(workspace));
+        } catch (Exception e) {
+            Log.d("[AirDesk]", e.getMessage());
+        }
+    }
+
+    public void deleteWorkspace(ForeignRemoteWorkspace workspace){
+        try {
+            workspace.delete();
+            foreignWorkspaces.remove(workspace);
         } catch (Exception e) {
             Log.d("[AirDesk]", e.getMessage());
         }
@@ -260,10 +267,17 @@ public class User {
         getOwnedWorkspaceByName(workspaceName).createFile(fileName);
     }
 
-    public void deleteFile(String fileName, Workspace workspace) throws ADFileNotFoundException, DeleteFileException {
+    public void updateFile(String fileName, OwnedWorkspace workspace, String text) throws QuotaLimitExceededException, FileNotFoundException, NotDirectoryException {
+        workspace.updateFile(fileName, text);
+    }
+    public void updateFile(String fileName, String workspaceName, String text) throws WorkspaceNotFoundException, QuotaLimitExceededException, FileNotFoundException, NotDirectoryException {
+        getOwnedWorkspaceByName(workspaceName).updateFile(fileName, text);
+    }
+
+    public void deleteFile(String fileName, Workspace workspace) throws FileNotFoundException, DeleteFileException {
         workspace.removeFile(fileName);
     }
-    public void deleteFile(String fileName, String workspaceName) throws WorkspaceNotFoundException, ADFileNotFoundException, DeleteFileException {
+    public void deleteFile(String fileName, String workspaceName) throws WorkspaceNotFoundException, FileNotFoundException, DeleteFileException {
         getOwnedWorkspaceByName(workspaceName).removeFile(fileName);
     }
     //endregion

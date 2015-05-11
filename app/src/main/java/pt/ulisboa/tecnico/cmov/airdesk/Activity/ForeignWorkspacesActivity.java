@@ -21,13 +21,14 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.Workspace.ForeignRemoteWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 
 public class ForeignWorkspacesActivity extends ActionBarActivity {
 
     private ArrayAdapter workspacesAdapter;
-    private List<Workspace> workspaces;
+    private List<ForeignRemoteWorkspace> workspaces;
     private ListView listView;
     private List<String> selectedWorkSpaces;
 
@@ -41,7 +42,7 @@ public class ForeignWorkspacesActivity extends ActionBarActivity {
         */
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         workspaces = airDeskApp.getUser().getForeignWorkspaces();
-        workspacesAdapter = new ArrayAdapter<Workspace>(this, android.R.layout.simple_list_item_1,workspaces);
+        workspacesAdapter = new ArrayAdapter<ForeignRemoteWorkspace>(this, android.R.layout.simple_list_item_1,workspaces);
         listView = (ListView) findViewById(R.id.listWorkspaces);
         listView.setAdapter(workspacesAdapter);
 
@@ -82,7 +83,7 @@ public class ForeignWorkspacesActivity extends ActionBarActivity {
                     case R.id.deleteWorkspace:
                         try{
                             for(int i=0; i<selectedWorkSpaces.size();i++){
-                                Workspace w = airDeskApp.getUser().getForeignWorkspaceByName(selectedWorkSpaces.get(i));
+                                ForeignRemoteWorkspace w = airDeskApp.getUser().getForeignWorkspaceByName(selectedWorkSpaces.get(i));
                                 airDeskApp.getUser().deleteWorkspace(w);
                             }
                         }catch (Exception e){

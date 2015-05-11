@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.FileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.MessageParsingException;
@@ -107,7 +107,7 @@ public class FuncCallMessage extends Message{
             try {
                 user.getOwnedWorkspaceByName(getArg1()).updateFile(getArg2(), getArg3());
                 return new FuncResponseMessage(getUser(), false, "");
-            } catch (ADFileNotFoundException e) {
+            } catch (FileNotFoundException e) {
                 return new FuncResponseMessage(getUser(), true, e);
             } catch (NotDirectoryException e) {
                 return new FuncResponseMessage(getUser(), true, e);
@@ -122,12 +122,12 @@ public class FuncCallMessage extends Message{
             try {
                 user.getOwnedWorkspaceByName(getArg1()).removeFile(getArg2());
                 return new FuncResponseMessage(getUser(), false, "");
-            } catch (ADFileNotFoundException e) {
+            } catch (FileNotFoundException e) {
                 return new FuncResponseMessage(getUser(), true, e);
             } catch (DeleteFileException e) {
                 return new FuncResponseMessage(getUser(), true, e);
             } catch (WorkspaceNotFoundException e) {
-                return new FuncResponseMessage(getUser(), true, new ADFileNotFoundException(e.getMessage()));
+                return new FuncResponseMessage(getUser(), true, new FileNotFoundException(e.getMessage()));
             }
 
         }

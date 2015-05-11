@@ -16,11 +16,6 @@ public class InviteWSMessage extends Message {
         this.workspace = workspace;
     }
 
-    public InviteWSMessage(String user, JSONObject workspace) {
-        super(Type.INVITE, user);
-
-    }
-
     public WorkspaceDTO getWorkspaceDTO() {
         return this.workspace;
     }
@@ -28,6 +23,7 @@ public class InviteWSMessage extends Message {
     @Override
     public JSONObject toJSON() throws JSONException {
         JSONObject result = new JSONObject();
+        result.put(MESSAGE_USER, this.getUser());
         result.put(MESSAGE_TYPE, this.getTypeOfMessage());
         result.put(MESSAGE_WORKSPACE, this.getWorkspaceDTO().toJSON());
         return result;

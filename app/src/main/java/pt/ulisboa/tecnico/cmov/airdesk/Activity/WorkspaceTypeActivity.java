@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.content.Intent;
+import android.widget.Toast;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
@@ -32,6 +33,7 @@ public class WorkspaceTypeActivity extends ActionBarActivity {
         String nick = airDeskApp.getPrefs().getString("nick_pref","DEFAULT");
         User user = new User(nick, userEmail, airDeskApp.getWifiHandler());
         airDeskApp.setUser(user);
+        Toast.makeText(this, "Welcome back " + user.getNick() + "!" , Toast.LENGTH_SHORT).show();
         airDeskApp.getWifiHandler().setCurrentActivity(this);
         airDeskApp.getWifiHandler().setMyUser(user);
         airDeskApp.getWifiHandler().wifiOn();

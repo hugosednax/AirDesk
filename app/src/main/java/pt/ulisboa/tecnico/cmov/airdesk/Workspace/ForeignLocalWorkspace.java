@@ -1,15 +1,9 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
-import android.util.Log;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.List;
 
-import pt.ulisboa.tecnico.cmov.airdesk.Exception.ADFileNotFoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.FileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
@@ -60,7 +54,7 @@ public class ForeignLocalWorkspace extends Workspace{
     //region File Methods
 
     @Override
-    public ADFile getFileByName(String name) throws ADFileNotFoundException {
+    public ADFile getFileByName(String name) throws FileNotFoundException {
         return workspaceLink.getFileByName(name);
     }
 
@@ -68,11 +62,11 @@ public class ForeignLocalWorkspace extends Workspace{
         workspaceLink.createFile(fileName);
     }
 
-    public void removeFile(String name) throws ADFileNotFoundException, DeleteFileException {
+    public void removeFile(String name) throws FileNotFoundException, DeleteFileException {
         workspaceLink.removeFile(name);
     }
 
-    public void updateFile(String name, String text) throws QuotaLimitExceededException, ADFileNotFoundException, NotDirectoryException {
+    public void updateFile(String name, String text) throws QuotaLimitExceededException, FileNotFoundException, NotDirectoryException {
         workspaceLink.updateFile(name, text);
     }
     //endregion
