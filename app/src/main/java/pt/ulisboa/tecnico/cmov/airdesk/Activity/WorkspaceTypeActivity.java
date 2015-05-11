@@ -30,9 +30,10 @@ public class WorkspaceTypeActivity extends ActionBarActivity {
         airDeskApp.setPrefs(getSharedPreferences("user_prefs", MODE_PRIVATE));
         String userEmail = airDeskApp.getPrefs().getString("email_pref","DEFAULT");
         String nick = airDeskApp.getPrefs().getString("nick_pref","DEFAULT");
-        airDeskApp.setUser(new User(nick,userEmail));
+        User user = new User(nick, userEmail, airDeskApp.getWifiHandler());
+        airDeskApp.setUser(user);
         airDeskApp.getWifiHandler().setCurrentActivity(this);
-        airDeskApp.getWifiHandler().setMyUser(nick);
+        airDeskApp.getWifiHandler().setMyUser(user);
         airDeskApp.getWifiHandler().wifiOn();
     }
 

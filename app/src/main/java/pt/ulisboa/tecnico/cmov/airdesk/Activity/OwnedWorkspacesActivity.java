@@ -70,14 +70,6 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
         selectedWorkSpaces = new ArrayList<>();
         addContextToList(listView, airDeskApp);
         airDeskApp.getWifiHandler().setCurrentActivity(this);
-        String nick = airDeskApp.getPrefs().getString("nick_pref","DEFAULT");
-        try {
-            airDeskApp.getWifiHandler().remoteMethodInvoke("filipe", new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE, nick, "file1"));
-        } catch (JSONException e) {
-            Log.d(airDeskApp.LOG_TAG, "JSON exception " + e.getMessage());
-        } catch (RemoteMethodException e) {
-            Log.d(airDeskApp.LOG_TAG, "RMI exception " + e.getMessage());
-        }
     }
 
     public void addContextToList(final ListView listView, final AirDeskApp airDeskApp){

@@ -45,6 +45,8 @@ import pt.ulisboa.tecnico.cmov.airdesk.Message.FuncResponseMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.InviteWSMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.Message;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.User.User;
+import pt.ulisboa.tecnico.cmov.airdesk.Workspace.ForeignRemoteWorkspace;
 
 /**
  * Created by Filipe Teixeira on 30/04/2015.
@@ -66,7 +68,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     private List<String> peersList;
     private TreeMap<String, SimWifiP2pSocket> userNetworkList;
     private TreeMap<String, ReceiveCommTask> commReceiveTaskTreeMap;
-    private String myUser;
+    private User myUser;
     private boolean groupOwner = false;
     //endregion
 
@@ -96,14 +98,22 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         this.currentActivity = currentActivity;
     }
 
-    public void setMyUser(String user){
+    public void setMyUser(User user){
         this.myUser = user;
     }
     //endregion
 
     //region Getters
-    public String getMyUser(){
+    public User getMyUser(){
         return myUser;
+    }
+
+    public String getMyUserName() { return getMyUser().getNick(); }
+
+    public boolean gotConnectionTo(String name){
+        if(userNetworkList.get(name) == null)
+            return false;
+        return true;
     }
     //endregion
 
@@ -196,9 +206,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         }
     }
 
-    public void sendMessage(String message, String ip) throws ServiceNotBoundException {
+    public void sendMessage(String message, String user) throws ServiceNotBoundException {
         if (mBound) {
-            //new OutgoingCommTask(message).execute(ip);
+            new RemoteSendMessageTask().execute(user, message);
         } else {
             throw new ServiceNotBoundException("Service not Bound");
         }
@@ -248,9 +258,15 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                         JSONMessage.getString(Message.MESSAGE_ARG2));
             else throw new MessageParsingException("No compatible FuncType found");
         } else if(messageType == Message.Type.FUNC_RESP){
-            return new FuncResponseMessage("", true, null);
+            return new FuncResponseMessage("", true, "");
         }
             throw new MessageParsingException("No compatible Type found");
+    }
+    //endregion
+
+    //region Private Methods
+    private void addForeignWorkspace(InviteWSMessage inviteWSMessage) {
+        getMyUser().addForeignWorkspace(new ForeignRemoteWorkspace(this, inviteWSMessage.getWorkspaceDTO(), inviteWSMessage.getUser()));
     }
     //endregion
 
@@ -340,10 +356,11 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                         response = st;
                     } else if(message.getClass().equals(InviteWSMessage.class)){
                         Log.d(TAG, "Received WS invite");
-                        //TODO: run new foreign etc etc, can be async
+                        InviteWSMessage inviteWSMessage = (InviteWSMessage) message;
+                        addForeignWorkspace(inviteWSMessage);
                     } else if (message.getClass().equals(FuncCallMessage.class)){
                         FuncCallMessage funcCallMessage = (FuncCallMessage) message;
-                        FuncResponseMessage funcResponseMessage = funcCallMessage.execute();
+                        FuncResponseMessage funcResponseMessage = funcCallMessage.execute(getMyUser());
                         s.getOutputStream().write((funcResponseMessage.toJSON().toString()+"\n").getBytes());
                     }
                         //else ignore
@@ -454,6 +471,25 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             }
             this.setResult(result);
             return result;
+        }
+    }
+
+    private class RemoteSendMessageTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... params) {
+            String user = params[0];
+            String message = params[1];
+            SimWifiP2pSocket socket = userNetworkList.get(user);
+            if (socket == null){
+                Log.d(TAG, "User " + user + " not in network list");
+            }else
+                try {
+                socket.getOutputStream().write((message + "\n").getBytes());
+            } catch (IOException e) {
+                Log.d(TAG, "IO error: " + e.getMessage());
+            }
+            return null;
         }
     }
 }

@@ -18,8 +18,8 @@ public class FuncResponseMessage extends Message{
         this.result = result;
     }
 
-    public FuncResponseMessage(Type typeOfMessage, String user, boolean exceptionThrown, Exception exception) {
-        super(typeOfMessage, user);
+    public FuncResponseMessage(String user, boolean exceptionThrown, Exception exception) {
+        super(Type.FUNC_RESP, user);
         this.exceptionThrown = exceptionThrown;
         this.exception = exception;
     }

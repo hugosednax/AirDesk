@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.android.internal.util.Predicate;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +17,13 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.ServiceNotBoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WriteToFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.JSONHandler;
+import pt.ulisboa.tecnico.cmov.airdesk.Message.InviteWSMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Predicate.WorkspaceNamePredicate;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.WiFiDirect.WifiNotificationHandler;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.ForeignLocalWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.OwnedWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
@@ -28,6 +33,8 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
  */
 public class User {
 
+    private static final String TAG = "[AirDesk]";
+
     //region Class Variables
     private String nick;
     private String email;
@@ -35,12 +42,14 @@ public class User {
     private List<Workspace> ownedWorkspaces;
     private List<String> interestKeywords;
     private JSONHandler settings;
+    private WifiNotificationHandler wifiHandler;
     //endregion
 
     //region Constructors
-    public User(String nick, String email){
+    public User(String nick, String email, WifiNotificationHandler wifiHandler){
         this.nick = nick;
         this.email = email;
+        this.wifiHandler = wifiHandler;
         foreignWorkspaces = new ArrayList<>();
         ownedWorkspaces = new ArrayList<>();
         interestKeywords = new ArrayList<>();
@@ -187,15 +196,25 @@ public class User {
         foreignWorkspaces.add(workspace);
     }
 
-    public void invite(OwnedWorkspace workspace, String email){
-        workspace.invite(email);
+    public void invite(OwnedWorkspace workspace, String name){
+        workspace.invite(name);
         Workspace newForeign = new ForeignLocalWorkspace(workspace, email);
-        if(email.equals(this.getEmail())){
+        if(name.equals(this.getNick())){
             foreignWorkspaces.add(newForeign);
             try {
                 settings.updateOwnedWorkspace(new WorkspaceDTO(workspace));
             } catch (Exception e) {
                 Log.d("[AirDesk]", e.getMessage());
+            }
+        } else {
+            if(wifiHandler.gotConnectionTo(name)){
+                try {
+                    wifiHandler.sendMessage(new InviteWSMessage(getNick(), new WorkspaceDTO(workspace)).toJSON().toString(), name);
+                } catch (ServiceNotBoundException e) {
+                    Log.d(TAG, "Service not bound at invite: " + e.getMessage());
+                } catch (JSONException e) {
+                    Log.d(TAG, "Error at converting to JSON in Invite: " + e.getMessage());
+                }
             }
         }
     }

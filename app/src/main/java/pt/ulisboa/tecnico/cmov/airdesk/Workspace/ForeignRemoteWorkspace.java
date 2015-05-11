@@ -28,18 +28,17 @@ public class ForeignRemoteWorkspace extends Workspace{
 
     //region Class Variables
     String owner;
-    String ip;
+
     WifiNotificationHandler wifiHandler;
     String myUser;
     //endregion
 
     //region Constructors
-    public ForeignRemoteWorkspace(WifiNotificationHandler wifiHandler, WorkspaceDTO workspaceDTO, String owner, String ip){
+    public ForeignRemoteWorkspace(WifiNotificationHandler wifiHandler, WorkspaceDTO workspaceDTO, String owner){
         super(workspaceDTO.getName() + "@" + owner);
         this.owner = owner;
-        this.ip = ip;
         this.wifiHandler = wifiHandler;
-        this.myUser = wifiHandler.getMyUser();
+        this.myUser = wifiHandler.getMyUserName();
     }
     //endregion
 
@@ -72,7 +71,7 @@ public class ForeignRemoteWorkspace extends Workspace{
     }
 
     public void createFile(String fileName) throws QuotaLimitExceededException, IOException, CreateFileException {
-        FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE, myUser, fileName);
+        FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE, myUser, this.getName(), fileName);
 
         try {
             FuncResponseMessage response = wifiHandler.remoteMethodInvoke(owner, newFuncCallMessage);
@@ -97,7 +96,7 @@ public class ForeignRemoteWorkspace extends Workspace{
     }
 
     public void removeFile(String filename) throws ADFileNotFoundException, DeleteFileException {
-        FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.REMOVE_FILE, myUser, filename);
+        FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.REMOVE_FILE, myUser, this.getName(), filename);
 
         try {
             FuncResponseMessage response = wifiHandler.remoteMethodInvoke(owner, newFuncCallMessage);
@@ -119,7 +118,7 @@ public class ForeignRemoteWorkspace extends Workspace{
     }
 
     public void updateFile(String filename, String text) throws QuotaLimitExceededException, ADFileNotFoundException, NotDirectoryException {
-        FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.UPDATE_FILE, myUser, filename, text);
+        FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.UPDATE_FILE, myUser, this.getName(), filename, text);
 
         try {
             FuncResponseMessage response = wifiHandler.remoteMethodInvoke(owner, newFuncCallMessage);
