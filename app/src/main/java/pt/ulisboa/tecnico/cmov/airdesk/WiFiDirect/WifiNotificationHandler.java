@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
@@ -49,7 +49,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.User.User;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.ForeignRemoteWorkspace;
 
 /**
- * Created by Filipe Teixeira on 30/04/2015.
+ * Created by Filipe Teixeira
  */
 public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
 
@@ -111,9 +111,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     public String getMyUserEmail() { return getMyUser().getEmail(); }
 
     public boolean gotConnectionTo(String name){
-        if(userNetworkList.get(name) == null)
-            return false;
-        return true;
+        return userNetworkList.get(name) != null;
     }
     //endregion
 
@@ -170,6 +168,16 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         Toast.makeText(this.currentActivity, "Group ownership changed",
                 Toast.LENGTH_SHORT).show();
         mManager.requestGroupInfo(mChannel, WifiNotificationHandler.this);
+    }
+
+    protected void notifyToast(String message){
+        final Context context = this.currentActivity;
+        final CharSequence text = message;
+        currentActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     //endregion
 
@@ -230,17 +238,16 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         if(result.equals("error"))
             throw new RemoteMethodException("Timeout");
         JSONObject responseJSON = new JSONObject(result);
-        FuncResponseMessage funcResponseMessage = new FuncResponseMessage("remove", responseJSON.getBoolean(Message.MESSAGE_EXCEPTION_THROWN),
+        return new FuncResponseMessage("remove", responseJSON.getBoolean(Message.MESSAGE_EXCEPTION_THROWN),
                 responseJSON.getBoolean(Message.MESSAGE_EXCEPTION_THROWN) ? responseJSON.getString(Message.MESSAGE_EXCEPTION) :
                         responseJSON.getString(Message.MESSAGE_RESULT));
-        return funcResponseMessage;
     }
     //endregion
 
     //region Message API
     public Message parseMessage(String message) throws JSONException, MessageParsingException {
         JSONObject JSONMessage = new JSONObject(message);
-        Log.d(TAG, "Message : " + message);
+        Log.d(TAG, "Parsing message : " + message);
         Message.Type messageType = Message.stringToEnum(JSONMessage.getString(Message.MESSAGE_TYPE));
 
         if(messageType == Message.Type.INVITE) {
@@ -249,12 +256,29 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         } else if(messageType == Message.Type.FUNC_CALL) {
             FuncCallMessage.FuncType funcType = FuncCallMessage.stringToFuncEnum(JSONMessage.getString(Message.MESSAGE_FUNC_TYPE));
             if (funcType == FuncCallMessage.FuncType.CREATE_FILE)
-                return new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE, "remove", JSONMessage.getString(Message.MESSAGE_ARG1));
-            else if (funcType == FuncCallMessage.FuncType.REMOVE_FILE)
-                return new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE, "remove", JSONMessage.getString(Message.MESSAGE_ARG1));
-            else if (funcType == FuncCallMessage.FuncType.UPDATE_FILE)
-                return new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE, "remove", JSONMessage.getString(Message.MESSAGE_ARG1),
+                return new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE,
+                        JSONMessage.getString(Message.MESSAGE_USER),
+                        JSONMessage.getString(Message.MESSAGE_ARG1),
                         JSONMessage.getString(Message.MESSAGE_ARG2));
+
+            else if (funcType == FuncCallMessage.FuncType.REMOVE_FILE)
+                return new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE,
+                        JSONMessage.getString(Message.MESSAGE_USER),
+                        JSONMessage.getString(Message.MESSAGE_ARG1),
+                        JSONMessage.getString(Message.MESSAGE_ARG2));
+
+            else if (funcType == FuncCallMessage.FuncType.UPDATE_FILE)
+                return new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE,
+                        JSONMessage.getString(Message.MESSAGE_USER),
+                        JSONMessage.getString(Message.MESSAGE_ARG1),
+                        JSONMessage.getString(Message.MESSAGE_ARG2),
+                        JSONMessage.getString(Message.MESSAGE_ARG3));
+
+            else if (funcType == FuncCallMessage.FuncType.GET_FILE_NAMES)
+                return new FuncCallMessage(FuncCallMessage.FuncType.GET_FILE_NAMES,
+                        JSONMessage.getString(Message.MESSAGE_USER),
+                        JSONMessage.getString(Message.MESSAGE_ARG1));
+
             else throw new MessageParsingException("No compatible FuncType found");
         } else if(messageType == Message.Type.FUNC_RESP){
             return new FuncResponseMessage("", true, "");
@@ -265,6 +289,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
     //region Private Methods
     private void addForeignWorkspace(InviteWSMessage inviteWSMessage) {
+        Log.d(TAG, "Adding new foreign workspace " + inviteWSMessage.getWorkspaceDTO().getName() + " from " + inviteWSMessage.getUser());
         getMyUser().addForeignWorkspace(new ForeignRemoteWorkspace(this, inviteWSMessage.getWorkspaceDTO(), inviteWSMessage.getUser()));
     }
     //endregion
@@ -305,7 +330,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 mSrvSocket = new SimWifiP2pSocketServer(
                         Integer.parseInt(context.getString(R.string.port)));
             } catch (IOException e) {
-                Log.d(TAG, e.getMessage());
+                Log.d(TAG, "Exception at Server socket: " + e.getMessage());
             }
             while (!Thread.currentThread().isInterrupted()) {
                 try {
@@ -341,9 +366,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             String delimit = "[|]";
             String[] tokens = iplist.split(delimit);
             ArrayList<String> list = new ArrayList<>();
-            for(int i = 0; i<tokens.length; i++){
-                list.add(tokens[i]);
-            }
+            Collections.addAll(list, tokens);
             return list;
         }
     }
@@ -366,7 +389,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                         response = st;
                     } else if(message.getClass().equals(InviteWSMessage.class)){
                         InviteWSMessage inviteWSMessage = (InviteWSMessage) message;
-                        Log.d(TAG, "Received WS invite to " + ((InviteWSMessage) message).getWorkspaceDTO().getName());
+                        String wsName = inviteWSMessage.getWorkspaceDTO().getName();
+                        Log.d(TAG, "Received WS invite to " + wsName);
+                        notifyToast("Added " + wsName + " to ForeignWorkspace");
                         addForeignWorkspace(inviteWSMessage);
                     } else if (message.getClass().equals(FuncCallMessage.class)){
                         FuncCallMessage funcCallMessage = (FuncCallMessage) message;
@@ -414,6 +439,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                     for(String ipClient : peersList){
                         peerListString+=ipClient+"|";
                     }
+                    Thread.sleep(10);
                     sendSocket.getOutputStream().write((peerListString+"\n").getBytes());
                 }
                 user = (new BufferedReader(new InputStreamReader(sendSocket.getInputStream()))).readLine();
@@ -421,6 +447,8 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 return "Unknown Host:" + e.getMessage();
             } catch (IOException e) {
                 return "IO error:" + e.getMessage();
+            } catch (InterruptedException e) {
+                //ignore
             }
             return null;
         }
@@ -435,6 +463,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 ReceiveCommTask receiveCommTask = new ReceiveCommTask();
                 commReceiveTaskTreeMap.put(user, receiveCommTask);
                 receiveCommTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, sendSocket);
+                Log.d(TAG, "Connected to " + user);
                 user = "error";
             }
         }
@@ -452,6 +481,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         @Override
         protected String doInBackground(String... params) {
             user = params[0];
+            Log.d(TAG, "Calling remote method to " + user);
             String message = params[1];
             String result = null;
             socket = userNetworkList.get(user);
@@ -462,7 +492,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             try {
                 ReceiveCommTask receiveCommTask = commReceiveTaskTreeMap.get(user);
                 socket.getOutputStream().write((message + "\n").getBytes());
-                while(receiveCommTask.response == null) {}
+                while(true) {
+                    if (!(receiveCommTask.response == null)) break;
+                }
                 result = receiveCommTask.response;
                 receiveCommTask.response = null;
             } catch (IOException e) {
@@ -478,6 +510,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         @Override
         protected Void doInBackground(String... params) {
             String user = params[0];
+            Log.d(TAG, "Sending Remote Message to " + user);
             String message = params[1];
             SimWifiP2pSocket socket = userNetworkList.get(user);
             if (socket == null){

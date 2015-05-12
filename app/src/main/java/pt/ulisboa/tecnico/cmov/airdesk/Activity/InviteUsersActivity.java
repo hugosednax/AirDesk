@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,8 +14,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
@@ -40,8 +37,8 @@ public class InviteUsersActivity extends ActionBarActivity {
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         try {
             user = airDeskApp.getUser();
-            workspaceToEdit = (OwnedWorkspace) user.getOwnedWorkspaceByName(workspaceNameToEdit);
-        }catch (Exception e){
+            workspaceToEdit = user.getOwnedWorkspaceByName(workspaceNameToEdit);
+        }catch (WorkspaceNotFoundException e){
             Context context = getApplicationContext();
             CharSequence text = e.getMessage();
             int duration = Toast.LENGTH_SHORT;

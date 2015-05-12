@@ -1,9 +1,14 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Message;
 
+import android.util.Log;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.FileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
@@ -25,7 +30,7 @@ public class FuncCallMessage extends Message{
     private int argNumber;
 
     public enum FuncType{
-        CREATE_FILE, UPDATE_FILE, REMOVE_FILE;
+        CREATE_FILE, UPDATE_FILE, REMOVE_FILE, GET_FILE_NAMES;
     }
 
     public static FuncType stringToFuncEnum(String type) throws MessageParsingException {
@@ -35,6 +40,8 @@ public class FuncCallMessage extends Message{
             return FuncType.UPDATE_FILE;
         else if(type.equals("REMOVE_FILE"))
             return FuncType.REMOVE_FILE;
+        else if(type.equals("GET_FILE_NAMES"))
+            return FuncType.GET_FILE_NAMES;
         else throw new MessageParsingException("No known type = " + type);
     }
 
@@ -87,7 +94,8 @@ public class FuncCallMessage extends Message{
     public FuncResponseMessage execute(User user){
         FuncResponseMessage funcResponseMessage = null;
         if(this.getTypeOfFunction() == FuncType.CREATE_FILE){
-
+            arg1 = parseWSName(arg1);
+            Log.d("[AirDesk]", "Executing createFile with parameters: " + getArg1() + " " + getArg2());
             //arg1 = workspaceName, arg2 = filename
             try {
                 user.createFile(getArg2(), getArg1());
@@ -104,6 +112,8 @@ public class FuncCallMessage extends Message{
 
         } else if(this.getTypeOfFunction() == FuncType.UPDATE_FILE){
             //arg1 = workspaceName, arg2 = filename, arg3 = text
+            arg1 = parseWSName(arg1);
+            Log.d("[AirDesk]", "Executing createFile with parameters: " + getArg1() + " " + getArg2());
             try {
                 user.getOwnedWorkspaceByName(getArg1()).updateFile(getArg2(), getArg3());
                 return new FuncResponseMessage(getUser(), false, "");
@@ -115,8 +125,10 @@ public class FuncCallMessage extends Message{
                 return new FuncResponseMessage(getUser(), true, new NotDirectoryException(e.getMessage()));
             }
 
-        } else if(this.getTypeOfFunction() == FuncType.REMOVE_FILE){
+        } else if(this.getTypeOfFunction() == FuncType.REMOVE_FILE) {
             //arg1 = workspaceName, arg2 = filename
+            arg1 = parseWSName(arg1);
+            Log.d("[AirDesk]", "Executing createFile with parameters: " + getArg1() + " " + getArg2());
             try {
                 user.getOwnedWorkspaceByName(getArg1()).removeFile(getArg2());
                 return new FuncResponseMessage(getUser(), false, "");
@@ -127,14 +139,32 @@ public class FuncCallMessage extends Message{
             } catch (WorkspaceNotFoundException e) {
                 return new FuncResponseMessage(getUser(), true, new FileNotFoundException(e.getMessage()));
             }
+        } else if(this.getTypeOfFunction() == FuncType.GET_FILE_NAMES){
+            Log.d("[AirDesk]", "Executing getFileNames");
+            try {
+                List<String> list = user.getOwnedWorkspaceByName(getArg1()).getFileNames();
+                JSONArray jsonList = new JSONArray(list);
+                return new FuncResponseMessage(getUser(), false, new JSONObject().put("LIST", jsonList).toString());
+            } catch (WorkspaceNotFoundException e) {
+                return new FuncResponseMessage(getUser(), true, new FileNotFoundException(e.getMessage()));
+            } catch (JSONException e) {
+                //TODO
+            }
 
         }
         return funcResponseMessage;
     }
 
+    private String parseWSName(String arg1) {
+        String delimit = "[@]";
+        String[] tokens = arg1.split(delimit);
+        return tokens[0];
+    }
+
     @Override
     public JSONObject toJSON() throws JSONException {
         JSONObject result = new JSONObject();
+        result.put(MESSAGE_USER, this.getUser());
         result.put(MESSAGE_TYPE, Type.FUNC_CALL);
         result.put(MESSAGE_FUNC_TYPE, this.getTypeOfFunction());
         if(argNumber>0){

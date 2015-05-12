@@ -211,6 +211,7 @@ public class User {
             Log.d(TAG, "added yourself to the list, whaaaat?");
         } else {
             if(wifiHandler.gotConnectionTo(email)){
+                Log.d(TAG, "Got connection to " + email + ", going to send message");
                 try {
                     wifiHandler.sendMessage(new InviteWSMessage(getEmail(), new WorkspaceDTO(workspace)).toJSON().toString(), email);
                 } catch (ServiceNotBoundException e) {
