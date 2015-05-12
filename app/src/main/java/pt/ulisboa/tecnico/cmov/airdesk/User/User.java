@@ -201,7 +201,12 @@ public class User {
     }
 
     public void invite(OwnedWorkspace workspace, String email){
-        workspace.invite(email);
+        workspace.addToAllowedUsers(email);
+        try {
+            settings.updateOwnedWorkspace(new WorkspaceDTO(workspace));
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+        }
         if(email.equals(this.getEmail())){
             Log.d(TAG, "added yourself to the list, whaaaat?");
         } else {
@@ -218,23 +223,23 @@ public class User {
     }
 
     public void uninvite(OwnedWorkspace workspace, String email){
-        workspace.uninvite(email);
+        workspace.removeFromAllowedUsers(email);
         Workspace newForeign = new ForeignLocalWorkspace(workspace, email);
         if(email.equals(this.getEmail())){
             foreignWorkspaces.remove(newForeign);
-            try {
-                settings.updateOwnedWorkspace(new WorkspaceDTO(workspace));
-            } catch (Exception e) {
-                Log.d("[AirDesk]", e.getMessage());
-            }
+        }
+        try {
+            settings.updateOwnedWorkspace(new WorkspaceDTO(workspace));
+        } catch (Exception e) {
+            Log.d("[AirDesk]", e.getMessage());
         }
     }
 
     public void deleteWorkspace(OwnedWorkspace workspace){
         try {
-            workspace.delete();
             ownedWorkspaces.remove(workspace);
             settings.removeOwnedWorkspace(new WorkspaceDTO(workspace));
+            workspace.delete();
         } catch (Exception e) {
             Log.d("[AirDesk]", e.getMessage());
         }

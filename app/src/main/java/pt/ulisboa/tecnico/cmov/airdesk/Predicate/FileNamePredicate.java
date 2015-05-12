@@ -16,6 +16,6 @@ public class FileNamePredicate implements Predicate<ADFile> {
     }
 
     public boolean apply(ADFile file){
-        return file.getName().equals(name);
+        return file.getFileName().equals(name);
     }
 }

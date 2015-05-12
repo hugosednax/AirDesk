@@ -198,7 +198,6 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     public void broadcast() throws ServiceNotBoundException {
         if (mBound) {
             for (String ip : peersList) {
-                Log.d(TAG, "Broadcasting to " + ip);
                 new OutgoingCommTask().execute(ip);
             }
         } else {
@@ -316,7 +315,6 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                     if(!groupOwner) {
                         ipPeerList = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
                         peersList = parseIPlist(ipPeerList);
-                        Log.d(TAG, "received ipPeerList");
                     }
                     socket.getOutputStream().write((myUser + "\n").getBytes());
                     publishProgress(socket);
@@ -335,6 +333,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             ReceiveCommTask receiveCommTask = new ReceiveCommTask();
             commReceiveTaskTreeMap.put(user, receiveCommTask);
             receiveCommTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, socket);
+            Log.d(TAG, "Connected to " + user);
             user = "error";
         }
 
@@ -366,8 +365,8 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                     if(message.getClass().equals(FuncResponseMessage.class)){
                         response = st;
                     } else if(message.getClass().equals(InviteWSMessage.class)){
-                        Log.d(TAG, "Received WS invite");
                         InviteWSMessage inviteWSMessage = (InviteWSMessage) message;
+                        Log.d(TAG, "Received WS invite to " + ((InviteWSMessage) message).getWorkspaceDTO().getName());
                         addForeignWorkspace(inviteWSMessage);
                     } else if (message.getClass().equals(FuncCallMessage.class)){
                         FuncCallMessage funcCallMessage = (FuncCallMessage) message;
@@ -403,11 +402,6 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     private class OutgoingCommTask extends AsyncTask<String, Void, String> {
         SimWifiP2pSocket sendSocket;
         String user= "error";
-
-        @Override
-        protected void onPreExecute() {
-            Log.d(TAG, "Connecting to socket");
-        }
 
         @Override
         protected String doInBackground(String... params) {

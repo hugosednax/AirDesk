@@ -140,14 +140,15 @@ public class JSONHandler {
         try{
             JSONObject JSONSettings = new JSONObject(this.toJSONString());
             JSONArray ownedWorkspaces = JSONSettings.getJSONArray(TAG_OWNED_WORKSPACES);
-            int toRemove = 0;
+            ArrayList<String> list = new ArrayList<>();
             for(int i = 0; i < ownedWorkspaces.length(); i++){
                 JSONObject workspace = (JSONObject)ownedWorkspaces.get(i);
-                if(workspace.get(TAG_NAME).equals(ws.getName())){
-                   // ownedWorkspaces.remove(i);
+                if(!workspace.get(TAG_NAME).equals(ws.getName())){
+                    list.add(workspace.toString());
                 }
-
             }
+            JSONArray jsArray = new JSONArray(list);
+            JSONSettings.put(TAG_OWNED_WORKSPACES, jsArray);
             writeToFile(JSONSettings.toString()+"\n");
         } catch (JSONException e) {
             Log.d("[AirDesk]", "Error creating JSON object" + "\n" + e.getMessage());

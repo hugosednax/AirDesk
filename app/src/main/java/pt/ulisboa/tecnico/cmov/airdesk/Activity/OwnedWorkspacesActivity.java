@@ -101,12 +101,8 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
                                 OwnedWorkspace w = airDeskApp.getUser().getOwnedWorkspaceByName(selectedWorkSpaces.get(i));
                                 airDeskApp.getUser().deleteWorkspace(w);
                             }
-                        }catch (Exception e){
-                            Context context = getApplicationContext();
-                            CharSequence text = e.getMessage();
-                            int duration = Toast.LENGTH_SHORT;
-                            Toast toast = Toast.makeText(context, text, duration);
-                            toast.show();
+                        } catch (WorkspaceNotFoundException e) {
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                         workspacesAdapter.notifyDataSetChanged(); //warn the adapter that the original array has changed
                         selectedWorkSpaces.clear();

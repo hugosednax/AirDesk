@@ -26,6 +26,8 @@ import pt.ulisboa.tecnico.cmov.airdesk.Predicate.FileNamePredicate;
  */
 public class OwnedWorkspace extends Workspace{
 
+    private static final String TAG = "[AirDesk]";
+
     //region Class Variables
     private List<String> allowedUsers;
     private boolean isPublic;
@@ -40,6 +42,7 @@ public class OwnedWorkspace extends Workspace{
         this.isPublic = isPublic;
         this.quota = quota;
         this.allowedUsers = new ArrayList<>();
+        this.files = new ArrayList<>();
         File mainDir = AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE);
         File currentDir = new File(""+mainDir+File.separatorChar+name);
         currentDir.mkdir();
@@ -54,6 +57,7 @@ public class OwnedWorkspace extends Workspace{
         this.quota = workspaceDTO.getQuota();
         this.allowedUsers = new ArrayList<>();
         this.keywords = new ArrayList<>();
+        this.files = new ArrayList<>();
 
         for(String username : workspaceDTO.getAllowedUsers())
             allowedUsers.add(username);
@@ -66,7 +70,7 @@ public class OwnedWorkspace extends Workspace{
         if(currentDir.isDirectory()){
             for(File file : currentDir.listFiles()){
                 ADFile savedFile = new ADFile(file);
-                getFiles().add(savedFile);
+                files.add(savedFile);
                 Log.d(AirDeskApp.LOG_TAG, "Loaded file: " + file.getName() + " from memory to app");
             }
         } else currentDir.mkdir();
@@ -90,7 +94,7 @@ public class OwnedWorkspace extends Workspace{
         return keywords;
     }
 
-    public int getSize() throws NotDirectoryException {
+    public int getSize(){
         File mainDir = AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE);
         File currentDir = new File(""+mainDir+File.separatorChar+name);
         int workspaceSize = 0;
@@ -101,48 +105,45 @@ public class OwnedWorkspace extends Workspace{
         if (currentDir.isDirectory())
             for (File child : currentDir.listFiles())
                 workspaceSize += child.length();
-        else throw new NotDirectoryException("Can't read workspace, the provided name isn't a directory.");
+        else Log.d("[AirDesk]", "Workspace folder isn't a directory, FileSystem error at getSize of Workspace " + this.getName());
 
         return workspaceSize;
     }
     //endregion
 
     //region File Functions
-    public void createFile(String fileName) throws QuotaLimitExceededException, CreateFileException, IOException {
-        try {
-            if(this.getSize() >= getQuota()){
-                throw new QuotaLimitExceededException("Quota limit exceeded while trying to create " + fileName + " in " + this.getName() + " your Workspace.");
-            } else {
-                if(existFile(fileName)) throw new CreateFileException("Already exists a file with that name");
+    public void createFile(String fileName) throws QuotaLimitExceededException, CreateFileException{
+        if(this.getSize() >= getQuota()){
+            throw new QuotaLimitExceededException("Quota limit exceeded while trying to create " + fileName + " in " + this.getName() + " your Workspace.");
+        } else {
+            if(existFile(fileName)) throw new CreateFileException("Already exists a file with that name.");
+            try {
                 files.add(new ADFile(fileName, this.getName()));
+            } catch (IOException e) {
+                Log.d(TAG, "Error in create file regarding fileSystem: " + e.getMessage());
+                throw new CreateFileException("Error at creating the file in the FileSystem.");
             }
-        } catch (NotDirectoryException e) {
-            Log.d(AirDeskApp.LOG_TAG, e.getMessage());
-            throw new CreateFileException("Problem occurred in getting workspace total size. See log for more info.");
-            }
+        }
     }
 
     public void removeFile(String name) throws FileNotFoundException, DeleteFileException {
         ADFile file = getFileByName(name);
         files.remove(file);
-
         if(!file.getFile().delete())
             throw new DeleteFileException("Can't delete file in Android File System");
     }
 
-    public void updateFile(String name, String text) throws FileNotFoundException, NotDirectoryException, QuotaLimitExceededException {
+    public void updateFile(String name, String text) throws FileNotFoundException, QuotaLimitExceededException {
         ADFile file = getFileByName(name);
-        Log.w("[AirDesk]", "size of workspace = " + this.getSize() + " file size = " + file.getSize() + " text length" + text.length() + " quota=" + this.getQuota());
         if(this.getSize() - file.getSize() + text.length() > this.getQuota())
             throw new QuotaLimitExceededException("Quota limit exceeded while trying to update " + name + " in " + this.getName() + " your Workspace.");
         file.save(text);
     }
 
     public ADFile getFileByName(String name) throws FileNotFoundException {
-        Predicate<ADFile> validator = new FileNamePredicate(name);
         ADFile result = null;
         for(ADFile file : getFiles())
-            if (validator.apply(file)) {
+            if (file.getFileName().equals(name)) {
                 result = file;
                 break;
             }
@@ -154,8 +155,10 @@ public class OwnedWorkspace extends Workspace{
     @Override
     public List<String> getFileNames() {
         List<String> result = new ArrayList<>();
-        for(ADFile file : getFiles())
+        for(ADFile file : getFiles()) {
+            Log.d("[AirDesk]", "Filename: " + file.getFileName());
             result.add(file.getFileName());
+        }
         return result;
     }
 
@@ -175,39 +178,27 @@ public class OwnedWorkspace extends Workspace{
     //endregion
 
     //region Workspace Functions
-    public void delete() throws NotDirectoryException{
+    public void delete(){
         File mainDir = AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
         File directory = new File(""+mainDir+File.separatorChar+name);
-        //if (directory.isDirectory())
-            for (File child : directory.listFiles())
-                if(!child.delete())
-                    Log.d(AirDeskApp.LOG_TAG, "Error at deleting file: " + child.getName());
-        //else throw new NotDirectoryException("Can't delete workspace, the provided name isn't a directory.");
+        for (File child : directory.listFiles())
+            if(!child.delete())
+                Log.d(AirDeskApp.LOG_TAG, "Error at deleting file: " + child.getName());
         if(!directory.delete())
             Log.d(AirDeskApp.LOG_TAG,"Error at deleting directory: " + directory.getName());
     }
 
-    public void invite(String username){
-        if(!allowedUsers.contains(username))
-            allowedUsers.add(username);
-
-        //todo 2nd deliever: network protocol
-        /*if(isOwner(user.getUsername()))
-            if(!allowedUsers.contains(username))
-                allowedUsers.add(username);*/
+    public void addToAllowedUsers(String email){
+        if(!allowedUsers.contains(email))
+            allowedUsers.add(email);
     }
 
-    public void uninvite(String username){
-        if(allowedUsers.contains(username))
-            allowedUsers.remove(username);
-
-        //todo 2nd deliever: network protocol
-        /*if(isOwner(user.getUsername()))
-            if(!allowedUsers.contains(username))
-                allowedUsers.add(username);*/
+    public void removeFromAllowedUsers(String email){
+        if(allowedUsers.contains(email))
+            allowedUsers.remove(email);
     }
 
-    public void setQuota(int max) throws NotDirectoryException, QuotaLimitExceededException {
+    public void setQuota(int max) throws QuotaLimitExceededException {
         long workspaceSize = this.getSize();
         if(max < workspaceSize)
             throw new QuotaLimitExceededException("Workspace size is " + workspaceSize + " and the new max size was " + max + ". Can't update to a smaller value.");

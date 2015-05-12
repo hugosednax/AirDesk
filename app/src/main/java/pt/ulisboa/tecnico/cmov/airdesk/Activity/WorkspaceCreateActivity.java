@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateWorkspaceException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 
 public class WorkspaceCreateActivity extends ActionBarActivity {
@@ -39,7 +40,7 @@ public class WorkspaceCreateActivity extends ActionBarActivity {
                 try {
                     airDeskApp.getUser().createWorkspace(name.getText().toString(), isPublic.isChecked(), Integer.parseInt(quota.getText().toString()));
                     finish();
-                }catch (Exception e) {
+                } catch (CreateWorkspaceException e) {
                     final Context context = getApplicationContext();
                     final CharSequence text = e.getMessage();
                     runOnUiThread(new Runnable() {

@@ -109,8 +109,6 @@ public class FuncCallMessage extends Message{
                 return new FuncResponseMessage(getUser(), false, "");
             } catch (FileNotFoundException e) {
                 return new FuncResponseMessage(getUser(), true, e);
-            } catch (NotDirectoryException e) {
-                return new FuncResponseMessage(getUser(), true, e);
             } catch (QuotaLimitExceededException e) {
                 return new FuncResponseMessage(getUser(), true, e);
             } catch (WorkspaceNotFoundException e) {
