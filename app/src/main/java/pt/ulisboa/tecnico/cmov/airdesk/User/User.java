@@ -286,6 +286,14 @@ public class User {
     public void deleteFile(String fileName, String workspaceName) throws WorkspaceNotFoundException, FileNotFoundException, DeleteFileException {
         getOwnedWorkspaceByName(workspaceName).removeFile(fileName);
     }
+
+    public String getFileContent(String fileName, OwnedWorkspace workspace) throws FileNotFoundException, IOException {
+        return workspace.getFileByName(fileName).getContent();
+    }
+
+    public String getFileContent(String fileName, String workspace) throws FileNotFoundException, IOException, WorkspaceNotFoundException {
+        return getOwnedWorkspaceByName(workspace).getFileByName(fileName).getContent();
+    }
     //endregion
 
     //region User Methods

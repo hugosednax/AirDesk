@@ -34,9 +34,9 @@ public abstract class Workspace {
 
     abstract public void removeFile(String name) throws FileNotFoundException, DeleteFileException;
 
-    abstract public void updateFile(String name, String text) throws FileNotFoundException, NotDirectoryException, QuotaLimitExceededException;
+    abstract public void updateFile(String name, String text) throws FileNotFoundException, QuotaLimitExceededException;
 
-    abstract public ADFile getFileByName(String name) throws FileNotFoundException;
+    abstract public String getFileContent(String filename) throws FileNotFoundException;
 
     abstract public List<String> getFileNames();
     //endregion

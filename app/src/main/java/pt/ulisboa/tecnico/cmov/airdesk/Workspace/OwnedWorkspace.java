@@ -152,6 +152,14 @@ public class OwnedWorkspace extends Workspace{
         return result;
     }
 
+    public String getFileContent(String filename) throws FileNotFoundException{
+        try {
+            return getFileByName(filename).getContent();
+        } catch (IOException e) {
+            return "Error reading the file";
+        }
+    }
+
     @Override
     public List<String> getFileNames() {
         List<String> result = new ArrayList<>();

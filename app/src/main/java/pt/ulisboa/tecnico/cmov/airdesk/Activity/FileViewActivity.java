@@ -11,10 +11,14 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.FileNotFoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
+import pt.ulisboa.tecnico.cmov.airdesk.User.User;
 
 
 public class FileViewActivity extends ActionBarActivity {
@@ -33,7 +37,7 @@ public class FileViewActivity extends ActionBarActivity {
         Intent intent = getIntent();
         String nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
         String nameOfCurrFile = intent.getStringExtra("nameOfFile");
-        StringBuilder text = new StringBuilder();
+        String content = "";
         boolean isForeign = intent.getBooleanExtra("isForeign",false);
         try {
              /*
@@ -41,31 +45,21 @@ public class FileViewActivity extends ActionBarActivity {
             Retrieve the user from the context and then get the current workspace by searching with the name and get the current Name by the name
             */
             if(isForeign)
-                currFile = airDeskApp.getUser().getForeignWorkspaceByName(nameOfCurrWorkspace).getFileByName(nameOfCurrFile);
+                content = airDeskApp.getUser().getForeignWorkspaceByName(nameOfCurrWorkspace).getFileContent(nameOfCurrFile);
             else
-                currFile = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace).getFileByName(nameOfCurrFile);
+                content = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace).getFileContent(nameOfCurrFile);
             //Read text from file
-            BufferedReader br = new BufferedReader(new FileReader(currFile.getFile()));
-            String line;
 
-            while ((line = br.readLine()) != null) {
-                text.append(line);
-                text.append('\n');
-            }
-            br.close();
-        }catch (Exception e){
-            Context context = getApplicationContext();
-            CharSequence toastText = e.getMessage();
-            int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(context, toastText, duration);
-            toast.show();
+        } catch (FileNotFoundException e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        } catch (WorkspaceNotFoundException e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
-            //Find the view by its id
-            TextView tv = (TextView)findViewById(R.id.FileContent);
-
-            //Set the text
-            tv.setText(text);
+        //Find the view by its id
+        TextView tv = (TextView)findViewById(R.id.FileContent);
+        //Set the text
+        tv.setText(content);
         airDeskApp.getWifiHandler().setCurrentActivity(this);
     }
 

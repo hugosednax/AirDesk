@@ -46,8 +46,8 @@ public class ForeignRemoteWorkspace extends Workspace{
     //endregion
 
     //region File Methods
-    public ADFile getFileByName(String filename) throws FileNotFoundException {
-        Log.d(TAG, "Calling Remote getFileByName");
+    public String getFileContent(String filename) throws FileNotFoundException {
+        Log.d(TAG, "Calling Remote getFileContent");
         //FuncCallMessage newFuncCallMessage = new FuncCallMessage(owner, filename);
         return null;
     }

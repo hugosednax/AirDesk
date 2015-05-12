@@ -30,11 +30,6 @@ public class ForeignLocalWorkspace extends Workspace{
 
     //region File Methods
     @Override
-    public ADFile getFileByName(String name) throws FileNotFoundException {
-        return workspaceLink.getFileByName(name);
-    }
-
-    @Override
     public List<String> getFileNames() {
 
         return null;
@@ -48,8 +43,13 @@ public class ForeignLocalWorkspace extends Workspace{
         workspaceLink.removeFile(name);
     }
 
-    public void updateFile(String name, String text) throws QuotaLimitExceededException, FileNotFoundException, NotDirectoryException {
+    public void updateFile(String name, String text) throws QuotaLimitExceededException, FileNotFoundException {
         workspaceLink.updateFile(name, text);
+    }
+
+    @Override
+    public String getFileContent(String filename) throws FileNotFoundException {
+        return workspaceLink.getFileContent(filename);
     }
     //endregion
 

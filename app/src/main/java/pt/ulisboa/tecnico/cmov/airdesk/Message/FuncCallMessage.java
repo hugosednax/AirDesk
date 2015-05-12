@@ -111,7 +111,7 @@ public class FuncCallMessage extends Message{
         } else if(this.getTypeOfFunction() == FuncType.UPDATE_FILE){
             //arg1 = workspaceName, arg2 = filename, arg3 = text
             arg1 = parseWSName(arg1);
-            Log.d("[AirDesk]", "Executing createFile with parameters: " + getArg1() + " " + getArg2());
+            Log.d("[AirDesk]", "Executing updateFile with parameters: " + getArg1() + " " + getArg2());
             try {
                 user.getOwnedWorkspaceByName(getArg1()).updateFile(getArg2(), getArg3());
                 return new FuncResponseMessage(getUser(), false, "");

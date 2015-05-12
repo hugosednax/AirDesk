@@ -9,17 +9,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
-import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.FileNotFoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 public class FileEditActivity extends ActionBarActivity {
 
-    ADFile currFile;
     TextView textView;
     String nameOfCurrFile;
     Workspace currWorkspace;
@@ -36,8 +33,9 @@ public class FileEditActivity extends ActionBarActivity {
         Intent intent = getIntent();
         String nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
         nameOfCurrFile = intent.getStringExtra("nameOfFile");
-        StringBuilder text = new StringBuilder();
         boolean isForeign = intent.getBooleanExtra("isForeign",false);
+
+        String content = "";
         try {
              /*
             Logic and Backend:
@@ -48,25 +46,19 @@ public class FileEditActivity extends ActionBarActivity {
             }else {
                 currWorkspace = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace);
             }
-            currFile = currWorkspace.getFileByName(nameOfCurrFile);
-            //Read text from file
-            BufferedReader br = new BufferedReader(new FileReader(currFile.getFile()));
-            String line;
+            content = currWorkspace.getFileContent(nameOfCurrFile);
 
-            while ((line = br.readLine()) != null) {
-                text.append(line);
-                text.append('\n');
-            }
-            br.close();
-        }catch (Exception e){
-            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+        } catch (WorkspaceNotFoundException e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        } catch (FileNotFoundException e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
         //Find the view by its id
         textView = (TextView)findViewById(R.id.FileContent);
 
         //Set the text
-        textView.setText(text);
+        textView.setText(content);
         airDeskApp.getWifiHandler().setCurrentActivity(this);
     }
 

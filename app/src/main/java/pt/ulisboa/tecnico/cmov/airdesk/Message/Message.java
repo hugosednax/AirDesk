@@ -16,7 +16,7 @@ public abstract class Message {
     public static final String MESSAGE_FUNC_TYPE = "FUNC_TYPE";
     public static final String MESSAGE_ARG1 = "ARG1";
     public static final String MESSAGE_ARG2 = "ARG2";
-    public static final String MESSAGE_ARG3 = "ARG2";
+    public static final String MESSAGE_ARG3 = "ARG3";
     public static final String MESSAGE_EXCEPTION_THROWN = "EXCEPTION_THROWN";
     public static final String MESSAGE_EXCEPTION_MESSAGE = "EXCEPTION";
     public static final String MESSAGE_EXCEPTION_NAME = "EXCEPTION_NAME";

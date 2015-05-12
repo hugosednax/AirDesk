@@ -6,8 +6,10 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -97,6 +99,18 @@ public class ADFile {
         } else {
             WriteToFile (String text)
         }*/
+    }
+
+    public String getContent() throws IOException {
+        String text = "";
+        BufferedReader br = new BufferedReader(new FileReader(this.getFile()));
+        String line;
+
+        while ((line = br.readLine()) != null) {
+            text += line + "\n";
+        }
+        br.close();
+        return text;
     }
     //endregion
 }
