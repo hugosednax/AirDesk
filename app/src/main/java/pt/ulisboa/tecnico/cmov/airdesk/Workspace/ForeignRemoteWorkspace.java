@@ -61,7 +61,7 @@ public class ForeignRemoteWorkspace extends Workspace{
         try {
             FuncResponseMessage response = wifiHandler.remoteMethodInvoke(owner, newFuncCallMessage);
             String list = response.getResult();
-            JSONArray jsonList = new JSONObject(list).getJSONArray("LIST");
+            JSONArray jsonList = (new JSONObject(list)).getJSONArray("LIST");
             for(int i = 0; i<jsonList.length(); i++){
                 result.add(jsonList.getString(i));
             }
@@ -124,7 +124,7 @@ public class ForeignRemoteWorkspace extends Workspace{
     }
 
     public void updateFile(String filename, String text) throws QuotaLimitExceededException, FileNotFoundException, NotDirectoryException {
-        Log.d(TAG, "Calling Remote udpdateFile");
+        Log.d(TAG, "Calling Remote updateFile");
 
         FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.UPDATE_FILE, myUser, this.getName(), filename, text);
 

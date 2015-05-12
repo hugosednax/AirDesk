@@ -143,8 +143,10 @@ public class FuncCallMessage extends Message{
             Log.d("[AirDesk]", "Executing getFileNames");
             try {
                 List<String> list = user.getOwnedWorkspaceByName(getArg1()).getFileNames();
-                JSONArray jsonList = new JSONArray(list);
-                return new FuncResponseMessage(getUser(), false, new JSONObject().put("LIST", jsonList).toString());
+                JSONArray jsonList = new JSONArray();
+                for(String s : list)
+                    jsonList.put(s);
+                return new FuncResponseMessage(getUser(), false, (new JSONObject().put("LIST", jsonList)).toString());
             } catch (WorkspaceNotFoundException e) {
                 return new FuncResponseMessage(getUser(), true, new FileNotFoundException(e.getMessage()));
             } catch (JSONException e) {

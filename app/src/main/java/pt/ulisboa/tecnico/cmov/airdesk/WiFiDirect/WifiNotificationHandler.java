@@ -215,7 +215,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
     public void sendMessage(String message, String user) throws ServiceNotBoundException {
         if (mBound) {
-            new RemoteSendMessageTask().execute(user, message);
+            new RemoteSendMessageTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user, message);
         } else {
             throw new ServiceNotBoundException("Service not Bound");
         }
@@ -223,10 +223,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
     public FuncResponseMessage remoteMethodInvoke(String user, FuncCallMessage message) throws JSONException, RemoteMethodException {
         RemoteMethodCallTask remoteMethodCallTask = new RemoteMethodCallTask();
-        remoteMethodCallTask.execute(user, message.toJSON().toString());
-
+        remoteMethodCallTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user, message.toJSON().toString());
         try {
-            remoteMethodCallTask.get(1000, TimeUnit.MILLISECONDS);
+            remoteMethodCallTask.get(2000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             throw new RemoteMethodException("Remote Method Call Task exception Interrupted thrown: " + e.getMessage());
         } catch (ExecutionException e) {
@@ -234,9 +233,8 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         } catch (TimeoutException e) {
             throw new RemoteMethodException("Remote Method Call Task exception Timeout thrown: " + e.getMessage());
         }
+
         String result = remoteMethodCallTask.getResult();
-        if(result.equals("error"))
-            throw new RemoteMethodException("Timeout");
         JSONObject responseJSON = new JSONObject(result);
         return new FuncResponseMessage("remove", responseJSON.getBoolean(Message.MESSAGE_EXCEPTION_THROWN),
                 responseJSON.getBoolean(Message.MESSAGE_EXCEPTION_THROWN) ? responseJSON.getString(Message.MESSAGE_EXCEPTION) :

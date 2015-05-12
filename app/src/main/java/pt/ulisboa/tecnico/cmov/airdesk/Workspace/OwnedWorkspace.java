@@ -156,7 +156,6 @@ public class OwnedWorkspace extends Workspace{
     public List<String> getFileNames() {
         List<String> result = new ArrayList<>();
         for(ADFile file : getFiles()) {
-            Log.d("[AirDesk]", "Filename: " + file.getFileName());
             result.add(file.getFileName());
         }
         return result;
