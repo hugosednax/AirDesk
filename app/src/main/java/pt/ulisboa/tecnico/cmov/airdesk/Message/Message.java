@@ -18,7 +18,8 @@ public abstract class Message {
     public static final String MESSAGE_ARG2 = "ARG2";
     public static final String MESSAGE_ARG3 = "ARG2";
     public static final String MESSAGE_EXCEPTION_THROWN = "EXCEPTION_THROWN";
-    public static final String MESSAGE_EXCEPTION = "EXCEPTION";
+    public static final String MESSAGE_EXCEPTION_MESSAGE = "EXCEPTION";
+    public static final String MESSAGE_EXCEPTION_NAME = "EXCEPTION_NAME";
     public static final String MESSAGE_RESULT = "RESULT";
 
 

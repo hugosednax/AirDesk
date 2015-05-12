@@ -73,23 +73,17 @@ public class ForeignRemoteWorkspace extends Workspace{
         return result;
     }
 
-    public void createFile(String fileName) throws QuotaLimitExceededException, IOException, CreateFileException {
+    public void createFile(String fileName) throws QuotaLimitExceededException, CreateFileException {
         Log.d(TAG, "Calling Remote createFile " + fileName);
         FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE, myUser, this.getName(), fileName);
 
         try {
             FuncResponseMessage response = wifiHandler.remoteMethodInvoke(owner, newFuncCallMessage);
             if(response.isExceptionThrown()){
-                Exception exc = response.getException();
-                Class<?> excClass = exc.getClass();
-
-                if(excClass.equals(QuotaLimitExceededException.class)) {
-                    throw new QuotaLimitExceededException(exc.getMessage());
-                }else if(excClass.equals(IOException.class)){
-                    throw new IOException(exc.getMessage());
-                }else if(excClass.equals(CreateFileException.class)){
-                    throw new CreateFileException(exc.getMessage());
-                }
+                if(response.getExceptionName().equals("QuotaLimitExceededException"))
+                    throw new QuotaLimitExceededException(response.getExceptionMessage());
+                if(response.getExceptionName().equals("CreateFileException"))
+                    throw new CreateFileException(response.getExceptionMessage());
             }
 
         }catch(RemoteMethodException e){
@@ -107,14 +101,10 @@ public class ForeignRemoteWorkspace extends Workspace{
         try {
             FuncResponseMessage response = wifiHandler.remoteMethodInvoke(owner, newFuncCallMessage);
             if(response.isExceptionThrown()){
-                Exception exc = response.getException();
-                Class<?> excClass = exc.getClass();
-
-                if(excClass.equals(FileNotFoundException.class)) {
-                    throw new FileNotFoundException(exc.getMessage());
-                }else if(excClass.equals(DeleteFileException.class)) {
-                    throw new DeleteFileException(exc.getMessage());
-                }
+                if(response.getExceptionName().equals("FileNotFoundException"))
+                    throw new FileNotFoundException(response.getExceptionMessage());
+                if(response.getExceptionName().equals("DeleteFileException"));
+                    throw new DeleteFileException(response.getExceptionMessage());
             }
         }catch(RemoteMethodException e){
             //throw new RemoteMethodException();
@@ -123,7 +113,7 @@ public class ForeignRemoteWorkspace extends Workspace{
         }
     }
 
-    public void updateFile(String filename, String text) throws QuotaLimitExceededException, FileNotFoundException, NotDirectoryException {
+    public void updateFile(String filename, String text) throws QuotaLimitExceededException, FileNotFoundException {
         Log.d(TAG, "Calling Remote updateFile");
 
         FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.UPDATE_FILE, myUser, this.getName(), filename, text);
@@ -131,16 +121,10 @@ public class ForeignRemoteWorkspace extends Workspace{
         try {
             FuncResponseMessage response = wifiHandler.remoteMethodInvoke(owner, newFuncCallMessage);
             if(response.isExceptionThrown()){
-                Exception exc = response.getException();
-                Class<?> excClass = exc.getClass();
-
-                if(excClass.equals(FileNotFoundException.class)) {
-                    throw new FileNotFoundException(exc.getMessage());
-                }else if(excClass.equals(QuotaLimitExceededException.class)) {
-                    throw new QuotaLimitExceededException(exc.getMessage());
-                }else if(excClass.equals(NotDirectoryException.class)) {
-                    throw new NotDirectoryException(exc.getMessage());
-                }
+                if(response.getExceptionName().equals("QuotaLimitExceededException"))
+                    throw new QuotaLimitExceededException(response.getExceptionMessage());
+                if(response.getExceptionName().equals("FileNotFoundException"))
+                    throw new FileNotFoundException(response.getExceptionMessage());
             }
         }catch(RemoteMethodException e){
             //TODO throw new RemoteMethodException();

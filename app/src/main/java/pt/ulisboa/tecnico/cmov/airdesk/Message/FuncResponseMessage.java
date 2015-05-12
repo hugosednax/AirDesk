@@ -9,7 +9,8 @@ import org.json.JSONObject;
 public class FuncResponseMessage extends Message{
     private boolean exceptionThrown;
     private String result;
-    private Exception exception;
+    private String exceptionMessage;
+    private String exceptionName;
 
 
     public FuncResponseMessage(String user, boolean exceptionThrown, String result) {
@@ -18,10 +19,11 @@ public class FuncResponseMessage extends Message{
         this.result = result;
     }
 
-    public FuncResponseMessage(String user, boolean exceptionThrown, Exception exception) {
+    public FuncResponseMessage(String user, boolean exceptionThrown, String exceptionMessage, String exceptionName) {
         super(Type.FUNC_RESP, user);
         this.exceptionThrown = exceptionThrown;
-        this.exception = exception;
+        this.exceptionMessage = exceptionMessage;
+        this.exceptionName = exceptionName;
     }
 
     public boolean isExceptionThrown() {
@@ -32,8 +34,11 @@ public class FuncResponseMessage extends Message{
         return result;
     }
 
-    public Exception getException() {
-        return exception;
+    public String getExceptionMessage() {
+        return exceptionMessage;
+    }
+    public String getExceptionName() {
+        return exceptionName;
     }
 
     @Override
@@ -41,8 +46,10 @@ public class FuncResponseMessage extends Message{
         JSONObject result = new JSONObject();
         result.put(MESSAGE_TYPE, Type.FUNC_RESP);
         result.put(MESSAGE_EXCEPTION_THROWN, isExceptionThrown());
-        if(exceptionThrown)
-            result.put(MESSAGE_EXCEPTION, this.getException().getMessage());
+        if(exceptionThrown) {
+            result.put(MESSAGE_EXCEPTION_MESSAGE, this.getExceptionMessage());
+            result.put(MESSAGE_EXCEPTION_NAME, this.exceptionName);
+        }
         else result.put(MESSAGE_RESULT, getResult());
         return result;
     }

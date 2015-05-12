@@ -101,13 +101,11 @@ public class FuncCallMessage extends Message{
                 user.createFile(getArg2(), getArg1());
                 return new FuncResponseMessage(getUser(), false, "");
             } catch (WorkspaceNotFoundException e) {
-                return new FuncResponseMessage(getUser(), true, new CreateFileException(e.getMessage()));
+                return new FuncResponseMessage(getUser(), true, "CreateFileException", e.getMessage());
             } catch (QuotaLimitExceededException e) {
-                return new FuncResponseMessage(getUser(), true, e);
+                return new FuncResponseMessage(getUser(), true, "QuotaLimitExceededException", e.getMessage());
             } catch (CreateFileException e) {
-                return new FuncResponseMessage(getUser(), true, e);
-            } catch (IOException e) {
-                return new FuncResponseMessage(getUser(), true, e);
+                return new FuncResponseMessage(getUser(), true, "CreateFileException", e.getMessage());
             }
 
         } else if(this.getTypeOfFunction() == FuncType.UPDATE_FILE){
@@ -118,26 +116,26 @@ public class FuncCallMessage extends Message{
                 user.getOwnedWorkspaceByName(getArg1()).updateFile(getArg2(), getArg3());
                 return new FuncResponseMessage(getUser(), false, "");
             } catch (FileNotFoundException e) {
-                return new FuncResponseMessage(getUser(), true, e);
+                return new FuncResponseMessage(getUser(), true, "FileNotFoundException", e.getMessage());
             } catch (QuotaLimitExceededException e) {
-                return new FuncResponseMessage(getUser(), true, e);
+                return new FuncResponseMessage(getUser(), true, "QuotaLimitExceededException", e.getMessage());
             } catch (WorkspaceNotFoundException e) {
-                return new FuncResponseMessage(getUser(), true, new NotDirectoryException(e.getMessage()));
+                return new FuncResponseMessage(getUser(), true, "FileNotFoundException", e.getMessage());
             }
 
         } else if(this.getTypeOfFunction() == FuncType.REMOVE_FILE) {
             //arg1 = workspaceName, arg2 = filename
             arg1 = parseWSName(arg1);
-            Log.d("[AirDesk]", "Executing createFile with parameters: " + getArg1() + " " + getArg2());
+            Log.d("[AirDesk]", "Executing remove file with parameters: " + getArg1() + " " + getArg2());
             try {
                 user.getOwnedWorkspaceByName(getArg1()).removeFile(getArg2());
                 return new FuncResponseMessage(getUser(), false, "");
             } catch (FileNotFoundException e) {
-                return new FuncResponseMessage(getUser(), true, e);
+                return new FuncResponseMessage(getUser(), true, "FileNotFoundException", e.getMessage());
             } catch (DeleteFileException e) {
-                return new FuncResponseMessage(getUser(), true, e);
+                return new FuncResponseMessage(getUser(), true, "DeleteFileException", e.getMessage());
             } catch (WorkspaceNotFoundException e) {
-                return new FuncResponseMessage(getUser(), true, new FileNotFoundException(e.getMessage()));
+                return new FuncResponseMessage(getUser(), true, "FileNotFoundException", e.getMessage());
             }
         } else if(this.getTypeOfFunction() == FuncType.GET_FILE_NAMES){
             Log.d("[AirDesk]", "Executing getFileNames");
@@ -148,7 +146,8 @@ public class FuncCallMessage extends Message{
                     jsonList.put(s);
                 return new FuncResponseMessage(getUser(), false, (new JSONObject().put("LIST", jsonList)).toString());
             } catch (WorkspaceNotFoundException e) {
-                return new FuncResponseMessage(getUser(), true, new FileNotFoundException(e.getMessage()));
+                return new FuncResponseMessage(getUser(), true, "FileNotFoundException", e.getMessage());
+
             } catch (JSONException e) {
                 //TODO
             }
@@ -169,10 +168,13 @@ public class FuncCallMessage extends Message{
         result.put(MESSAGE_USER, this.getUser());
         result.put(MESSAGE_TYPE, Type.FUNC_CALL);
         result.put(MESSAGE_FUNC_TYPE, this.getTypeOfFunction());
-        if(argNumber>0){
+        if(argNumber>0) {
             result.put(MESSAGE_ARG1, arg1);
-            if(argNumber == 2)
+            if (argNumber > 1) {
                 result.put(MESSAGE_ARG2, arg2);
+                if(argNumber == 3)
+                    result.put(MESSAGE_ARG3, arg3);
+            }
         }
         return result;
     }

@@ -236,9 +236,13 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
         String result = remoteMethodCallTask.getResult();
         JSONObject responseJSON = new JSONObject(result);
-        return new FuncResponseMessage("remove", responseJSON.getBoolean(Message.MESSAGE_EXCEPTION_THROWN),
-                responseJSON.getBoolean(Message.MESSAGE_EXCEPTION_THROWN) ? responseJSON.getString(Message.MESSAGE_EXCEPTION) :
-                        responseJSON.getString(Message.MESSAGE_RESULT));
+        if(responseJSON.getBoolean(Message.MESSAGE_EXCEPTION_THROWN))
+            return new FuncResponseMessage("remove", responseJSON.getBoolean(Message.MESSAGE_EXCEPTION_THROWN),
+                        responseJSON.getString(Message.MESSAGE_EXCEPTION_NAME),
+                        responseJSON.getString(Message.MESSAGE_EXCEPTION_MESSAGE));
+        else
+            return new FuncResponseMessage("remove", responseJSON.getBoolean(Message.MESSAGE_EXCEPTION_THROWN),
+                    responseJSON.getString(Message.MESSAGE_RESULT));
     }
     //endregion
 
@@ -260,13 +264,13 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                         JSONMessage.getString(Message.MESSAGE_ARG2));
 
             else if (funcType == FuncCallMessage.FuncType.REMOVE_FILE)
-                return new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE,
+                return new FuncCallMessage(FuncCallMessage.FuncType.REMOVE_FILE,
                         JSONMessage.getString(Message.MESSAGE_USER),
                         JSONMessage.getString(Message.MESSAGE_ARG1),
                         JSONMessage.getString(Message.MESSAGE_ARG2));
 
             else if (funcType == FuncCallMessage.FuncType.UPDATE_FILE)
-                return new FuncCallMessage(FuncCallMessage.FuncType.CREATE_FILE,
+                return new FuncCallMessage(FuncCallMessage.FuncType.UPDATE_FILE,
                         JSONMessage.getString(Message.MESSAGE_USER),
                         JSONMessage.getString(Message.MESSAGE_ARG1),
                         JSONMessage.getString(Message.MESSAGE_ARG2),

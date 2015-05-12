@@ -269,7 +269,7 @@ public class User {
     public void createFile(String fileName, Workspace workspace) throws QuotaLimitExceededException, CreateFileException, IOException {
         workspace.createFile(fileName);
     }
-    public void createFile(String fileName, String workspaceName) throws WorkspaceNotFoundException, QuotaLimitExceededException, CreateFileException, IOException {
+    public void createFile(String fileName, String workspaceName) throws WorkspaceNotFoundException, QuotaLimitExceededException, CreateFileException {
         getOwnedWorkspaceByName(workspaceName).createFile(fileName);
     }
 
