@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.Application;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import pt.ulisboa.tecnico.cmov.airdesk.User.User;
 import pt.ulisboa.tecnico.cmov.airdesk.WiFiDirect.WifiNotificationHandler;
@@ -36,6 +37,8 @@ public class AirDeskApp extends Application {
 
     @Override
     public void onTerminate() {
+        Log.d(LOG_TAG, "Terminating");
+        getWifiHandler().closeSockets();
         super.onTerminate();
     }
     //endregion
@@ -45,7 +48,9 @@ public class AirDeskApp extends Application {
         return user;
     }
 
-    public WifiNotificationHandler getWifiHandler() { return wifiHandler; }
+    public WifiNotificationHandler getWifiHandler() {
+        return wifiHandler;
+    }
 
     public SharedPreferences getPrefs() {
         return prefs;

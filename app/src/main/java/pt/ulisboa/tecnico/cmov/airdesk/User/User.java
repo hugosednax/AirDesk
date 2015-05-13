@@ -187,7 +187,9 @@ public class User {
     }
 
     public void addForeignWorkspace(ForeignRemoteWorkspace workspace){
-        foreignWorkspaces.add(workspace);
+        if(!hasForeignWorkspaceByName(workspace.getName())){
+            getForeignWorkspaces().add(workspace);
+        }
     }
 
     public void removeForeignWorkspace(String workspace){

@@ -323,6 +323,24 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             }
         }
     }
+
+    public void closeSockets() {
+        List<SimWifiP2pSocket> list = new ArrayList<>(userNetworkList.values());
+        for(SimWifiP2pSocket socket : list)
+            try {
+                Log.d(TAG, "Closing socket");
+                socket.close();
+
+            } catch (IOException e) {
+                Log.d(TAG, "Error closing socket in socketClose");
+            }
+        try {
+            Log.d(TAG, "Closing Server Socket");
+            mSrvSocket.close();
+        } catch (IOException e) {
+            Log.d(TAG, "Error closing server socket in socketClose");
+        }
+    }
     //endregion
 
     //region Remote Protocol Tasks
@@ -363,12 +381,21 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         protected void onProgressUpdate(SimWifiP2pSocket... values) {
             SimWifiP2pSocket socket = values[0];
             userNetworkList.put(user, socket);
-            ReceiveCommTask receiveCommTask = new ReceiveCommTask();
+            ReceiveCommTask receiveCommTask = new ReceiveCommTask(user);
             commReceiveTaskTreeMap.put(user, receiveCommTask);
             receiveCommTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, socket);
             Log.d(TAG, "Connected to " + user);
             getMyUser().updateInvites(user);
             user = "error";
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+                try {
+                   mSrvSocket.close();
+                } catch (Exception e) {
+                    Log.d(TAG, "Error closing socket: " + e.getMessage());
+                }
         }
 
         protected ArrayList<String> parseIPlist(String iplist){
@@ -383,6 +410,11 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     private class ReceiveCommTask extends AsyncTask<SimWifiP2pSocket, String, Void> {
         SimWifiP2pSocket s;
         String response = null;
+        String userEmail = "";
+
+        ReceiveCommTask(String userEmail){
+            this.userEmail = userEmail;
+        }
 
         @Override
         protected Void doInBackground(SimWifiP2pSocket... params) {
@@ -430,6 +462,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 }
             }
             s = null;
+            userNetworkList.remove(userEmail);
         }
     }
 
@@ -469,7 +502,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             }
             else {
                 userNetworkList.put(user, sendSocket);
-                ReceiveCommTask receiveCommTask = new ReceiveCommTask();
+                ReceiveCommTask receiveCommTask = new ReceiveCommTask(user);
                 commReceiveTaskTreeMap.put(user, receiveCommTask);
                 receiveCommTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, sendSocket);
                 Log.d(TAG, "Connected to " + user);

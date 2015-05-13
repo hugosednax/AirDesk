@@ -195,9 +195,10 @@ public class FilesActivity extends ActionBarActivity {
 
     @Override
     public void onResume() {
-        super.onResume();
         if (filesAdapter !=null){
+            Log.d("notifiyDAta","setCHANNNGED SON");
             filesAdapter.notifyDataSetChanged();
         }
+        super.onResume();
     }
 }
