@@ -18,7 +18,6 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
  * Created by Filipe Teixeira on 21/03/2015.
  */
 public class WorkspaceDTO {
-
     //region Class Variables
     private String name;
     private boolean isPublic;

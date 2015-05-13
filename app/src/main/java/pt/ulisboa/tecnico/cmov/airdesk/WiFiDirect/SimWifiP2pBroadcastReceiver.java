@@ -1,16 +1,14 @@
 package pt.ulisboa.tecnico.cmov.airdesk.WiFiDirect;
 
-/**
- * Created by hugo__000 on 06/05/2015.
- */
-
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-
+/**
+ * Created by hugo__000
+ */
 public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
     //region Class Variables
     private WifiNotificationHandler wifiHandler;

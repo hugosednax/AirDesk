@@ -113,7 +113,7 @@ public class JSONHandler {
     }
     //endregion
 
-    //region API
+    //region Public API
     public List<WorkspaceDTO> getOwnedWorkspaces() {
         return ownedWorkspaces;
     }

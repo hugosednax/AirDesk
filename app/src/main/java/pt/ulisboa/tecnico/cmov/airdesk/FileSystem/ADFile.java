@@ -86,19 +86,6 @@ public class ADFile {
         } finally{
             writer.close();
         }
-
-        //Bellow code was a previous implementation, this check must be done in the workspace environment
-
-        /*// File size calculation
-        long fileSize = text.length() * 8;
-        long oldFileSize = file.getTotalSpace();
-
-        // Check if quota is passed
-        if(workspace.getSize()+fileSize-oldFileSize >= workspace.getQuota()){
-            System.out.println("TODO EXCEPTION");
-        } else {
-            WriteToFile (String text)
-        }*/
     }
 
     public String getContent() throws IOException {

@@ -9,14 +9,11 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
-
 /**
  * Created by Filipe Teixeira on 12/03/2015.
  */
-
-// 1st version of ForeignWorkspace, fully local
+// 1st version of ForeignWorkspace, fully local, Deprecated
 public class ForeignLocalWorkspace extends Workspace{
-
     //region Class Variables
     private OwnedWorkspace workspaceLink;
     //endregion

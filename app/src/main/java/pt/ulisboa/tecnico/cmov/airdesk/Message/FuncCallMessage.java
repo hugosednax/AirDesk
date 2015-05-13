@@ -23,16 +23,15 @@ import pt.ulisboa.tecnico.cmov.airdesk.User.User;
  * Created by Filipe Teixeira on 10/05/2015.
  */
 public class FuncCallMessage extends Message{
+    //region Class Variables
     private FuncType typeOfFunction;
     private String arg1;
     private String arg2;
     private String arg3;
     private int argNumber;
+    //endregion
 
-    public enum FuncType{
-        CREATE_FILE, UPDATE_FILE, REMOVE_FILE, GET_FILE_NAMES, GET_FILE_CONTENT;
-    }
-
+    //region FuncType Declaration and Methods
     public static FuncType stringToFuncEnum(String type) throws MessageParsingException {
         if(type.equals("CREATE_FILE")){
             return FuncType.CREATE_FILE;
@@ -47,12 +46,12 @@ public class FuncCallMessage extends Message{
         else throw new MessageParsingException("No known type = " + type);
     }
 
-    public FuncCallMessage(FuncType typeOfFunction, String user) {
-        super(Message.Type.FUNC_CALL, user);
-        this.typeOfFunction = typeOfFunction;
-        this.argNumber = 0;
+    public enum FuncType{
+        CREATE_FILE, UPDATE_FILE, REMOVE_FILE, GET_FILE_NAMES, GET_FILE_CONTENT;
     }
+    //endregion
 
+    //region Constructors
     public FuncCallMessage(FuncType typeOfFunction, String user, String arg1) {
         super(Message.Type.FUNC_CALL, user);
         this.typeOfFunction = typeOfFunction;
@@ -76,7 +75,9 @@ public class FuncCallMessage extends Message{
         this.arg3 = arg3;
         this.argNumber = 3;
     }
+    //endregion
 
+    //region Getters
     public FuncType getTypeOfFunction() {
         return typeOfFunction;
     }
@@ -92,7 +93,9 @@ public class FuncCallMessage extends Message{
     public String getArg3() {
         return arg3;
     }
+    //endregion
 
+    //region Remote Method Execution
     public FuncResponseMessage execute(User user){
         FuncResponseMessage funcResponseMessage = null;
         if(this.getTypeOfFunction() == FuncType.CREATE_FILE){
@@ -141,6 +144,7 @@ public class FuncCallMessage extends Message{
             }
         } else if(this.getTypeOfFunction() == FuncType.GET_FILE_NAMES){
             Log.d("[AirDesk]", "Executing getFileNames");
+            arg1 = parseWSName(arg1);
             try {
                 List<String> list = user.getOwnedWorkspaceByName(getArg1()).getFileNames();
                 JSONArray jsonList = new JSONArray();
@@ -169,7 +173,9 @@ public class FuncCallMessage extends Message{
         }
         return funcResponseMessage;
     }
+    //endregion
 
+    //region Private Methods
     private String parseWSName(String arg1) {
         String delimit = "[@]";
         String[] tokens = arg1.split(delimit);
@@ -192,7 +198,5 @@ public class FuncCallMessage extends Message{
         }
         return result;
     }
-
-
-
+    //endregion
 }

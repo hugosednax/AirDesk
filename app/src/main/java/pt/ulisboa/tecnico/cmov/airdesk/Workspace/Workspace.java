@@ -1,24 +1,16 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Workspace;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.FileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
-import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
-import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
-
 /**
  * Created by hugo__000 on 10/03/2015.
  */
 public abstract class Workspace {
-
     //region Class Variables
     protected String name;
     //endregion

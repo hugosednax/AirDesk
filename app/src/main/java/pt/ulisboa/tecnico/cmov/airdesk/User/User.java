@@ -25,13 +25,12 @@ import pt.ulisboa.tecnico.cmov.airdesk.Message.InviteWSMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Predicate.WorkspaceNamePredicate;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.WiFiDirect.WifiNotificationHandler;
-import pt.ulisboa.tecnico.cmov.airdesk.Workspace.ForeignLocalWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.ForeignRemoteWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.OwnedWorkspace;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
 
 /**
- * Created by hugo__000 on 10/03/2015.
+ * Created by hugo__000
  */
 public class User {
     //region Class Const
@@ -95,9 +94,6 @@ public class User {
                 for(String email : savedWS.getAllowedUsers())
                     this.invite(savedWS, email);
         }
-        for(WorkspaceDTO wsDTO : settings.getForeignWorkspaces()){
-            //TODO: something to do
-        }
     }
     //endregion
 
@@ -111,14 +107,14 @@ public class User {
     }
 
     public ArrayList<String> getOwnedWorkspacesNames() {
-        ArrayList<String> workspaceNames = new ArrayList<String>();
+        ArrayList<String> workspaceNames = new ArrayList<>();
         for(int i=0;i<ownedWorkspaces.size();i++)
             workspaceNames.add(ownedWorkspaces.get(i).getName());
         return workspaceNames;
     }
 
     public ArrayList<String> getForeignWorkspacesNames() {
-        ArrayList<String> workspaceNames = new ArrayList<String>();
+        ArrayList<String> workspaceNames = new ArrayList<>();
         for(int i=0;i<ownedWorkspaces.size();i++)
             workspaceNames.add(ownedWorkspaces.get(i).getName());
         return workspaceNames;
@@ -147,9 +143,7 @@ public class User {
                 break;
             }
         }
-        if(result == null)
-            return false;
-        return true;
+        return result != null;
     }
 
     public boolean hasForeignWorkspaceByName(String name){
@@ -223,12 +217,8 @@ public class User {
         }
     }
 
-    public void uninvite(OwnedWorkspace workspace, String email){
+    public void unInvite(OwnedWorkspace workspace, String email){
         workspace.removeFromAllowedUsers(email);
-        Workspace newForeign = new ForeignLocalWorkspace(workspace, email);
-        if(email.equals(this.getEmail())){
-            foreignWorkspaces.remove(newForeign);
-        }
         try {
             settings.updateOwnedWorkspace(new WorkspaceDTO(workspace));
         } catch (Exception e) {

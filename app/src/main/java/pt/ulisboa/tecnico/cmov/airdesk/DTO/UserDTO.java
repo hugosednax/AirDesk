@@ -7,7 +7,6 @@ import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
  * Created by Filipe Teixeira on 21/03/2015.
  */
 public class UserDTO {
-
     //region Class Variables
     private String username;
     //endregion

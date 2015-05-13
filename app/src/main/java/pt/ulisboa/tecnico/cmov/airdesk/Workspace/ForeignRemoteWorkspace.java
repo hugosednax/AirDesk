@@ -21,14 +21,14 @@ import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.FuncCallMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.FuncResponseMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.WiFiDirect.WifiNotificationHandler;
-
 /**
  * Created by Filipe Teixeira
  */
-// 2nd version of ForeignWorkspace, remote
+// 2nd version of ForeignWorkspace, Remote
 public class ForeignRemoteWorkspace extends Workspace{
-
+    //region Class Const
     private static final String TAG ="[AirDesk]";
+    //endregion
 
     //region Class Variables
     String owner;
@@ -70,7 +70,7 @@ public class ForeignRemoteWorkspace extends Workspace{
     public List<String> getFileNames() {
         Log.d(TAG, "Calling Remote getFileNames");
 
-        FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.GET_FILE_NAMES, myUser, parseWSName(this.getName()));
+        FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.GET_FILE_NAMES, myUser, this.getName());
         List<String> result = new ArrayList<>();
         try {
             FuncResponseMessage response = wifiHandler.remoteMethodInvoke(owner, newFuncCallMessage);
@@ -153,10 +153,4 @@ public class ForeignRemoteWorkspace extends Workspace{
         //TODO
     }
     //endregion
-
-    private String parseWSName(String arg1) {
-        String delimit = "[@]";
-        String[] tokens = arg1.split(delimit);
-        return tokens[0];
-    }
 }

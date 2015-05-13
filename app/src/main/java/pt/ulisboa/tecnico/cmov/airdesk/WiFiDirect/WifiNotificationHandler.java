@@ -47,7 +47,6 @@ import pt.ulisboa.tecnico.cmov.airdesk.Message.Message;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.User.User;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.ForeignRemoteWorkspace;
-
 /**
  * Created by Filipe Teixeira
  */
@@ -326,6 +325,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     }
     //endregion
 
+    //region Remote Protocol Tasks
     private class IncomingCommTask extends AsyncTask<Void, SimWifiP2pSocket, Void> {
         String user = "error";
         String ipPeerList = "";
@@ -534,4 +534,5 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             return null;
         }
     }
+    //endregion
 }

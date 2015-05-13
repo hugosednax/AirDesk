@@ -6,12 +6,10 @@ import android.content.SharedPreferences;
 
 import pt.ulisboa.tecnico.cmov.airdesk.User.User;
 import pt.ulisboa.tecnico.cmov.airdesk.WiFiDirect.WifiNotificationHandler;
-
 /**
- * Created by Toninho on 3/12/2015.
+ * Created by Toninho
  */
 public class AirDeskApp extends Application {
-
     //region Class Variables
     public static final String LOG_TAG = "[AirDesk]";
 

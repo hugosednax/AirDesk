@@ -55,7 +55,7 @@ public class InviteUsersActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String selectedFromList =(String) (listView.getItemAtPosition(position));
-                user.uninvite(workspaceToEdit, selectedFromList);
+                user.unInvite(workspaceToEdit, selectedFromList);
                 usersAdapter.notifyDataSetChanged();
             }
         });

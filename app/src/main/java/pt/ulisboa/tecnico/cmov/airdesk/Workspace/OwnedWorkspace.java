@@ -20,13 +20,13 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 import pt.ulisboa.tecnico.cmov.airdesk.Predicate.FileNamePredicate;
-
 /**
  * Created by Filipe Teixeira on 12/03/2015.
  */
 public class OwnedWorkspace extends Workspace{
-
+    //region Class Const
     private static final String TAG = "[AirDesk]";
+    //endregion
 
     //region Class Variables
     private List<String> allowedUsers;
