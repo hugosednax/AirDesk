@@ -21,6 +21,7 @@ public abstract class Message {
     public static final String MESSAGE_EXCEPTION_MESSAGE = "EXCEPTION";
     public static final String MESSAGE_EXCEPTION_NAME = "EXCEPTION_NAME";
     public static final String MESSAGE_RESULT = "RESULT";
+    public static final String MESSAGE_KEYWORDS = "KEYWORDS";
     //endregion
 
     //region Class Variables
@@ -36,11 +37,13 @@ public abstract class Message {
             return Type.FUNC_RESP;
         else if(type.equals("INVITE"))
             return Type.INVITE;
+        else if(type.equals("INTEREST"))
+            return Type.INTEREST;
         else throw new MessageParsingException("No known type = " + type);
     }
 
     public enum Type{
-        FUNC_CALL, FUNC_RESP, INVITE;
+        FUNC_CALL, FUNC_RESP, INVITE, INTEREST;
     }
     //endregion
 

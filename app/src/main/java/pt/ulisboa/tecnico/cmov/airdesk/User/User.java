@@ -21,6 +21,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ServiceNotBoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WriteToFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.JSONHandler;
+import pt.ulisboa.tecnico.cmov.airdesk.Message.InterestMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.InviteWSMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Predicate.WorkspaceNamePredicate;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
@@ -255,6 +256,7 @@ public class User {
         }
         return results;
     }
+
     //endregion
 
     //region File Methods
@@ -289,7 +291,16 @@ public class User {
     //endregion
 
     //region User Methods
-    public void addInterestKeyword(String keyword) { this.getInterestKeywords().add(keyword); }
+    public void addInterestKeyword(String keyword) {
+        this.getInterestKeywords().add(keyword);
+        List<String> keywords = new ArrayList<>();
+        keywords.add(keyword);
+        try {
+            wifiHandler.broadcastMessage(new InterestMessage(getEmail(), keywords).toString());
+        } catch (ServiceNotBoundException e) {
+            Log.d(TAG, "Service not bound, can't broadcast new interests");
+        }
+    }
 
     public void removeInterestKeyword(String keyword) { this.getInterestKeywords().remove(keyword); }
 
@@ -307,6 +318,43 @@ public class User {
                     }
                 }
             }
+        }
+    }
+
+    public void updateAllInvites(){
+        for(OwnedWorkspace ws : getOwnedWorkspaces()){
+            for(String guest : ws.getAllowedUsers()){
+                if(wifiHandler.gotConnectionTo(guest)){
+                    Log.d(TAG, "Got connection to " + guest + ", and found a reference to " + ws.getName() + ", going to reInvite him");
+                    try {
+                        wifiHandler.sendMessage(new InviteWSMessage(getEmail(), new WorkspaceDTO(ws)).toJSON().toString(), guest);
+                    } catch (ServiceNotBoundException e) {
+                        Log.d(TAG, "Service not bound at invite: " + e.getMessage());
+                    } catch (JSONException e) {
+                        Log.d(TAG, "Error at converting to JSON in Invite: " + e.getMessage());
+                    }
+                }
+            }
+        }
+    }
+
+    public void updateKeywords(String user){
+        try {
+            wifiHandler.sendMessage(new InterestMessage(getEmail(), getInterestKeywords()).toJSON().toString(), user);
+        } catch (ServiceNotBoundException e) {
+            Log.d(TAG, "Cant update keywords with unbound service");
+        } catch (JSONException e) {
+            Log.d(TAG, "Error JSON parsing the InterestMessage for updateKeywords");
+        }
+    }
+
+    public void updateAllKeywords(){
+        try {
+            wifiHandler.broadcastMessage(new InterestMessage(getEmail(), getInterestKeywords()).toJSON().toString());
+        } catch (ServiceNotBoundException e) {
+            Log.d(TAG, "Cant update keywords with unbound service");
+        } catch (JSONException e) {
+            Log.d(TAG, "Error JSON parsing the InterestMessage for updateKeywords");
         }
     }
     //endregion
