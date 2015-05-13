@@ -58,6 +58,11 @@ public class ADFile {
         return editable;
     }
 
+    public void setEditable(boolean editable) {
+        Log.d("[AirDesk]", "edit  = " + editable);
+        this.editable = editable;
+    }
+
     public String toString(){
         return name;
     }

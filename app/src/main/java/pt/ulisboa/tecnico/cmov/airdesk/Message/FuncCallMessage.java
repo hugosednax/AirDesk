@@ -6,15 +6,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.FileNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.CreateFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.DeleteFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.MessageParsingException;
-import pt.ulisboa.tecnico.cmov.airdesk.Exception.NotDirectoryException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.QuotaLimitExceededException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.User.User;
@@ -43,11 +40,15 @@ public class FuncCallMessage extends Message{
             return FuncType.GET_FILE_NAMES;
         else if(type.equals("GET_FILE_CONTENT"))
             return FuncType.GET_FILE_CONTENT;
-        else throw new MessageParsingException("No known type = " + type);
+        else if(type.equals("EDITABLE"))
+            return FuncType.EDITABLE;
+        else if(type.equals("CANCEL_EDIT"))
+            return FuncType.CANCEL_EDIT;
+        else throw new MessageParsingException("No known type = " + type + " @FuncCallMessage.stringToFuncEnum");
     }
 
     public enum FuncType{
-        CREATE_FILE, UPDATE_FILE, REMOVE_FILE, GET_FILE_NAMES, GET_FILE_CONTENT;
+        CREATE_FILE, UPDATE_FILE, REMOVE_FILE, GET_FILE_NAMES, GET_FILE_CONTENT, EDITABLE, CANCEL_EDIT;
     }
     //endregion
 
@@ -157,13 +158,36 @@ public class FuncCallMessage extends Message{
             } catch (JSONException e) {
                 //TODO
             }
-        } else if(this.getTypeOfFunction() == FuncType.GET_FILE_CONTENT){
+        } else if(this.getTypeOfFunction() == FuncType.GET_FILE_CONTENT) {
             Log.d("[AirDesk]", "Executing getFileContent");
             arg1 = parseWSName(arg1);
             try {
                 String content = user.getOwnedWorkspaceByName(getArg1()).getFileContent(getArg2());
 
                 return new FuncResponseMessage(getUser(), false, content);
+            } catch (FileNotFoundException e) {
+                return new FuncResponseMessage(getUser(), true, "FileNotFoundException", e.getMessage());
+            } catch (WorkspaceNotFoundException e) {
+                return new FuncResponseMessage(getUser(), true, "FileNotFoundException", e.getMessage());
+            }
+        } else if(this.getTypeOfFunction() == FuncType.EDITABLE){
+            Log.d("[AirDesk]", "Executing editable");
+            arg1 = parseWSName(arg1);
+            try {
+                boolean editable = user.getOwnedWorkspaceByName(getArg1()).editable(getArg2());
+                return new FuncResponseMessage(getUser(), false, editable ? "true" : "false");
+            } catch (FileNotFoundException e) {
+                return new FuncResponseMessage(getUser(), true, "FileNotFoundException", e.getMessage());
+            } catch (WorkspaceNotFoundException e) {
+                return new FuncResponseMessage(getUser(), true, "FileNotFoundException", e.getMessage());
+            }
+
+        } else if(this.getTypeOfFunction() == FuncType.CANCEL_EDIT){
+            Log.d("[AirDesk]", "Executing cancel_edit");
+            arg1 = parseWSName(arg1);
+            try {
+                user.getOwnedWorkspaceByName(getArg1()).setEditable(getArg2());
+                return new FuncResponseMessage(getUser(), false, "");
             } catch (FileNotFoundException e) {
                 return new FuncResponseMessage(getUser(), true, "FileNotFoundException", e.getMessage());
             } catch (WorkspaceNotFoundException e) {

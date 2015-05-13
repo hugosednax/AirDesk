@@ -31,6 +31,10 @@ public abstract class Workspace {
     abstract public String getFileContent(String filename) throws FileNotFoundException;
 
     abstract public List<String> getFileNames();
+
+    abstract public boolean editable(String filename) throws FileNotFoundException;
+
+    abstract public void setEditable(String filename) throws FileNotFoundException;
     //endregion
 
     //region Getters

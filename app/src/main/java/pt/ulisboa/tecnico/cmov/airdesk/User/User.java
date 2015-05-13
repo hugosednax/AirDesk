@@ -60,7 +60,7 @@ public class User {
         try {
             this.settings = new JSONHandler();
         } catch (Exception e) {
-            Log.d(AirDeskApp.LOG_TAG, e.getMessage());
+            Log.d(AirDeskApp.LOG_TAG, "Error at creating JSONHandler " + e.getMessage());
         }
 
         if(settings.hadSettings()){
@@ -284,7 +284,6 @@ public class User {
     public String getFileContent(String fileName, OwnedWorkspace workspace) throws FileNotFoundException, IOException {
         return workspace.getFileByName(fileName).getContent();
     }
-
     public String getFileContent(String fileName, String workspace) throws FileNotFoundException, IOException, WorkspaceNotFoundException {
         return getOwnedWorkspaceByName(workspace).getFileByName(fileName).getContent();
     }

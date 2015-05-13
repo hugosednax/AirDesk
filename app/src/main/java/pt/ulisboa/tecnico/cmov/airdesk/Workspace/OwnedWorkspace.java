@@ -138,6 +138,7 @@ public class OwnedWorkspace extends Workspace{
         if(this.getSize() - file.getSize() + text.length() > this.getQuota())
             throw new QuotaLimitExceededException("Quota limit exceeded while trying to update " + name + " in " + this.getName() + " your Workspace.");
         file.save(text);
+        file.setEditable(true);
     }
 
     public ADFile getFileByName(String name) throws FileNotFoundException {
@@ -180,6 +181,16 @@ public class OwnedWorkspace extends Workspace{
         if(result == null)
             return false;
         return true;
+    }
+
+    public boolean editable(String fileName) throws FileNotFoundException {
+        boolean editable = getFileByName(fileName).isEditable();
+        if(editable) getFileByName(fileName).setEditable(false);
+        return editable;
+    }
+
+    public void setEditable(String fileName) throws FileNotFoundException {
+        getFileByName(fileName).setEditable(true);
     }
 
     //endregion

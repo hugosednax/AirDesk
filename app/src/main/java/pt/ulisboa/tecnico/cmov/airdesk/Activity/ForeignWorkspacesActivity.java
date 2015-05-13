@@ -42,7 +42,7 @@ public class ForeignWorkspacesActivity extends ActionBarActivity {
         */
         AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         workspaces = airDeskApp.getUser().getForeignWorkspaces();
-        workspacesAdapter = new ArrayAdapter<ForeignRemoteWorkspace>(this, android.R.layout.simple_list_item_1,workspaces);
+        workspacesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,workspaces);
         listView = (ListView) findViewById(R.id.listWorkspaces);
         listView.setAdapter(workspacesAdapter);
 

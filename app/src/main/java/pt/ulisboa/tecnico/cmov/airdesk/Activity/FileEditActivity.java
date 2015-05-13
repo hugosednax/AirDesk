@@ -20,6 +20,7 @@ public class FileEditActivity extends ActionBarActivity {
     TextView textView;
     String nameOfCurrFile;
     Workspace currWorkspace;
+    boolean grabbedLock = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,11 @@ public class FileEditActivity extends ActionBarActivity {
                 currWorkspace = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace);
             }
             content = currWorkspace.getFileContent(nameOfCurrFile);
+            if(!currWorkspace.editable(nameOfCurrFile)) {
+                Toast.makeText(getApplicationContext(), "File is being edited", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            grabbedLock = true;
 
         } catch (WorkspaceNotFoundException e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -67,6 +73,7 @@ public class FileEditActivity extends ActionBarActivity {
             public void run() {
                 try {
                     currWorkspace.updateFile(nameOfCurrFile, textView.getText().toString());
+                    grabbedLock = false;
                     finish();
                 } catch (Exception e) {
                     final Context context = getApplicationContext();
@@ -85,6 +92,18 @@ public class FileEditActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_file_edit, menu);
         return true;
+    }
+
+    @Override
+    public void onDestroy(){
+        if(grabbedLock)
+            try {
+                currWorkspace.setEditable(nameOfCurrFile);
+            } catch (FileNotFoundException e) {
+                //TODO
+            } finally{
+                super.onDestroy();
+            }
     }
 
 }

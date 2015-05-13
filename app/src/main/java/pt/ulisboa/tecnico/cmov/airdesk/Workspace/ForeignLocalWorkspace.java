@@ -32,6 +32,16 @@ public class ForeignLocalWorkspace extends Workspace{
         return null;
     }
 
+    @Override
+    public boolean editable(String filename) throws FileNotFoundException {
+        return workspaceLink.editable(filename);
+    }
+
+    @Override
+    public void setEditable(String filename) throws FileNotFoundException {
+        workspaceLink.setEditable(filename);
+    }
+
     public void createFile(String fileName) throws QuotaLimitExceededException, IOException, CreateFileException {
         workspaceLink.createFile(fileName);
     }

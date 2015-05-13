@@ -146,6 +146,43 @@ public class ForeignRemoteWorkspace extends Workspace{
             //TODO help
         }
     }
+
+    public boolean editable(String filename) throws FileNotFoundException {
+        Log.d(TAG, "Calling Remote editable");
+        boolean result = false;
+        FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.EDITABLE, myUser, this.getName(), filename);
+        try {
+            FuncResponseMessage response = wifiHandler.remoteMethodInvoke(owner, newFuncCallMessage);
+            if(response.isExceptionThrown()){
+                if(response.getExceptionName().equals("FileNotFoundException"))
+                    throw new FileNotFoundException(response.getExceptionMessage());
+            } else {
+                if(response.getResult().equals("true"))
+                    result = true;
+            }
+        }catch(RemoteMethodException e){
+            //TODO throw new RemoteMethodException();
+        }catch(JSONException e) {
+            //TODO help
+        }
+        return result;
+    }
+
+    public void setEditable(String filename) throws FileNotFoundException {
+        Log.d(TAG, "Calling Remote setEditable");
+        FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.CANCEL_EDIT, myUser, this.getName(), filename);
+        try {
+            FuncResponseMessage response = wifiHandler.remoteMethodInvoke(owner, newFuncCallMessage);
+            if(response.isExceptionThrown()){
+                if(response.getExceptionName().equals("FileNotFoundException"))
+                    throw new FileNotFoundException(response.getExceptionMessage());
+            }
+        }catch(RemoteMethodException e){
+            //TODO throw new RemoteMethodException();
+        }catch(JSONException e) {
+            //TODO help
+        }
+    }
     //endregion
 
     //region Workspace Methods
