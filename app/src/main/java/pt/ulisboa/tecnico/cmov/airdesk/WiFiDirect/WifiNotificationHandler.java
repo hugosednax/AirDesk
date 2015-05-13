@@ -298,6 +298,18 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                         JSONMessage.getString(Message.MESSAGE_ARG1),
                         JSONMessage.getString(Message.MESSAGE_ARG2));
 
+            else if (funcType == FuncCallMessage.FuncType.EDITABLE)
+                return new FuncCallMessage(FuncCallMessage.FuncType.EDITABLE,
+                        JSONMessage.getString(Message.MESSAGE_USER),
+                        JSONMessage.getString(Message.MESSAGE_ARG1),
+                        JSONMessage.getString(Message.MESSAGE_ARG2));
+
+            else if (funcType == FuncCallMessage.FuncType.CANCEL_EDIT)
+                return new FuncCallMessage(FuncCallMessage.FuncType.CANCEL_EDIT,
+                        JSONMessage.getString(Message.MESSAGE_USER),
+                        JSONMessage.getString(Message.MESSAGE_ARG1),
+                        JSONMessage.getString(Message.MESSAGE_ARG2));
+
             else throw new MessageParsingException("No compatible FuncType found");
         } else if(messageType == Message.Type.FUNC_RESP){
             return new FuncResponseMessage("", true, "");
@@ -440,9 +452,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             }
         }
 
-        protected ArrayList<String> parseIPlist(String iplist){
+        protected ArrayList<String> parseIPlist(String ipList){
             String delimit = "[|]";
-            String[] tokens = iplist.split(delimit);
+            String[] tokens = ipList.split(delimit);
             ArrayList<String> list = new ArrayList<>();
             Collections.addAll(list, tokens);
             return list;
@@ -483,6 +495,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                         s.getOutputStream().write((funcResponseMessage.toJSON().toString()+"\n").getBytes());
 
                     } else if (message.getClass().equals(InterestMessage.class)){
+                        Log.d(TAG, "Received interest message");
                         InterestMessage interestMessage = (InterestMessage) message;
                         inviteThroughKeywords(interestMessage.getUser(), interestMessage.getKeywords());
                     }
