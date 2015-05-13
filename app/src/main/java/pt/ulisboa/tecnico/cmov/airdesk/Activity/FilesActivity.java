@@ -112,7 +112,8 @@ public class FilesActivity extends ActionBarActivity {
                                     toast.show();
                                 }
                             }
-                        filesAdapter.notifyDataSetChanged(); //warn the adapter that the original array has changed
+                        if(currentWorkspace != null)
+                            assignArrayAdapter(currentWorkspace.getFileNames());
                         selectedFiles.clear();
                         mode.finish();
                         return true;
@@ -195,10 +196,8 @@ public class FilesActivity extends ActionBarActivity {
 
     @Override
     public void onResume() {
-        if (filesAdapter !=null){
-            Log.d("notifiyDAta","setCHANNNGED SON");
-            filesAdapter.notifyDataSetChanged();
-        }
+        if(currentWorkspace != null)
+            assignArrayAdapter(currentWorkspace.getFileNames());
         super.onResume();
     }
 }
