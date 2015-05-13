@@ -16,42 +16,28 @@
         android:textColor="#AAAAAA"
         android:id="@+id/textView4" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/keywordInput"
-        android:background="#F0F0F0"
-        android:layout_alignBaseline="@+id/textView4"
-        android:layout_alignBottom="@+id/textView4"
-        android:layout_alignRight="@+id/textView3"
-        android:layout_alignEnd="@+id/textView3"
-        android:layout_toRightOf="@+id/textView4"
-        android:layout_toEndOf="@+id/textView4" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="List of Keywords"
         android:id="@+id/textView2"
-        android:layout_marginTop="71dp"
         android:textColor="#AAAAAA"
         android:layout_below="@+id/textView3"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp" />
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/keywordList"
-        android:layout_below="@+id/textView2"
-        android:layout_marginTop="27dp"
         android:background="#F0F0F0"
+        android:choiceMode="singleChoice"
+        android:layout_below="@+id/textView2"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:choiceMode="singleChoice" />
+        android:layout_marginTop="5dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -59,12 +45,22 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Press Enter to Add"
         android:id="@+id/textView3"
-        android:layout_marginLeft="52dp"
-        android:layout_marginStart="52dp"
+        android:layout_marginLeft="62dp"
+        android:layout_marginStart="62dp"
         android:textColor="#AAAAAA"
-        android:layout_marginTop="27dp"
-        android:layout_below="@+id/textView4"
+        android:layout_below="@+id/keywordInput"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/keywordInput"
+        android:background="#F0F0F0"
+        android:layout_alignTop="@+id/textView4"
+        android:layout_toRightOf="@+id/textView4"
+        android:layout_toEndOf="@+id/textView4" />
 
 </RelativeLayout>

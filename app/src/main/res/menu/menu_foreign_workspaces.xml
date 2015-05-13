@@ -2,7 +2,4 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="pt.ulisboa.tecnico.cmov.airdesk.Activity.ForeignWorkspacesActivity">
-    <item android:id="@+id/addKeyword"
-        android:title="@string/action_input_keyword"
-        app:showAsAction="always"/>
 </menu>

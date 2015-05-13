@@ -1,13 +1,14 @@
 package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -19,39 +20,36 @@ import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.User.User;
-import pt.ulisboa.tecnico.cmov.airdesk.Workspace.OwnedWorkspace;
 
-public class KeywordAddActivity extends ActionBarActivity {
+public class UserActivity extends ActionBarActivity {
+
     private User user;
     private ListView listView;
     private ArrayAdapter keywordsAdapter;
-    private OwnedWorkspace workspace;
+    AirDeskApp airDeskApp;
     EditText input;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_keyword_manager);
+        setContentView(R.layout.activity_user);
+        airDeskApp = (AirDeskApp) getApplicationContext();
+        user = airDeskApp.getUser();
 
-        AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
-        String workspaceNameToEdit = getIntent().getExtras().getString("nameOfWorkspace");
-        try {
-            user = airDeskApp.getUser();
-            workspace = (OwnedWorkspace) user.getOwnedWorkspaceByName(workspaceNameToEdit);
-        } catch (WorkspaceNotFoundException e) {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
+        TextView nameView = (TextView) findViewById(R.id.name);
+        nameView.setText(user.getNick());
 
-        keywordsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,workspace.getKeywords());
-        listView = (ListView) findViewById(R.id.keywordList);
+        TextView emailView = (TextView) findViewById(R.id.email);
+        emailView.setText(user.getEmail());
+
+        keywordsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, user.getInterestKeywords());
+        listView = (ListView) findViewById(R.id.kwrdList);
         listView.setAdapter(keywordsAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String selectedFromList =(String) (listView.getItemAtPosition(position));
-                workspace.removeKeyword(selectedFromList);
                 user.removeInterestKeyword(selectedFromList);
                 keywordsAdapter.notifyDataSetChanged();
             }
@@ -66,7 +64,7 @@ public class KeywordAddActivity extends ActionBarActivity {
 
                 input = (EditText)v;
                 if(keyCode == KeyEvent.KEYCODE_ENTER && input.getText().toString()!=null){
-                    workspace.addKeyword(input.getText().toString());
+                    user.addInterestKeyword(input.getText().toString());
                     keywordsAdapter.notifyDataSetChanged();
                     input.getText().clear();
                     return true;
@@ -74,28 +72,22 @@ public class KeywordAddActivity extends ActionBarActivity {
                 return false;
             }
         });
+    }
 
-        keywordInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    workspace.addKeyword(input.getText().toString());
-                    keywordsAdapter.notifyDataSetChanged();
-                    input.getText().clear();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        airDeskApp.getWifiHandler().setCurrentActivity(this);
+    public void logOut(View v){
+        SharedPreferences.Editor editor = getSharedPreferences("user_prefs", MODE_PRIVATE).edit();
+        editor.remove("email_pref");
+        editor.remove("nick_pref");
+        editor.apply();
+        Intent intent = new Intent(this, StarterActivity.class);
+        startActivity(intent);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_keyword_manager, menu);
+        getMenuInflater().inflate(R.menu.menu_user, menu);
         return true;
     }
 

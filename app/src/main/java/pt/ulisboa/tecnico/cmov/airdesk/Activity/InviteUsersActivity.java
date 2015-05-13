@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -81,6 +82,7 @@ public class InviteUsersActivity extends ActionBarActivity {
         prevlgdUserInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                Log.d("YEEYSAD", "boobs");
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     user.invite(workspaceToEdit, input.getText().toString());
                     usersAdapter.notifyDataSetChanged();

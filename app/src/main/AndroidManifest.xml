@@ -85,6 +85,10 @@
             android:name=".Activity.KeywordAddActivity"
             android:label="@string/title_activity_keyword_manager" >
         </activity>
+        <activity
+            android:name=".Activity.UserActivity"
+            android:label="@string/title_activity_user" >
+        </activity>
     </application>
 
 </manifest>

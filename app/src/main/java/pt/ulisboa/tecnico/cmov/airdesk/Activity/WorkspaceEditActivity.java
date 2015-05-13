@@ -48,7 +48,7 @@ public class WorkspaceEditActivity extends ActionBarActivity {
             //Get the workspace from its name
             workspaceToEdit = (OwnedWorkspace) user.getOwnedWorkspaceByName(workspaceNameToEdit);
         }catch(WorkspaceNotFoundException e){
-            //TODO
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
         //Fill the quotaView with the current Quota of the Workspace
         quota.setText(String.valueOf(workspaceToEdit.getQuota()));

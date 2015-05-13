@@ -64,4 +64,10 @@ public class WorkspaceTypeActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    //Pressed User button
+    public void goToUserSettings(View v){
+        Intent intent = new Intent(this, UserActivity.class);
+        startActivity(intent);
+    }
+
 }

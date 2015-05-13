@@ -7,18 +7,6 @@
     tools:context="pt.ulisboa.tecnico.cmov.airdesk.Activity.InviteUsersActivity"
     android:background="#BBCDE3">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/previllgedUser"
-        android:layout_alignBottom="@+id/prevClientText"
-        android:layout_toRightOf="@+id/prevClientText"
-        android:layout_toEndOf="@+id/prevClientText"
-        android:layout_marginLeft="25dp"
-        android:layout_marginStart="25dp"
-        android:autoText="false"
-        android:background="#F0F0F0" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,10 +14,9 @@
         android:text="Add Previliged Client"
         android:id="@+id/prevClientText"
         android:textColor="#AAAAAA"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="61dp" />
+        android:layout_alignTop="@+id/previllgedUser"
+        android:layout_toLeftOf="@+id/textView"
+        android:layout_toStartOf="@+id/textView" />
 
     <ListView
         android:layout_width="wrap_content"
@@ -40,10 +27,10 @@
         android:smoothScrollbar="true"
         android:stackFromBottom="false"
         android:background="#F0F0F0"
-        android:layout_alignParentBottom="true"
         android:layout_below="@+id/prevClientsText"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="5dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -52,10 +39,10 @@
         android:text="Previliged Clients"
         android:id="@+id/prevClientsText"
         android:textColor="#AAAAAA"
-        android:layout_below="@+id/previllgedUser"
+        android:layout_below="@+id/textView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="39dp" />
+        android:layout_marginTop="20dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -63,7 +50,20 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Press Enter to Add"
         android:id="@+id/textView"
-        android:layout_below="@+id/previllgedUser"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/prevClientText"
+        android:layout_toRightOf="@+id/prevClientsText"
+        android:layout_toEndOf="@+id/prevClientsText" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/previllgedUser"
+        android:background="#F0F0F0"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="39dp" />
 
 </RelativeLayout>

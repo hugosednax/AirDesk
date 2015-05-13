@@ -114,6 +114,9 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
                     case R.id.inviteUsers:
                         startInviteUsers();
                         return true;
+                    case R.id.addKeyword:
+                        startKeywordAdding();
+                        return true;
                     default:
                         return false;
                 }
@@ -135,15 +138,19 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
                 if (selectedWorkSpaces.size() == 1){
-                    MenuItem itemEdit = menu.findItem(R.id.editWorkspace);
-                    MenuItem itemInvite = menu.findItem(R.id.inviteUsers);
-                    itemEdit.setVisible(true);
-                    itemInvite.setVisible(true);
+                    MenuItem itemShow = menu.findItem(R.id.editWorkspace);
+                    itemShow.setVisible(true);
+                    itemShow = menu.findItem(R.id.inviteUsers);
+                    itemShow.setVisible(true);
+                    itemShow = menu.findItem(R.id.addKeyword);
+                    itemShow.setVisible(true);
                 } else {
-                    MenuItem itemEdit = menu.findItem(R.id.editWorkspace);
-                    MenuItem itemInvite = menu.findItem(R.id.inviteUsers);
-                    itemEdit.setVisible(false);
-                    itemInvite.setVisible(false);
+                    MenuItem itemHide = menu.findItem(R.id.editWorkspace);
+                    itemHide.setVisible(false);
+                    itemHide = menu.findItem(R.id.inviteUsers);
+                    itemHide.setVisible(false);
+                    itemHide = menu.findItem(R.id.addKeyword);
+                    itemHide.setVisible(false);
                 }
                 return true;
             }
@@ -172,6 +179,13 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    public void startKeywordAdding(){
+        Intent intent = new Intent(this, KeywordAddActivity.class);
+        String nameOfWorkspace = selectedWorkSpaces.get(0);
+        intent.putExtra("nameOfWorkspace",nameOfWorkspace);
+        startActivity(intent);
+    }
+
     /*Normal inflate, only has the new Option*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -189,13 +203,6 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
             startActivity(intent);
             return true;
         }
-
-        if (id == R.id.addKeyword) {
-            Intent intent = new Intent(this, KeywordAddActivity.class);
-            startActivity(intent);
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 

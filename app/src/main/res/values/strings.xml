@@ -27,5 +27,6 @@
     <string name="action_invite_users">Invite</string>
     <string name="port">10001</string>
     <string name="title_activity_keyword_manager">keywordManager</string>
+    <string name="title_activity_user">UserActivity</string>
 
 </resources>

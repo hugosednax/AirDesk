@@ -28,5 +28,7 @@
         android:onClick="SaveChanges"
         android:id="@+id/SaveChanges"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:background="#3FA9F5"
+        android:textColor="#ffffffff" />
 </RelativeLayout>

@@ -39,5 +39,6 @@
         android:layout_below="@+id/inputEmail"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="65dp"
-        android:background="#3FA9F5" />
+        android:background="#3FA9F5"
+        android:textColor="#ffffff" />
 </RelativeLayout>

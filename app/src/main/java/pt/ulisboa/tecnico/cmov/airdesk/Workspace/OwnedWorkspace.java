@@ -232,6 +232,10 @@ public class OwnedWorkspace extends Workspace{
         this.getKeywords().add(keyword);
     }
 
+    public void removeKeyword(String keyword){
+        this.getKeywords().remove(keyword);
+    }
+
     public boolean hasKeyword(String keyword){
         return this.getKeywords().contains(keyword);
     }
