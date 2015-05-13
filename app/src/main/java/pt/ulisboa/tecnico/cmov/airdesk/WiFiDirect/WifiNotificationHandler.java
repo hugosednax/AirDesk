@@ -281,6 +281,12 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                         JSONMessage.getString(Message.MESSAGE_USER),
                         JSONMessage.getString(Message.MESSAGE_ARG1));
 
+            else if (funcType == FuncCallMessage.FuncType.GET_FILE_CONTENT)
+                return new FuncCallMessage(FuncCallMessage.FuncType.GET_FILE_CONTENT,
+                        JSONMessage.getString(Message.MESSAGE_USER),
+                        JSONMessage.getString(Message.MESSAGE_ARG1),
+                        JSONMessage.getString(Message.MESSAGE_ARG2));
+
             else throw new MessageParsingException("No compatible FuncType found");
         } else if(messageType == Message.Type.FUNC_RESP){
             return new FuncResponseMessage("", true, "");
@@ -361,6 +367,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             commReceiveTaskTreeMap.put(user, receiveCommTask);
             receiveCommTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, socket);
             Log.d(TAG, "Connected to " + user);
+            getMyUser().updateInvites(user);
             user = "error";
         }
 
@@ -466,6 +473,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 commReceiveTaskTreeMap.put(user, receiveCommTask);
                 receiveCommTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, sendSocket);
                 Log.d(TAG, "Connected to " + user);
+                getMyUser().updateInvites(user);
                 user = "error";
             }
         }

@@ -30,7 +30,7 @@ public class FuncCallMessage extends Message{
     private int argNumber;
 
     public enum FuncType{
-        CREATE_FILE, UPDATE_FILE, REMOVE_FILE, GET_FILE_NAMES;
+        CREATE_FILE, UPDATE_FILE, REMOVE_FILE, GET_FILE_NAMES, GET_FILE_CONTENT;
     }
 
     public static FuncType stringToFuncEnum(String type) throws MessageParsingException {
@@ -42,6 +42,8 @@ public class FuncCallMessage extends Message{
             return FuncType.REMOVE_FILE;
         else if(type.equals("GET_FILE_NAMES"))
             return FuncType.GET_FILE_NAMES;
+        else if(type.equals("GET_FILE_CONTENT"))
+            return FuncType.GET_FILE_CONTENT;
         else throw new MessageParsingException("No known type = " + type);
     }
 
@@ -150,6 +152,18 @@ public class FuncCallMessage extends Message{
 
             } catch (JSONException e) {
                 //TODO
+            }
+        } else if(this.getTypeOfFunction() == FuncType.GET_FILE_CONTENT){
+            Log.d("[AirDesk]", "Executing getFileContent");
+            arg1 = parseWSName(arg1);
+            try {
+                String content = user.getOwnedWorkspaceByName(getArg1()).getFileContent(getArg2());
+
+                return new FuncResponseMessage(getUser(), false, content);
+            } catch (FileNotFoundException e) {
+                return new FuncResponseMessage(getUser(), true, "FileNotFoundException", e.getMessage());
+            } catch (WorkspaceNotFoundException e) {
+                return new FuncResponseMessage(getUser(), true, "FileNotFoundException", e.getMessage());
             }
 
         }

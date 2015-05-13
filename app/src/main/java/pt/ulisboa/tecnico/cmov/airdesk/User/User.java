@@ -300,5 +300,22 @@ public class User {
     public void addInterestKeyword(String keyword) { this.getInterestKeywords().add(keyword); }
 
     public void removeInterestKeyword(String keyword) { this.getInterestKeywords().remove(keyword); }
+
+    public void updateInvites(String guestName){
+        for(OwnedWorkspace ws : getOwnedWorkspaces()){
+            for(String guest : ws.getAllowedUsers()){
+                if(guest.equals(guestName) && wifiHandler.gotConnectionTo(guestName)){
+                    Log.d(TAG, "Got connection to " + guestName + ", and found a reference to " + ws.getName() + ", going to invite him");
+                    try {
+                        wifiHandler.sendMessage(new InviteWSMessage(getEmail(), new WorkspaceDTO(ws)).toJSON().toString(), guestName);
+                    } catch (ServiceNotBoundException e) {
+                        Log.d(TAG, "Service not bound at invite: " + e.getMessage());
+                    } catch (JSONException e) {
+                        Log.d(TAG, "Error at converting to JSON in Invite: " + e.getMessage());
+                    }
+                }
+            }
+        }
+    }
     //endregion
 }

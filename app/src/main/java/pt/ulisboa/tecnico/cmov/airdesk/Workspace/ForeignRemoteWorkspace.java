@@ -48,8 +48,22 @@ public class ForeignRemoteWorkspace extends Workspace{
     //region File Methods
     public String getFileContent(String filename) throws FileNotFoundException {
         Log.d(TAG, "Calling Remote getFileContent");
-        //FuncCallMessage newFuncCallMessage = new FuncCallMessage(owner, filename);
-        return null;
+
+        FuncCallMessage newFuncCallMessage = new FuncCallMessage(FuncCallMessage.FuncType.GET_FILE_CONTENT, myUser, this.getName(), filename);
+
+        try {
+            FuncResponseMessage response = wifiHandler.remoteMethodInvoke(owner, newFuncCallMessage);
+            if(response.isExceptionThrown()){
+                if(response.getExceptionName().equals("FileNotFoundException"))
+                    throw new FileNotFoundException(response.getExceptionMessage());
+            } else
+                return response.getResult();
+        }catch(RemoteMethodException e){
+            //throw new RemoteMethodException();
+        }catch(JSONException e) {
+            //help
+        }
+        return "Error accessing the File Owner";
     }
 
     @Override
