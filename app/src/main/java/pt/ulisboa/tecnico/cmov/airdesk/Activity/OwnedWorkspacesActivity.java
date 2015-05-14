@@ -37,6 +37,7 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
     private List<OwnedWorkspace> workspaces;
     private ListView listView;
     private List<String> selectedWorkSpaces;
+    AirDeskApp airDeskApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,7 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
             Get the ListView, link it to the ArrayAdapter, allow multiple choices, allow long clicks,
                 set itemClick Listener
             */
-        AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
+        airDeskApp = (AirDeskApp) getApplicationContext();
         workspaces = airDeskApp.getUser().getOwnedWorkspaces();
         workspacesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, workspaces);
         listView = (ListView) findViewById(R.id.listWorkspaces);
@@ -143,7 +144,15 @@ public class OwnedWorkspacesActivity extends ActionBarActivity {
                     itemShow = menu.findItem(R.id.inviteUsers);
                     itemShow.setVisible(true);
                     itemShow = menu.findItem(R.id.addKeyword);
-                    itemShow.setVisible(true);
+                    try {
+                        if (airDeskApp.getUser().getOwnedWorkspaceByName(selectedWorkSpaces.get(0)).isPublic()) {
+                            itemShow.setVisible(true);
+                        }else{
+                            itemShow.setVisible(false);
+                        }
+                    }catch (WorkspaceNotFoundException e){
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     MenuItem itemHide = menu.findItem(R.id.editWorkspace);
                     itemHide.setVisible(false);
