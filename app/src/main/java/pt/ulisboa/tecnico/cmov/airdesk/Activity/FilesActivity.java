@@ -22,6 +22,7 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Activity.Threads.FilesTask;
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.ADFile;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.Workspace;
@@ -48,8 +49,22 @@ public class FilesActivity extends ActionBarActivity {
         Intent intent = getIntent();
         isForeign = intent.getBooleanExtra("isForeign",false); //default value is false
         selectedFiles = new ArrayList<>();
+        String nameOfCurrWorkspace = intent.getStringExtra("nameOfWorkspace");
 
-        new FilesTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, this);
+        try {
+            if(isForeign)
+                setCurrentWorkspace(airDeskApp.getUser().getForeignWorkspaceByName(nameOfCurrWorkspace));
+            else{
+                setCurrentWorkspace(airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace));
+                airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace).accessCloudFiles();
+            }
+
+        }catch(WorkspaceNotFoundException e){
+            Log.d("[AirDesk]", "Workspace not found at FilesTask: " + e.getMessage());
+        }
+
+        //new FilesTask().execute(this);
+        //assignArrayAdapter(currentWorkspace.getFileNames());
         airDeskApp.getWifiHandler().setCurrentActivity(this);
     }
 

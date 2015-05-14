@@ -73,34 +73,6 @@ public class OwnedWorkspace extends Workspace{
             keywords.add(keyword);
 
         File mainDir = AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE);
-        File currentDir = new File(""+mainDir+File.separatorChar+name);
-
-        /*if(currentDir.isDirectory()){
-            ParseUser parseUser = ParseUser.getCurrentUser();
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("File");
-            ParseObject fileEntry = null;
-            query.whereEqualTo("user", parseUser.getEmail());
-            query.whereEqualTo("workspace", this.getName());
-            Log.d(TAG, "querying user=" + parseUser.getEmail() + " workspace=" + this.getName());
-            try {
-                List<ParseObject> listParse = query.find();
-                for(ParseObject parseObject : listParse){
-                    ParseFile file = parseObject.getParseFile("file");
-                    ADFile savedFile = new ADFile(parseObject.getString("fileName"),getName(), true);
-                    savedFile.save(new String(file.getData()));
-                    files.add(savedFile);
-                    Log.d(AirDeskApp.LOG_TAG, "Loaded file: " + parseObject.getString("fileName") + " from cloud to app");
-                }
-
-            } catch (Exception e) {
-                Log.d(TAG, "Parse error at updateFile: " + e.getMessage());
-            }
-            for(File file : currentDir.listFiles()){
-                ADFile savedFile = new ADFile(file);
-                files.add(savedFile);
-                Log.d(AirDeskApp.LOG_TAG, "Loaded file: " + file.getName() + " from memory to app");
-            }
-        } else currentDir.mkdir();*/
     }
     //endregion
 
@@ -267,6 +239,8 @@ public class OwnedWorkspace extends Workspace{
 
     @Override
     public List<String> getFileNames() {
+        if(!filesPresent)
+            accessCloudFiles();
         List<String> result = new ArrayList<>();
         for(ADFile file : getFiles()) {
             result.add(file.getFileName());

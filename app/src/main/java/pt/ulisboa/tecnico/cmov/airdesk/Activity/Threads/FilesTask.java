@@ -51,7 +51,7 @@ public class FilesTask extends AsyncTask<FilesActivity, Void, List<String>> {
         }catch(WorkspaceNotFoundException e){
             Log.d("[AirDesk]", "Workspace not found at FilesTask: " + e.getMessage());
         }
-        return activity.getCurrentWorkspace().getFileNames();
+        return null;//activity.getCurrentWorkspace().getFileNames();
     }
 
     @Override

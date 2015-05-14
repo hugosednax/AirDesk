@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -432,11 +433,16 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                     ipPeerList = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
 
                     if(!groupOwner)
-                        for(String ip : parseIPlist(ipPeerList)){
-                            Log.d(TAG, "Trying to connect to ip: " + ip);
-                            if(!peersList.contains(ip))
-                                new OutgoingCommTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ip);
+                        if(!ipPeerList.equals("")){
+                            List<String> list = parseIPlist(ipPeerList);
+                            for(int i = 0; i < list.size(); i++){
+                                Log.d(TAG, "Trying to connect to ip: " + list.get(i));
+                                if(!peersList.contains(list.get(i))){
+                                    new OutgoingCommTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, list.get(i));
+                                }
+                            }
                         }
+
                     socket.getOutputStream().write((myUser + "\n").getBytes());
                     publishProgress(socket);
                 } catch (IOException e) {
@@ -449,6 +455,8 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
         @Override
         protected void onProgressUpdate(SimWifiP2pSocket... values) {
+            if(user.equals(getMyUserEmail()))
+                return;
             SimWifiP2pSocket socket = values[0];
             userNetworkList.put(user, socket);
             ReceiveCommTask receiveCommTask = new ReceiveCommTask(user);
@@ -566,8 +574,10 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 Log.d(TAG, "Sending user");
                 sendSocket.getOutputStream().write((myUser + "\n").getBytes());
                 String peerListString="";
-                for(String ipClient : peersList){
-                    peerListString+=ipClient+"|";
+                if(groupOwner){
+                    for(String ipClient : peersList){
+                        peerListString+=ipClient+"|";
+                    }
                 }
                 Thread.sleep(10);
 
@@ -590,6 +600,8 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 Log.d(TAG, "Error at outgoing task: " + result);
             }
             else {
+                if(user.equals(getMyUserEmail()))
+                    return;
                 userNetworkList.put(user, sendSocket);
                 ReceiveCommTask receiveCommTask = new ReceiveCommTask(user);
                 commReceiveTaskTreeMap.put(user, receiveCommTask);
