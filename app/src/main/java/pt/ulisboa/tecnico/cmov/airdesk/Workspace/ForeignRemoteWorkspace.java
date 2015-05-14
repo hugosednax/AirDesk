@@ -63,10 +63,8 @@ public class ForeignRemoteWorkspace extends Workspace{
                     throw new FileNotFoundException(response.getExceptionMessage());
             } else
                 return response.getResult();
-        }catch(RemoteMethodException e){
-            //throw new RemoteMethodException();
-        }catch(JSONException e) {
-            //help
+        }catch (JSONException | RemoteMethodException e) {
+            Log.d(TAG, "In remote getFileNames " + e.getMessage());
         }
         return "Error accessing the File Owner";
     }
@@ -84,9 +82,7 @@ public class ForeignRemoteWorkspace extends Workspace{
             for(int i = 0; i<jsonList.length(); i++){
                 result.add(jsonList.getString(i));
             }
-        } catch (JSONException e) {
-            Log.d(TAG, "In remote getFileNames " + e.getMessage());
-        } catch (RemoteMethodException e) {
+        }catch (JSONException | RemoteMethodException e) {
             Log.d(TAG, "In remote getFileNames " + e.getMessage());
         }
         return result;
@@ -105,10 +101,8 @@ public class ForeignRemoteWorkspace extends Workspace{
                     throw new CreateFileException(response.getExceptionMessage());
             }
 
-        }catch(RemoteMethodException e){
-            //throw new RemoteMethodException();
-        }catch(JSONException e) {
-            //help
+        }catch (JSONException | RemoteMethodException e) {
+            Log.d(TAG, "In remote getFileNames " + e.getMessage());
         }
     }
 
@@ -125,10 +119,8 @@ public class ForeignRemoteWorkspace extends Workspace{
                 if(response.getExceptionName().equals("DeleteFileException"));
                     throw new DeleteFileException(response.getExceptionMessage());
             }
-        }catch(RemoteMethodException e){
-            //throw new RemoteMethodException();
-        }catch(JSONException e) {
-            //help
+        }catch (JSONException | RemoteMethodException e) {
+            Log.d(TAG, "In remote getFileNames " + e.getMessage());
         }
     }
 
@@ -145,10 +137,8 @@ public class ForeignRemoteWorkspace extends Workspace{
                 if(response.getExceptionName().equals("FileNotFoundException"))
                     throw new FileNotFoundException(response.getExceptionMessage());
             }
-        }catch(RemoteMethodException e){
-            //TODO throw new RemoteMethodException();
-        }catch(JSONException e) {
-            //TODO help
+        }catch (JSONException | RemoteMethodException e) {
+            Log.d(TAG, "In remote getFileNames " + e.getMessage());
         }
     }
 
@@ -165,10 +155,8 @@ public class ForeignRemoteWorkspace extends Workspace{
                 if(response.getResult().equals("true"))
                     result = true;
             }
-        }catch(RemoteMethodException e){
-            //TODO throw new RemoteMethodException();
-        }catch(JSONException e) {
-            //TODO help
+        }catch (JSONException | RemoteMethodException e) {
+            Log.d(TAG, "In remote getFileNames " + e.getMessage());
         }
         return result;
     }
@@ -182,10 +170,8 @@ public class ForeignRemoteWorkspace extends Workspace{
                 if(response.getExceptionName().equals("FileNotFoundException"))
                     throw new FileNotFoundException(response.getExceptionMessage());
             }
-        }catch(RemoteMethodException e){
-            //TODO throw new RemoteMethodException();
-        }catch(JSONException e) {
-            //TODO help
+        }catch (JSONException | RemoteMethodException e) {
+            Log.d(TAG, "In remote getFileNames " + e.getMessage());
         }
     }
     //endregion

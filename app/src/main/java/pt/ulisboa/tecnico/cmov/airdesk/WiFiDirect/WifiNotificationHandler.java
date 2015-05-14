@@ -209,7 +209,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
     public void broadcast() throws ServiceNotBoundException {
         if (mBound) {
             for (String ip : peersList) {
-                new OutgoingCommTask().execute(ip);
+                new OutgoingCommTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ip);
             }
         } else {
             throw new ServiceNotBoundException("Service not Bound");
@@ -421,13 +421,22 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             }
             while (!Thread.currentThread().isInterrupted()) {
                 try {
+                    Log.d(TAG, "Accepted socket");
                     SimWifiP2pSocket socket = mSrvSocket.accept();
+
+                    Log.d(TAG, "Waiting for user");
                     user = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
 
-                    if(!groupOwner) {
-                        ipPeerList = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
-                        peersList = parseIPlist(ipPeerList);
-                    }
+
+                    Log.d(TAG, "Waiting for ip list");
+                    ipPeerList = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
+
+                    if(!groupOwner)
+                        for(String ip : parseIPlist(ipPeerList)){
+                            Log.d(TAG, "Trying to connect to ip: " + ip);
+                            if(!peersList.contains(ip))
+                                new OutgoingCommTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ip);
+                        }
                     socket.getOutputStream().write((myUser + "\n").getBytes());
                     publishProgress(socket);
                 } catch (IOException e) {
@@ -550,17 +559,20 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         @Override
         protected String doInBackground(String... params) {
             try {
+                Log.d(TAG, "Outgoing Connecting to ip: " + params[0]);
                 sendSocket = new SimWifiP2pSocket(params[0],
                         Integer.parseInt(context.getString(R.string.port)));
+
+                Log.d(TAG, "Sending user");
                 sendSocket.getOutputStream().write((myUser + "\n").getBytes());
-                if(groupOwner) {
-                    String peerListString="";
-                    for(String ipClient : peersList){
-                        peerListString+=ipClient+"|";
-                    }
-                    Thread.sleep(10);
-                    sendSocket.getOutputStream().write((peerListString+"\n").getBytes());
+                String peerListString="";
+                for(String ipClient : peersList){
+                    peerListString+=ipClient+"|";
                 }
+                Thread.sleep(10);
+
+                Log.d(TAG, "Sending ip list " + peerListString);
+                sendSocket.getOutputStream().write((peerListString+"\n").getBytes());
                 user = (new BufferedReader(new InputStreamReader(sendSocket.getInputStream()))).readLine();
             } catch (UnknownHostException e) {
                 return "Unknown Host:" + e.getMessage();
@@ -630,8 +642,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
         @Override
         protected Void doInBackground(String... params) {
+
+            Log.d(TAG, "Sending message " + params[0]);
             String user = params[0];
-            Log.d(TAG, "Sending Remote Message to " + user);
             String message = params[1];
             SimWifiP2pSocket socket = userNetworkList.get(user);
             if (socket == null){

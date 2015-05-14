@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,8 +48,8 @@ public class FilesActivity extends ActionBarActivity {
         Intent intent = getIntent();
         isForeign = intent.getBooleanExtra("isForeign",false); //default value is false
         selectedFiles = new ArrayList<>();
-        
-        new FilesTask().execute(this);
+
+        new FilesTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, this);
         airDeskApp.getWifiHandler().setCurrentActivity(this);
     }
 
