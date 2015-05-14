@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.airdesk.Activity.Threads;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -42,10 +43,13 @@ public class FilesTask extends AsyncTask<FilesActivity, Void, List<String>> {
             */
             if(isForeign)
                 activity.setCurrentWorkspace(airDeskApp.getUser().getForeignWorkspaceByName(nameOfCurrWorkspace));
-            else
+            else{
                 activity.setCurrentWorkspace(airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace));
-        }catch(WorkspaceNotFoundException e){
+                airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace).accessCloudFiles();
+            }
 
+        }catch(WorkspaceNotFoundException e){
+            Log.d("[AirDesk]", "Workspace not found at FilesTask: " + e.getMessage());
         }
         return activity.getCurrentWorkspace().getFileNames();
     }

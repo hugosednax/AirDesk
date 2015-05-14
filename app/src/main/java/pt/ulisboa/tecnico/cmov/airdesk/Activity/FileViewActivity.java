@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -46,13 +47,12 @@ public class FileViewActivity extends ActionBarActivity {
             */
             if(isForeign)
                 content = airDeskApp.getUser().getForeignWorkspaceByName(nameOfCurrWorkspace).getFileContent(nameOfCurrFile);
-            else
+            else {
                 content = airDeskApp.getUser().getOwnedWorkspaceByName(nameOfCurrWorkspace).getFileContent(nameOfCurrFile);
+            }
             //Read text from file
 
-        } catch (FileNotFoundException e) {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        } catch (WorkspaceNotFoundException e) {
+        } catch (FileNotFoundException | WorkspaceNotFoundException e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
@@ -72,7 +72,6 @@ public class FileViewActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
         return super.onOptionsItemSelected(item);
     }
 }

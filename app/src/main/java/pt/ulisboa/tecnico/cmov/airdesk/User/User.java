@@ -266,6 +266,11 @@ public class User {
         return results;
     }
 
+    public void cleanAllWorkspaces(){
+        for(OwnedWorkspace ws : getOwnedWorkspaces())
+            ws.cleanAllFiles();
+    }
+
     //endregion
 
     //region File Methods

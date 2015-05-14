@@ -33,6 +33,13 @@ public class ADFile {
         this.editable = true;
     }
 
+    public ADFile(String name, String workspaceName, boolean cloud) throws IOException {
+        this.file =  new File(""+AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE)+File.separatorChar+workspaceName, name);
+        file.createNewFile();
+        this.name = name;
+        this.editable = true;
+    }
+
     public ADFile(File file) {
         this.file = file;
         this.name = file.getName();

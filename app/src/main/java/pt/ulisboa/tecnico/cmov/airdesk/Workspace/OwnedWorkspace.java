@@ -4,6 +4,12 @@ import android.content.Context;
 import android.util.Log;
 
 import com.android.internal.util.Predicate;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +40,7 @@ public class OwnedWorkspace extends Workspace{
     private List<String> keywords;
     protected List<ADFile> files;
     protected int quota;
+    private boolean filesPresent;
     //endregion
 
     //region Constructors
@@ -48,7 +55,7 @@ public class OwnedWorkspace extends Workspace{
         currentDir.mkdir();
         if(!currentDir.isDirectory())
             throw new CreateWorkspaceException("Can't create a new directory for this Workspace");
-        this.keywords = new ArrayList<String>();
+        this.keywords = new ArrayList<>();
     }
 
     public OwnedWorkspace(WorkspaceDTO workspaceDTO) {
@@ -58,6 +65,7 @@ public class OwnedWorkspace extends Workspace{
         this.allowedUsers = new ArrayList<>();
         this.keywords = new ArrayList<>();
         this.files = new ArrayList<>();
+        this.filesPresent = false;
 
         for(String username : workspaceDTO.getAllowedUsers())
             allowedUsers.add(username);
@@ -67,13 +75,32 @@ public class OwnedWorkspace extends Workspace{
         File mainDir = AirDeskApp.getAppContext().getDir("data", Context.MODE_PRIVATE);
         File currentDir = new File(""+mainDir+File.separatorChar+name);
 
-        if(currentDir.isDirectory()){
+        /*if(currentDir.isDirectory()){
+            ParseUser parseUser = ParseUser.getCurrentUser();
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("File");
+            ParseObject fileEntry = null;
+            query.whereEqualTo("user", parseUser.getEmail());
+            query.whereEqualTo("workspace", this.getName());
+            Log.d(TAG, "querying user=" + parseUser.getEmail() + " workspace=" + this.getName());
+            try {
+                List<ParseObject> listParse = query.find();
+                for(ParseObject parseObject : listParse){
+                    ParseFile file = parseObject.getParseFile("file");
+                    ADFile savedFile = new ADFile(parseObject.getString("fileName"),getName(), true);
+                    savedFile.save(new String(file.getData()));
+                    files.add(savedFile);
+                    Log.d(AirDeskApp.LOG_TAG, "Loaded file: " + parseObject.getString("fileName") + " from cloud to app");
+                }
+
+            } catch (Exception e) {
+                Log.d(TAG, "Parse error at updateFile: " + e.getMessage());
+            }
             for(File file : currentDir.listFiles()){
                 ADFile savedFile = new ADFile(file);
                 files.add(savedFile);
                 Log.d(AirDeskApp.LOG_TAG, "Loaded file: " + file.getName() + " from memory to app");
             }
-        } else currentDir.mkdir();
+        } else currentDir.mkdir();*/
     }
     //endregion
 
@@ -115,20 +142,43 @@ public class OwnedWorkspace extends Workspace{
     public void createFile(String fileName) throws QuotaLimitExceededException, CreateFileException{
         if(this.getSize() >= getQuota()){
             throw new QuotaLimitExceededException("Quota limit exceeded while trying to create " + fileName + " in " + this.getName() + " your Workspace.");
-        } else {
-            if(existFile(fileName)) throw new CreateFileException("Already exists a file with that name.");
-            try {
-                files.add(new ADFile(fileName, this.getName()));
-            } catch (IOException e) {
-                Log.d(TAG, "Error in create file regarding fileSystem: " + e.getMessage());
-                throw new CreateFileException("Error at creating the file in the FileSystem.");
-            }
         }
+        if(existFile(fileName)) throw new CreateFileException("Already exists a file with that name.");
+        try {
+            files.add(new ADFile(fileName, this.getName()));
+            ParseUser parseUser = ParseUser.getCurrentUser();
+            ParseObject fileTable = new ParseObject("File");
+            byte[] data = "".getBytes();
+            ParseFile file = new ParseFile(fileName, data);
+            fileTable.put("user", parseUser.getEmail());
+            fileTable.put("workspace", this.getName());
+            fileTable.put("fileName", fileName+".txt");
+            fileTable.put("file", file);
+            fileTable.saveInBackground();
+        } catch (IOException e) {
+            Log.d(TAG, "Error in create file regarding fileSystem: " + e.getMessage());
+            throw new CreateFileException("Error at creating the file in the FileSystem.");
+        }
+
+
     }
 
     public void removeFile(String name) throws FileNotFoundException, DeleteFileException {
         ADFile file = getFileByName(name);
         files.remove(file);
+        ParseUser parseUser = ParseUser.getCurrentUser();
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("File");
+        ParseObject fileEntry = null;
+        query.whereEqualTo("user", parseUser.getEmail());
+        query.whereEqualTo("workspace", this.getName());
+        query.whereEqualTo("fileName", name);
+        Log.d(TAG, "querying user=" + parseUser.getEmail() + " workspace=" + this.getName() + " fileName=" + name);
+        try {
+            fileEntry = query.find().get(0);
+            fileEntry.deleteInBackground();
+        } catch (Exception e) {
+            Log.d(TAG, "Parse error at updateFile: " + e.getMessage());
+        }
         if(!file.getFile().delete())
             throw new DeleteFileException("Can't delete file in Android File System");
     }
@@ -139,6 +189,20 @@ public class OwnedWorkspace extends Workspace{
             throw new QuotaLimitExceededException("Quota limit exceeded while trying to update " + name + " in " + this.getName() + " your Workspace.");
         file.save(text);
         file.setEditable(true);
+        ParseUser parseUser = ParseUser.getCurrentUser();
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("File");
+        ParseObject fileEntry = null;
+        query.whereEqualTo("user", parseUser.getEmail());
+        query.whereEqualTo("workspace", this.getName());
+        query.whereEqualTo("fileName", name);
+        Log.d(TAG, "querying user=" + parseUser.getEmail() + " workspace=" + this.getName() + " fileName=" + name);
+        try {
+            fileEntry = query.find().get(0);
+            fileEntry.put("file", new ParseFile(name, text.getBytes()));
+            fileEntry.save();
+        } catch (Exception e) {
+            Log.d(TAG, "Parse error at updateFile: " + e.getMessage());
+        }
     }
 
     public ADFile getFileByName(String name) throws FileNotFoundException {
@@ -159,6 +223,46 @@ public class OwnedWorkspace extends Workspace{
         } catch (IOException e) {
             return "Error reading the file";
         }
+    }
+
+    public void accessCloudFiles(){
+        if(!filesPresent) {
+            Log.d(TAG, "Accessing Cloud files");
+            ParseUser parseUser = ParseUser.getCurrentUser();
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("File");
+            query.whereEqualTo("user", parseUser.getEmail());
+            query.whereEqualTo("workspace", this.getName());
+            Log.d(TAG, "querying user=" + parseUser.getEmail() + " workspace=" + this.getName());
+            try {
+                List<ParseObject> listParse = query.find();
+                for (ParseObject parseObject : listParse) {
+                    ParseFile file = parseObject.getParseFile("file");
+                    ADFile savedFile = new ADFile(parseObject.getString("fileName"), getName(), true);
+                    savedFile.save(new String(file.getData()));
+                    files.add(savedFile);
+                    Log.d(AirDeskApp.LOG_TAG, "Loaded file: " + parseObject.getString("fileName") + " from cloud to app");
+                }
+
+            } catch (Exception e) {
+                Log.d(TAG, "Parse error at updateFile: " + e.getMessage());
+            }
+            /*for(File file : currentDir.listFiles()){
+                ADFile savedFile = new ADFile(file);
+                files.add(savedFile);
+                Log.d(AirDeskApp.LOG_TAG, "Loaded file: " + file.getName() + " from memory to app");
+            }*/
+            filesPresent=true;
+        }
+    }
+
+    public void cleanAllFiles(){
+        File mainDir = AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
+        File directory = new File(""+mainDir+File.separatorChar+name);
+        for (File child : directory.listFiles())
+            if(!child.delete())
+                Log.d(AirDeskApp.LOG_TAG, "Error at deleting file: " + child.getName());
+        files = new ArrayList<>();
+        filesPresent = false;
     }
 
     @Override
@@ -199,6 +303,12 @@ public class OwnedWorkspace extends Workspace{
     public void delete(){
         File mainDir = AirDeskApp.getAppContext().getDir("data", AirDeskApp.getAppContext().MODE_PRIVATE);
         File directory = new File(""+mainDir+File.separatorChar+name);
+        for(String file : getFileNames())
+            try {
+                removeFile(file);
+            } catch (FileNotFoundException | DeleteFileException e) {
+                Log.d(AirDeskApp.LOG_TAG, "Error at removing file: " + file);
+            }
         for (File child : directory.listFiles())
             if(!child.delete())
                 Log.d(AirDeskApp.LOG_TAG, "Error at deleting file: " + child.getName());

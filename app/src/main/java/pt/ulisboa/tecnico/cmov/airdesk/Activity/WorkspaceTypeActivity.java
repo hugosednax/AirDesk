@@ -87,4 +87,10 @@ public class WorkspaceTypeActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    @Override
+    public void onDestroy(){
+        ((AirDeskApp)getApplication()).getUser().cleanAllWorkspaces();
+        super.onDestroy();
+    }
+
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
@@ -54,9 +55,7 @@ public class FileEditActivity extends ActionBarActivity {
             }
             grabbedLock = true;
 
-        } catch (WorkspaceNotFoundException e) {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        } catch (FileNotFoundException e) {
+        } catch (WorkspaceNotFoundException | FileNotFoundException e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
@@ -100,10 +99,11 @@ public class FileEditActivity extends ActionBarActivity {
             try {
                 currWorkspace.setEditable(nameOfCurrFile);
             } catch (FileNotFoundException e) {
-                //TODO
+                Log.d("[AirDesk]", "Error onDestroy of FileEdit: " + e.getMessage());
             } finally{
                 super.onDestroy();
             }
+        else super.onDestroy();
     }
 
 }
