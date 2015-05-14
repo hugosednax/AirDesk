@@ -295,9 +295,11 @@ public class User {
         List<String> keywords = new ArrayList<>();
         keywords.add(keyword);
         try {
-            wifiHandler.broadcastMessage(new InterestMessage(getEmail(), keywords).toString());
+            wifiHandler.broadcastMessage(new InterestMessage(getEmail(), keywords).toJSON().toString());
         } catch (ServiceNotBoundException e) {
             Log.d(TAG, "Service not bound, can't broadcast new interests");
+        } catch (JSONException e) {
+            Log.d(TAG, "JSON exception at User addInterestKeyword: " + e.getMessage());
         }
     }
 

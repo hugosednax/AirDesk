@@ -259,8 +259,8 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
 
     //region Message API
     public Message parseMessage(String message) throws JSONException, MessageParsingException {
-        JSONObject JSONMessage = new JSONObject(message);
         Log.d(TAG, "Parsing message : " + message);
+        JSONObject JSONMessage = new JSONObject(message);
         Message.Type messageType = Message.stringToEnum(JSONMessage.getString(Message.MESSAGE_TYPE));
 
         if(messageType == Message.Type.INVITE) {
@@ -479,34 +479,34 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
             try {
                 sockIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 while (!isCancelled() && (st = sockIn.readLine()) != null) {
-                    Message message = parseMessage(st);
-                    if(message.getClass().equals(FuncResponseMessage.class)){
-                        response = st;
+                    try {
+                        Message message = parseMessage(st);
+                        if(message.getClass().equals(FuncResponseMessage.class)){
+                            response = st;
 
-                    } else if(message.getClass().equals(InviteWSMessage.class)){
-                        InviteWSMessage inviteWSMessage = (InviteWSMessage) message;
-                        String wsName = inviteWSMessage.getWorkspaceDTO().getName();
-                        Log.d(TAG, "Received WS invite to " + wsName);
-                        addForeignWorkspace(inviteWSMessage);
+                        } else if(message.getClass().equals(InviteWSMessage.class)){
+                            InviteWSMessage inviteWSMessage = (InviteWSMessage) message;
+                            String wsName = inviteWSMessage.getWorkspaceDTO().getName();
+                            Log.d(TAG, "Received WS invite to " + wsName);
+                            addForeignWorkspace(inviteWSMessage);
 
-                    } else if (message.getClass().equals(FuncCallMessage.class)){
-                        FuncCallMessage funcCallMessage = (FuncCallMessage) message;
-                        FuncResponseMessage funcResponseMessage = funcCallMessage.execute(getMyUser());
-                        s.getOutputStream().write((funcResponseMessage.toJSON().toString()+"\n").getBytes());
+                        } else if (message.getClass().equals(FuncCallMessage.class)){
+                            FuncCallMessage funcCallMessage = (FuncCallMessage) message;
+                            FuncResponseMessage funcResponseMessage = funcCallMessage.execute(getMyUser());
+                            s.getOutputStream().write((funcResponseMessage.toJSON().toString()+"\n").getBytes());
 
-                    } else if (message.getClass().equals(InterestMessage.class)){
-                        Log.d(TAG, "Received interest message");
-                        InterestMessage interestMessage = (InterestMessage) message;
-                        inviteThroughKeywords(interestMessage.getUser(), interestMessage.getKeywords());
+                        } else if (message.getClass().equals(InterestMessage.class)){
+                            Log.d(TAG, "Received interest message");
+                            InterestMessage interestMessage = (InterestMessage) message;
+                            inviteThroughKeywords(interestMessage.getUser(), interestMessage.getKeywords());
+                        }
+                        //else ignore
+                    } catch (JSONException | MessageParsingException e) {
+                        Log.d(TAG, "Error at Receive task: " + e.getMessage());
                     }
-                    //else ignore
                 }
             } catch (IOException e) {
                 Log.d(TAG, "Error reading socket: " + e.getMessage());
-            } catch (MessageParsingException e) {
-                Log.d(TAG, "Error Parsing the Message: " + e.getMessage());
-            } catch (JSONException e) {
-                Log.d(TAG, "Error Creating the JSON: " + e.getMessage());
             }
             return null;
         }

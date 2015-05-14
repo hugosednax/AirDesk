@@ -59,7 +59,6 @@ public class ADFile {
     }
 
     public void setEditable(boolean editable) {
-        Log.d("[AirDesk]", "edit  = " + editable);
         this.editable = editable;
     }
 

@@ -34,7 +34,10 @@ public class InterestMessage extends Message {
         JSONObject result = new JSONObject();
         result.put(MESSAGE_USER, this.getUser());
         result.put(MESSAGE_TYPE, this.getTypeOfMessage());
-        result.put(MESSAGE_KEYWORDS, new JSONArray(getKeywords()));
+        JSONArray jsonArray = new JSONArray();
+        for(String keyword : getKeywords())
+            jsonArray.put(keyword);
+        result.put(MESSAGE_KEYWORDS, jsonArray);
         return result;
     }
 }
