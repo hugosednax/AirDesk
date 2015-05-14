@@ -14,7 +14,7 @@ public class AirDeskApp extends Application {
     //region Class Variables
     public static final String LOG_TAG = "[AirDesk]";
 
-    private User user;
+    private User user = null;
     SharedPreferences prefs;
     private static Context context;
     private WifiNotificationHandler wifiHandler;
