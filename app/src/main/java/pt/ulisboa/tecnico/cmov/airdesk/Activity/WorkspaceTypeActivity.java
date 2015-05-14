@@ -30,7 +30,7 @@ public class WorkspaceTypeActivity extends ActionBarActivity {
         * was directly redirected from StarterActivity since it has done sign up previously
         *
         * So we can know for sure that there is filled values for the nick and email, so
-        * we create a User object with these informations
+        * we create a User object with this information
         * */
         final AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         airDeskApp.setPrefs(getSharedPreferences("user_prefs", MODE_PRIVATE));
