@@ -45,6 +45,11 @@ public class ForeignRemoteWorkspace extends Workspace{
     }
     //endregion
 
+
+    public String getOwner() {
+        return owner;
+    }
+
     //region File Methods
     public String getFileContent(String filename) throws FileNotFoundException {
         Log.d(TAG, "Calling Remote getFileContent");

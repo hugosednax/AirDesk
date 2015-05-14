@@ -41,11 +41,13 @@ import pt.ulisboa.tecnico.cmov.airdesk.DTO.WorkspaceDTO;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.MessageParsingException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.RemoteMethodException;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.ServiceNotBoundException;
+import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.FuncCallMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.FuncResponseMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.InterestMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.InviteWSMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.Message;
+import pt.ulisboa.tecnico.cmov.airdesk.Message.RemoveInviteMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.User.User;
 import pt.ulisboa.tecnico.cmov.airdesk.Workspace.ForeignRemoteWorkspace;
@@ -266,6 +268,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
         if(messageType == Message.Type.INVITE) {
             return new InviteWSMessage((String) JSONMessage.get(Message.MESSAGE_USER),
                     new WorkspaceDTO((JSONObject) JSONMessage.get(Message.MESSAGE_WORKSPACE)));
+
         } else if(messageType == Message.Type.FUNC_CALL) {
             FuncCallMessage.FuncType funcType = FuncCallMessage.stringToFuncEnum(JSONMessage.getString(Message.MESSAGE_FUNC_TYPE));
             if (funcType == FuncCallMessage.FuncType.CREATE_FILE)
@@ -311,9 +314,11 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                         JSONMessage.getString(Message.MESSAGE_ARG2));
 
             else throw new MessageParsingException("No compatible FuncType found");
+
         } else if(messageType == Message.Type.FUNC_RESP){
             return new FuncResponseMessage("", true, "");
-        }else if(messageType == Message.Type.INTEREST){
+
+        } else if(messageType == Message.Type.INTEREST){
             ArrayList<String> list = new ArrayList<>();
             JSONArray jsonArray = (JSONArray)JSONMessage.get(Message.MESSAGE_KEYWORDS);
             if (jsonArray != null) {
@@ -323,6 +328,9 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                 }
             }
             return new InterestMessage(JSONMessage.getString(Message.MESSAGE_USER), list);
+
+        } else if(messageType == Message.Type.REMOVE_INVITE){
+            return new RemoveInviteMessage(JSONMessage.getString(Message.MESSAGE_USER), JSONMessage.getString(Message.MESSAGE_WORKSPACE));
         }
         throw new MessageParsingException("No compatible Type found");
     }
@@ -499,6 +507,15 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                             Log.d(TAG, "Received interest message");
                             InterestMessage interestMessage = (InterestMessage) message;
                             inviteThroughKeywords(interestMessage.getUser(), interestMessage.getKeywords());
+
+                        } else if (message.getClass().equals(RemoveInviteMessage.class)){
+                            Log.d(TAG, "Received remove invite message");
+                            RemoveInviteMessage removeInviteMessage = (RemoveInviteMessage) message;
+                            try {
+                                getMyUser().getOwnedWorkspaceByName(removeInviteMessage.getWorkspaceName()).removeFromAllowedUsers(message.getUser());
+                            } catch (WorkspaceNotFoundException e) {
+                                Log.d(TAG, "A remove invite message was called over a non existent workspace: " + ((RemoveInviteMessage) message).getWorkspaceName());
+                            }
                         }
                         //else ignore
                     } catch (JSONException | MessageParsingException e) {

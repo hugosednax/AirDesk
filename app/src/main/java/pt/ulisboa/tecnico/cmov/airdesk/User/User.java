@@ -23,6 +23,7 @@ import pt.ulisboa.tecnico.cmov.airdesk.Exception.WriteToFileException;
 import pt.ulisboa.tecnico.cmov.airdesk.FileSystem.JSONHandler;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.InterestMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Message.InviteWSMessage;
+import pt.ulisboa.tecnico.cmov.airdesk.Message.RemoveInviteMessage;
 import pt.ulisboa.tecnico.cmov.airdesk.Predicate.WorkspaceNamePredicate;
 import pt.ulisboa.tecnico.cmov.airdesk.Exception.WorkspaceNotFoundException;
 import pt.ulisboa.tecnico.cmov.airdesk.WiFiDirect.WifiNotificationHandler;
@@ -95,6 +96,12 @@ public class User {
                 for(String email : savedWS.getAllowedUsers())
                     this.invite(savedWS, email);
         }
+    }
+
+    private String parseWSName(String arg1) {
+        String delimit = "[@]";
+        String[] tokens = arg1.split(delimit);
+        return tokens[0];
     }
     //endregion
 
@@ -241,10 +248,12 @@ public class User {
 
     public void deleteWorkspace(ForeignRemoteWorkspace workspace){
         try {
-            workspace.delete();
             foreignWorkspaces.remove(workspace);
-        } catch (Exception e) {
-            Log.d("[AirDesk]", e.getMessage());
+            wifiHandler.sendMessage(new RemoveInviteMessage(this.getEmail(), parseWSName(workspace.getName())).toJSON().toString(), workspace.getOwner());
+        } catch (JSONException e) {
+            //TODO
+        } catch (ServiceNotBoundException e) {
+            //TODO
         }
     }
 

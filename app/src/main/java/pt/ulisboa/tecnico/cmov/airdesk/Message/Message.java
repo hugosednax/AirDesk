@@ -39,11 +39,13 @@ public abstract class Message {
             return Type.INVITE;
         else if(type.equals("INTEREST"))
             return Type.INTEREST;
+        else if(type.equals("REMOVE_INVITE"))
+            return Type.REMOVE_INVITE;
         else throw new MessageParsingException("No known type = " + type);
     }
 
     public enum Type{
-        FUNC_CALL, FUNC_RESP, INVITE, INTEREST;
+        FUNC_CALL, FUNC_RESP, INVITE, INTEREST, REMOVE_INVITE;
     }
     //endregion
 
