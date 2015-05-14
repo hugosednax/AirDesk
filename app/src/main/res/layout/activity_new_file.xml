@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/FileName"
         android:layout_marginTop="119dp"
-        android:text="Name"
+        android:hint="Name"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:background="#F0F0F0" />
