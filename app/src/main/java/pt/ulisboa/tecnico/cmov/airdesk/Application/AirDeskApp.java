@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.parse.Parse;
+
 import pt.ulisboa.tecnico.cmov.airdesk.User.User;
 import pt.ulisboa.tecnico.cmov.airdesk.WiFiDirect.WifiNotificationHandler;
 /**
@@ -32,7 +34,11 @@ public class AirDeskApp extends Application {
         super.onCreate();
         this.context = getApplicationContext();
         wifiHandler = new WifiNotificationHandler(getApplicationContext());
-        //wifiHandler.wifiOn(); wifi is turned on in the WorkspaceTypeActivity
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(this);
+
+        Parse.initialize(this, "H6oyIUFhST9fFAxUgtTCe1xS2iayhb6lfem84kcg", "dYWNKt8uMbL3auBYKxDOjdfFs8E6azCpTHxNVjQv");
+
     }
 
     @Override

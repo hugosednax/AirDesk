@@ -9,6 +9,11 @@ import android.view.View;
 import android.content.Intent;
 import android.widget.Toast;
 
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseUser;
+
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 import pt.ulisboa.tecnico.cmov.airdesk.User.User;
@@ -27,16 +32,25 @@ public class WorkspaceTypeActivity extends ActionBarActivity {
         * So we can know for sure that there is filled values for the nick and email, so
         * we create a User object with these informations
         * */
-        AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
+        final AirDeskApp airDeskApp = (AirDeskApp) getApplicationContext();
         airDeskApp.setPrefs(getSharedPreferences("user_prefs", MODE_PRIVATE));
         String userEmail = airDeskApp.getPrefs().getString("email_pref","DEFAULT");
-        String nick = airDeskApp.getPrefs().getString("nick_pref","DEFAULT");
+        final String nick = airDeskApp.getPrefs().getString("nick_pref","DEFAULT");
         User user = airDeskApp.getUser();
         if(airDeskApp.getUser() == null){
             user = new User(nick, userEmail, airDeskApp.getWifiHandler());
             airDeskApp.setUser(user);
+            ParseUser.logInInBackground(nick, "DEFAULT", new LogInCallback() {
+                public void done(ParseUser user, ParseException e) {
+                    if (user != null) {
+                        Log.d(airDeskApp.LOG_TAG, "User " + nick + " is now Parse logged");
+                    } else {
+                        Log.d(airDeskApp.LOG_TAG, "User " + nick + " couldn't log in parse: " + e.getMessage());
+                    }
+                }
+            });
         }
-        Toast.makeText(this, "Welcome back " + user.getNick() + "!" , Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Welcome " + user.getNick() + "!" , Toast.LENGTH_SHORT).show();
         airDeskApp.getWifiHandler().setCurrentActivity(this);
         airDeskApp.getWifiHandler().setMyUser(user);
         airDeskApp.getWifiHandler().wifiOn();

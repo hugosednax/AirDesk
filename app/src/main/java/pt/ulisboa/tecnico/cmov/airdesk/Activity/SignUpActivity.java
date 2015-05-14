@@ -10,6 +10,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SignUpCallback;
+
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 import pt.ulisboa.tecnico.cmov.airdesk.R;
 
@@ -35,6 +39,19 @@ public class SignUpActivity extends ActionBarActivity {
         prefEditor.putString("email_pref",email.getText().toString());
         prefEditor.putString("nick_pref",nick.getText().toString());
         prefEditor.apply();
+
+        //Parse signUp
+        ParseUser user = new ParseUser();
+        user.setUsername(nick.getText().toString());
+        user.setPassword("DEFAULT");
+        user.setEmail(email.getText().toString());
+
+        try {
+            user.signUp();
+        } catch (ParseException e) {
+            Log.d("[AirDesk]", "SignUp didn't succeed: " + e.getMessage());
+        }
+
         Intent intent = new Intent(this, WorkspaceTypeActivity.class);
         startActivity(intent);
     }
@@ -51,9 +68,6 @@ public class SignUpActivity extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-
         return super.onOptionsItemSelected(item);
     }
 }

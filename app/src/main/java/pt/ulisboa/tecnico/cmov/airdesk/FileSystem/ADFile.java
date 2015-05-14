@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.cmov.airdesk.FileSystem;
 import android.content.Context;
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -12,7 +11,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 
 import pt.ulisboa.tecnico.cmov.airdesk.Application.AirDeskApp;
 
@@ -24,6 +22,7 @@ public class ADFile {
     private File file;
     private String name;
     private boolean editable;
+    private boolean committed = false;
     //endregion
 
     //region Constructors
@@ -58,9 +57,11 @@ public class ADFile {
         return editable;
     }
 
-    public void setEditable(boolean editable) {
-        this.editable = editable;
-    }
+    public boolean isCommitted(){ return committed; }
+
+    public void setEditable(boolean editable) { this.editable = editable; }
+
+    public void setCommitted(boolean committed){ this.committed = committed; }
 
     public String toString(){
         return name;
