@@ -45,6 +45,8 @@ public class ForeignWorkspacesActivity extends ActionBarActivity {
         workspacesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,workspaces);
         listView = (ListView) findViewById(R.id.listWorkspaces);
         listView.setAdapter(workspacesAdapter);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setLongClickable(true);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
