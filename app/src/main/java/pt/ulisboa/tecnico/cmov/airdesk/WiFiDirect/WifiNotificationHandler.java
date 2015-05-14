@@ -579,7 +579,7 @@ public class WifiNotificationHandler implements SimWifiP2pManager.PeerListListen
                         peerListString+=ipClient+"|";
                     }
                 }
-                Thread.sleep(10);
+                Thread.sleep(100);
 
                 Log.d(TAG, "Sending ip list " + peerListString);
                 sendSocket.getOutputStream().write((peerListString+"\n").getBytes());
